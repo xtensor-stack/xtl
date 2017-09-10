@@ -1,0 +1,21 @@
+############################################################################
+# Copyright (c) 2017, Sylvain Corlay and Johan Mabille                     #
+#                                                                          #
+# Distributed under the terms of the BSD 3-Clause License.                 #
+#                                                                          #
+# The full license is in the file LICENSE, distributed with this software. #
+############################################################################
+
+# xtl cmake module
+# This module sets the following variables in your project::
+#
+#   xtl_FOUND - true if xtl found on the system
+#   xtl_INCLUDE_DIRS - the directory containing xtl headers
+#   xtl_LIBRARY - empty
+
+@PACKAGE_INIT@
+
+set(PN xtl)
+set_and_check(${PN}_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
+set(${PN}_LIBRARY "")
+check_required_components(${PN})
