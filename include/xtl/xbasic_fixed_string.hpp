@@ -407,22 +407,22 @@ namespace xtl
                                            xbasic_fixed_string<CT, N, EP, TR>& str);
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
-    std::basic_istream<CT, TR>& get_line(std::basic_istream<CT, TR>& input,
-                                         xbasic_fixed_string<CT, N, EP, TR>& str,
-                                         CT delim);
+    std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>& input,
+                                        xbasic_fixed_string<CT, N, EP, TR>& str,
+                                        CT delim);
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
-    std::basic_istream<CT, TR>& get_line(std::basic_istream<CT, TR>&& input,
-                                         xbasic_fixed_string<CT, N, EP, TR>& str,
-                                         CT delim);
+    std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>&& input,
+                                        xbasic_fixed_string<CT, N, EP, TR>& str,
+                                        CT delim);
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
-    std::basic_istream<CT, TR>& get_line(std::basic_istream<CT, TR>& input,
-                                         xbasic_fixed_string<CT, N, EP, TR>& str);
+    std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>& input,
+                                        xbasic_fixed_string<CT, N, EP, TR>& str);
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
-    std::basic_istream<CT, TR>& get_line(std::basic_istream<CT, TR>&& input,
-                                         xbasic_fixed_string<CT, N, EP, TR>& str);
+    std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>&& input,
+                                        xbasic_fixed_string<CT, N, EP, TR>& str);
 
     /********************************
      * xbasic_fixed_string policies *
@@ -1634,6 +1634,7 @@ namespace xtl
     operator+(CT lhs,
               const xbasic_fixed_string<CT, N, EP, TR>& rhs)
     {
+        using size_type = typename xbasic_fixed_string<CT, N, EP, TR>::size_type;
         xbasic_fixed_string<CT, N, EP, TR> res(size_type(1), lhs);
         return res += rhs;
     }
@@ -1697,6 +1698,7 @@ namespace xtl
     operator+(CT lhs,
               const xbasic_fixed_string<CT, N, EP, TR>&& rhs)
     {
+        using size_type = typename xbasic_fixed_string<CT, N, EP, TR>::size_type;
         xbasic_fixed_string<CT, N, EP, TR> res(size_type(1), lhs);
         return res += std::move(rhs);
     }
@@ -1861,43 +1863,43 @@ namespace xtl
     }
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
-    inline std::basic_istream<CT, TR>& get_line(std::basic_istream<CT, TR>& input,
+    inline std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>& input,
+                                               xbasic_fixed_string<CT, N, EP, TR>& str,
+                                               CT delim)
+    {
+        std::string tmp;
+        auto& ret = std::getline(input, tmp, delim);
+        str = tmp;
+        return ret;
+    }
+
+    template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
+    inline std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>&& input,
                                                 xbasic_fixed_string<CT, N, EP, TR>& str,
                                                 CT delim)
     {
         std::string tmp;
-        auto& ret = std::get_line(input, tmp, delim);
+        auto& ret = std::getline(std::move(input), tmp, delim);
         str = tmp;
         return ret;
     }
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
-    inline std::basic_istream<CT, TR>& get_line(std::basic_istream<CT, TR>&& input,
-                                                xbasic_fixed_string<CT, N, EP, TR>& str,
-                                                CT delim)
-    {
-        std::string tmp;
-        auto& ret = std::get_line(std::move(input), tmp, delim);
-        str = tmp;
-        return ret;
-    }
-
-    template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
-    inline std::basic_istream<CT, TR>& get_line(std::basic_istream<CT, TR>& input,
+    inline std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>& input,
                                                 xbasic_fixed_string<CT, N, EP, TR>& str)
     {
         std::string tmp;
-        auto& ret = std::get_line(input, tmp);
+        auto& ret = std::getline(input, tmp);
         str = tmp;
         return ret;
     }
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
-    inline std::basic_istream<CT, TR>& get_line(std::basic_istream<CT, TR>&& input,
+    inline std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>&& input,
                                                 xbasic_fixed_string<CT, N, EP, TR>& str)
     {
         std::string tmp;
-        auto& ret = std::get_line(std::move(input), tmp, delim);
+        auto& ret = std::getline(std::move(input), tmp);
         str = tmp;
         return ret;
     }
