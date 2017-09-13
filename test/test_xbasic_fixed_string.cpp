@@ -71,6 +71,22 @@ namespace xtl
             EXPECT_EQ(s2.size(), size_type(11));
             EXPECT_STREQ(s2.c_str(), s1.c_str());
         }
+
+        // From string
+        {
+            std::string s1 = "constructor";
+            string_type s2(s1);
+            EXPECT_EQ(s2.size(), size_type(11));
+            EXPECT_STREQ(s2.c_str(), s1.c_str());
+
+            string_type s3(s1, size_type(1), size_type(4));
+            EXPECT_EQ(s3.size(), size_type(4));
+            EXPECT_STREQ(s3.c_str(), "onst");
+
+            std::string s4 = s1;
+            EXPECT_EQ(s4.size(), size_type(11));
+            EXPECT_STREQ(s4.c_str(), s4.c_str());
+        }
     }
 
     TEST(xfixed_string, copy_semantic)
@@ -124,6 +140,15 @@ namespace xtl
         {
             string_type s(ref);
             s = { 'c', 'o', 'n', 's', 't' };
+            EXPECT_EQ(s.size(), size_type(5));
+            EXPECT_STREQ(s.c_str(), "const");
+        }
+
+        // From std::string
+        {
+            string_type s(ref);
+            std::string a("const");
+            s = a;
             EXPECT_EQ(s.size(), size_type(5));
             EXPECT_STREQ(s.c_str(), "const");
         }
@@ -197,19 +222,31 @@ namespace xtl
         {
             string_type s(ref);
             string_type s1 = "constructor";
-            s = s1;
+            s.assign(s1);
             EXPECT_EQ(s.size(), size_type(11));
             EXPECT_STREQ(s.c_str(), s1.c_str());
         }
 
-        // From rvaluereference
+        // From rvalue reference
         {
             string_type s(ref);
             string_type s1 = "constructor";
             string_type s1_tmp(s1);
-            s = std::move(s1_tmp);
+            s.assign(std::move(s1_tmp));
             EXPECT_EQ(s.size(), size_type(11));
             EXPECT_STREQ(s.c_str(), s1.c_str());
+        }
+
+        // From string
+        {
+            string_type s(ref);
+            std::string s1 = "constructor";
+            s.assign(s1);
+            EXPECT_EQ(s.size(), size_type(11));
+            EXPECT_STREQ(s.c_str(), s1.c_str());
+            s.assign(s1, 1, size_type(4));
+            EXPECT_EQ(s.size(), size_type(4));
+            EXPECT_STREQ(s.c_str(), "onst");
         }
     }
 
@@ -392,6 +429,24 @@ namespace xtl
 
         {
             string_type s = ref;
+            std::string ins = "aa";
+            s.insert(3, ins);
+            EXPECT_STREQ(s.c_str(), "opeaaration");
+            EXPECT_THROW(s.insert(45, ins), std::out_of_range);
+        }
+
+        {
+            string_type s = ref;
+            std::string ins = "abcdefgh";
+            s.insert(3, ins, 2, 2);
+            EXPECT_STREQ(s.c_str(), "opecdration");
+            s.insert(3, ins, 5, 15);
+            EXPECT_STREQ(s.c_str(), "opefghcdration");
+            EXPECT_THROW(s.insert(45, ins, 2, 2), std::out_of_range);
+        }
+
+        {
+            string_type s = ref;
             s.insert(s.begin() + 3, 'b');
             EXPECT_STREQ(s.c_str(), "opebration");
         }
@@ -471,6 +526,23 @@ namespace xtl
 
         {
             string_type s = ref;
+            std::string ap = "abc";
+            s.append(ap);
+            EXPECT_STREQ(s.c_str(), "operationabc");
+            EXPECT_THROW(s.append(string_type("operation")), std::length_error);
+        }
+
+        {
+            string_type s = ref;
+            std::string ap = "abc";
+            s.append(ap, 1, 2);
+            EXPECT_STREQ(s.c_str(), "operationbc");
+            s.append(ap, 1, 15);
+            EXPECT_STREQ(s.c_str(), "operationbcbc");
+        }
+
+        {
+            string_type s = ref;
             const char* ap = "ab\0cde";
             s.append(ap, 6);
             EXPECT_EQ(s.size(), size_type(15));
@@ -506,6 +578,13 @@ namespace xtl
         {
             string_type s = ref;
             string_type ap = "abc";
+            s += (ap);
+            EXPECT_STREQ(s.c_str(), "operationabc");
+        }
+
+        {
+            string_type s = ref;
+            std::string ap = "abc";
             s += (ap);
             EXPECT_STREQ(s.c_str(), "operationabc");
         }
@@ -602,6 +681,23 @@ namespace xtl
             int r5 = s3.compare(1, 2, s1.c_str() + 2, 3);
             EXPECT_LT(r5, 0);
         }
+
+        {
+            std::string str1(s1.cbegin(), s1.cend());
+            std::string str2(s2.cbegin(), s2.cend());
+            std::string str3(s3.cbegin(), s3.cend());
+
+            int r1 = s1.compare(str2);
+            EXPECT_LT(r1, 0);
+            int r2 = s1.compare(str1);
+            EXPECT_EQ(r2, 0);
+            int r3 = s2.compare(str1);
+            EXPECT_GT(r3, 0);
+            int r4 = s1.compare(str3);
+            EXPECT_GT(r4, 0);
+            int r5 = s3.compare(str1);
+            EXPECT_LT(r5, 0);
+        }
     }
 
     TEST(xfixed_string, replace)
@@ -646,6 +742,18 @@ namespace xtl
 
         s.replace(s.cbegin() + 2, s.cbegin() + 4, rep4 + 2, rep4 + 4);
         EXPECT_STREQ(s.c_str(), "reabace");
+
+        std::string rep6 = "pl";
+        s.replace(2, 2, rep6);
+        EXPECT_STREQ(s.c_str(), ref.c_str());
+
+        std::string rep7 = "zyx";
+        s.replace(s.cbegin() + 2, s.cbegin() + 4, rep7);
+        EXPECT_STREQ(s.c_str(), "rezyxace");
+
+        std::string rep8 = "epla";
+        s.replace(2, 3, rep8, 1, 2);
+        EXPECT_STREQ(s.c_str(), ref.c_str());
     }
 
     TEST(xfixed_string, find)
@@ -672,6 +780,12 @@ namespace xtl
         EXPECT_EQ(r7, size_type(4));
         size_type r8 = ref.find('a', 8);
         EXPECT_EQ(r8, string_type::npos);
+
+        std::string ssub(sub.cbegin(), sub.cend());
+        size_type r9 = ref.find(ssub, 2);
+        EXPECT_EQ(r9, size_type(5));
+        size_type r10 = ref.find(ssub, 11);
+        EXPECT_EQ(r10, string_type::npos);
     }
 
     TEST(xfixed_string, rfind)
@@ -698,6 +812,12 @@ namespace xtl
         EXPECT_EQ(r7, size_type(8));
         size_type r8 = ref.rfind('a', 2);
         EXPECT_EQ(r8, string_type::npos);
+
+        std::string ssub(sub.cbegin(), sub.cend());
+        size_type r9 = ref.rfind(ssub, 12);
+        EXPECT_EQ(r9, size_type(6));
+        size_type r10 = ref.rfind(ssub, 1);
+        EXPECT_EQ(r10, string_type::npos);
     }
 
     TEST(xfixed_string, find_first_of)
@@ -733,6 +853,15 @@ namespace xtl
         EXPECT_EQ(r11, size_type(7));
         size_type r12 = ref.find_first_of('o', 8);
         EXPECT_EQ(r12, string_type::npos);
+
+        std::string ssub = "Good Bye!";
+        std::string ssub2 = "eo";
+        size_type r13 = ref.find_first_of(ssub, 1);
+        EXPECT_EQ(r13, size_type(1));
+        size_type r14 = ref.find_first_of(ssub, 3);
+        EXPECT_EQ(r14, size_type(4));
+        size_type r15 = ref.find_first_of(ssub2, 8);
+        EXPECT_EQ(r15, string_type::npos);
     }
 
     TEST(xfixed_string, find_first_not_of)
@@ -763,6 +892,12 @@ namespace xtl
 
         size_type r10 = ref.find_first_not_of('l', 2);
         EXPECT_EQ(r10, size_type(4));
+
+        std::string ssub = "eo";
+        size_type r11 = ref.find_first_not_of(ssub, 1);
+        EXPECT_EQ(r11, size_type(2));
+        size_type r12 = ref.find_first_not_of(ssub, 4);
+        EXPECT_EQ(r12, size_type(5));
     }
     TEST(xfixed_string, find_last_of)
     {
@@ -796,6 +931,14 @@ namespace xtl
         EXPECT_EQ(r11, size_type(4));
         size_type r12 = ref.find_last_of('/', 3);
         EXPECT_EQ(r12, string_type::npos);
+
+        std::string ssub = "/f";
+        size_type r13 = ref.find_last_of(ssub, 11);
+        EXPECT_EQ(r13, size_type(8));
+        size_type r14 = ref.find_last_of(ssub, 6);
+        EXPECT_EQ(r14, size_type(4));
+        size_type r15 = ref.find_last_of(ssub, 3);
+        EXPECT_EQ(r15, string_type::npos);
     }
 
     TEST(xfixed_string, find_last_not_of)
@@ -822,6 +965,12 @@ namespace xtl
         EXPECT_EQ(r10, size_type(11));
         size_type r11 = ref.find_last_not_of('/', 4);
         EXPECT_EQ(r11, size_type(3));
+
+        std::string ssub = "/f";
+        size_type r12 = ref.find_last_not_of(ssub, 11);
+        EXPECT_EQ(r12, size_type(11));
+        size_type r13 = ref.find_last_not_of(ssub, 4);
+        EXPECT_EQ(r13, size_type(3));
     }
 
     TEST(xfixed_string, concatenation)
@@ -900,6 +1049,18 @@ namespace xtl
         EXPECT_TRUE(s1 >= s1.c_str());
         EXPECT_TRUE(s2 > s1.c_str());
         EXPECT_TRUE(s2 >= s1.c_str());
+
+        std::string ss1 = "aabcdef";
+        std::string ss2 = "abcdefg";
+        std::string ss3 = "aabcd";
+
+        EXPECT_TRUE(s1 < ss2);
+        EXPECT_TRUE(s1 <= ss2);
+        EXPECT_TRUE(s1 <= ss1);
+        EXPECT_TRUE(s1 == ss1);
+        EXPECT_TRUE(s1 >= ss1);
+        EXPECT_TRUE(s2 > ss1);
+        EXPECT_TRUE(s2 >= ss1);
     }
 
     TEST(xfixed_string, input_output)
