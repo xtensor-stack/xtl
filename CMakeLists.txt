@@ -31,7 +31,13 @@ message(STATUS "xtl v${${PROJECT_NAME}_VERSION}")
 
 set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xbasic_fixed_string.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xclosure.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xcomplex.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xoptional.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xoptional_sequence.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xsequence.hpp
     ${XTL_INCLUDE_DIR}/xtl/xtl_config.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xtype_traits.hpp
 )
 
 OPTION(BUILD_TESTS "xtl test suite" OFF)

@@ -6,8 +6,8 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#ifndef XBASIC_FIXED_STRING_HPP
-#define XBASIC_FIXED_STRING_HPP
+#ifndef XTL_BASIC_FIXED_STRING_HPP
+#define XTL_BASIC_FIXED_STRING_HPP
 
 #include <cstddef>
 #include <iterator>
