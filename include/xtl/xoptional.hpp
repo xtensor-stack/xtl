@@ -10,6 +10,7 @@
 #define XTL_OPTIONAL_HPP
 
 #include <cmath>
+#include <ostream>
 #include <type_traits>
 #include <utility>
 
@@ -502,8 +503,8 @@ namespace xtl
     }
 
     // External operators
-    template <class T, class B, class S>
-    inline S& operator<<(S& out, const xoptional<T, B>& v)
+    template <class T, class B, class OC, class OT>
+    inline std::basic_ostream<OC, OT>& operator<<(std::basic_ostream<OC, OT>& out, const xoptional<T, B>& v)
     {
         if (v.has_value())
         {
