@@ -10,10 +10,13 @@
 #define XTL_BASIC_FIXED_STRING_HPP
 
 #include <cstddef>
+#include <functional>
 #include <iterator>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+
+#include "xhash.hpp"
 
 namespace xtl
 {
@@ -506,6 +509,24 @@ namespace xtl
     std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>&& input,
                                         xbasic_fixed_string<CT, N, EP, TR>& str);
 
+} // namespace xtl
+
+namespace std
+{
+    template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
+    struct hash<::xtl::xbasic_fixed_string<CT, N, EP, TR>>
+    {
+        using argument_type = ::xtl::xbasic_fixed_string<CT, N, EP, TR>;
+        using result_type = std::size_t;
+        inline result_type operator()(const argument_type& arg) const
+        {
+            return ::xtl::hash_bytes(arg.data(), arg.size(), static_cast<std::size_t>(0xc70f6907UL));
+        }
+    };
+} // namespace std
+
+namespace xtl
+{
     /********************************
      * xbasic_fixed_string policies *
      ********************************/
