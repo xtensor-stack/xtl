@@ -80,6 +80,7 @@ set(XTL_TESTS
     main.cpp
     test_xbasic_fixed_string.cpp
     test_xcomplex.cpp
+    test_xhash.cpp
     test_xoptional.cpp
 )
 
