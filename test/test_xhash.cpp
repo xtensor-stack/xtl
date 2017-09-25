@@ -152,14 +152,14 @@ namespace xtl
 #else
 #error Unknown pointer size or missing size macros!
 #endif
-        uint32_t actual = verification_test(&hash_bytes<sizeof(std::size_t)>, sizeof(std::size_t));
+        uint32_t actual = verification_test(&hash_bytes, sizeof(std::size_t));
 
         EXPECT_EQ(actual, res);
     }
 
     TEST(hash, sanity)
     {
-        EXPECT_TRUE(sanity_test(&hash_bytes<sizeof(std::size_t)>, sizeof(std::size_t)));
+        EXPECT_TRUE(sanity_test(&hash_bytes, sizeof(std::size_t)));
     }
 }
 
