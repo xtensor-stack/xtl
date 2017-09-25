@@ -18,7 +18,6 @@
 namespace xtl
 {
 
-    template <std::size_t N>
     std::size_t hash_bytes(const void* buffer, std::size_t lenght, std::size_t seed);
 
     /******************************
@@ -188,7 +187,6 @@ namespace xtl
 #endif
     }
 
-    template <std::size_t N>
     inline std::size_t hash_bytes(const void* buffer, std::size_t length, std::size_t seed)
     {
         return detail::murmur_hash<sizeof(std::size_t)>(buffer, length, seed);

@@ -1079,4 +1079,11 @@ namespace xtl
         EXPECT_STREQ(res2.c_str(), ref.c_str());
     }
 
+    TEST(xfixed_string, hash)
+    {
+        std::hash<string_type> h;
+        std::size_t res = h("test");
+        EXPECT_TRUE(res != std::size_t(0));
+    }
 } // xtl
+
