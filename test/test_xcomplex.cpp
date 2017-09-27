@@ -16,7 +16,7 @@ namespace xtl
 {
     using namespace std::complex_literals;
 
-    TEST(utils, forward_offset)
+    TEST(xcomplex, forward_offset)
     {
         // Test that lvalues can be modified
         std::complex<double> clv;
