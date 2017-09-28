@@ -12,13 +12,13 @@
 
 namespace adl
 {
-    class iterator_test : public xtl::random_access_iterator_base<iterator_test, int, int>
+    class iterator_test : public xtl::xrandom_access_iterator_base<iterator_test, int, int>
     {
 
     public:
 
         using self_type = iterator_test;
-        using base_type = xtl::random_access_iterator_base<self_type, int, int>;
+        using base_type = xtl::xrandom_access_iterator_base<self_type, int, int>;
         using value_type = typename base_type::value_type;
         using reference = typename base_type::reference;
         using pointer = typename base_type::pointer;

@@ -15,7 +15,7 @@
 namespace xtl
 {
     template <class I, class T, class D = std::ptrdiff_t, class P = T*, class R = T&>
-    class random_access_iterator_base
+    class xrandom_access_iterator_base
     {
 
     public:
@@ -84,7 +84,6 @@ namespace xtl
         {
             return rhs < lhs;
         }
-
     };
 
 }

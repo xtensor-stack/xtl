@@ -76,26 +76,26 @@ namespace xtl
     template <class S>
     using const_ptr_closure_type_t = typename const_ptr_closure_type<S>::type;
 
-    /*******************
-     * closure_wrapper *
-     *******************/
+    /********************
+     * xclosure_wrapper *
+     ********************/
 
     template <class CT>
-    class closure_wrapper
+    class xclosure_wrapper
     {
     public:
 
         using value_type = std::decay_t<CT>;
         using closure_type = CT;
-        using self_type = closure_wrapper<CT>;
+        using self_type = xclosure_wrapper<CT>;
 
         using reference = std::conditional_t<
           std::is_const<std::remove_reference_t<CT>>::value,
           const value_type&, value_type&
         >;
 
-        closure_wrapper(value_type&& e);
-        closure_wrapper(reference e);
+        xclosure_wrapper(value_type&& e);
+        xclosure_wrapper(reference e);
 
         template <class T>
         self_type& operator=(T&&);
@@ -129,21 +129,25 @@ namespace xtl
         get_storage_init(CTA&& e) const;
     };
 
+    // TODO: remove this (backward compatibility)
     template <class CT>
-    inline closure_wrapper<CT>::closure_wrapper(value_type&& e)
+    using closure_wrapper = xclosure_wrapper<CT>;
+
+    template <class CT>
+    inline xclosure_wrapper<CT>::xclosure_wrapper(value_type&& e)
         : m_wrappee(get_storage_init<storing_type>(std::move(e)))
     {
     }
 
     template <class CT>
-    inline closure_wrapper<CT>::closure_wrapper(reference e)
+    inline xclosure_wrapper<CT>::xclosure_wrapper(reference e)
         : m_wrappee(get_storage_init<storing_type>(e))
     {
     }
 
     template <class CT>
     template <class T>
-    inline auto closure_wrapper<CT>::operator=(T&& t)
+    inline auto xclosure_wrapper<CT>::operator=(T&& t)
         -> self_type& 
     {
         deref(m_wrappee) = std::forward<T>(t);
@@ -151,25 +155,25 @@ namespace xtl
     }
 
     template <class CT>
-    inline closure_wrapper<CT>::operator typename closure_wrapper<CT>::closure_type() noexcept
+    inline xclosure_wrapper<CT>::operator typename xclosure_wrapper<CT>::closure_type() noexcept
     {
         return deref(m_wrappee);
     }
 
     template <class CT>
-    inline auto closure_wrapper<CT>::get() & noexcept -> closure_type
+    inline auto xclosure_wrapper<CT>::get() & noexcept -> closure_type
     {
         return deref(m_wrappee);
     }
 
     template <class CT>
-    inline auto closure_wrapper<CT>::get() const & noexcept -> closure_type
+    inline auto xclosure_wrapper<CT>::get() const & noexcept -> closure_type
     {
         return deref(m_wrappee);
     }
 
     template <class CT>
-    inline auto closure_wrapper<CT>::get() && noexcept -> closure_type
+    inline auto xclosure_wrapper<CT>::get() && noexcept -> closure_type
     {
         return deref(m_wrappee);
     }
@@ -177,7 +181,7 @@ namespace xtl
     template <class CT>
     template <class T>
     inline std::enable_if_t<std::is_pointer<T>::value, std::add_lvalue_reference_t<std::remove_pointer_t<T>>>
-    closure_wrapper<CT>::deref(T val) const
+    xclosure_wrapper<CT>::deref(T val) const
     {
         return *val;
     }
@@ -185,7 +189,7 @@ namespace xtl
     template <class CT>
     template <class T>
     inline std::enable_if_t<!std::is_pointer<T>::value, std::add_lvalue_reference_t<T>>
-    closure_wrapper<CT>::deref(T& val) const
+    xclosure_wrapper<CT>::deref(T& val) const
     {
         return val;
     }
@@ -193,7 +197,7 @@ namespace xtl
     template <class CT>
     template <class T, class CTA>
     inline std::enable_if_t<std::is_pointer<T>::value, T>
-    closure_wrapper<CT>::get_storage_init(CTA&& e) const
+    xclosure_wrapper<CT>::get_storage_init(CTA&& e) const
     {
         return &e;
     }
@@ -201,25 +205,25 @@ namespace xtl
     template <class CT>
     template <class T, class CTA>
     inline std::enable_if_t<!std::is_pointer<T>::value, T>
-    closure_wrapper<CT>::get_storage_init(CTA&& e) const
+    xclosure_wrapper<CT>::get_storage_init(CTA&& e) const
     {
         return e;
     }
 
     template <class CT>
-    inline bool closure_wrapper<CT>::equal(const self_type& rhs) const
+    inline bool xclosure_wrapper<CT>::equal(const self_type& rhs) const
     {
         return m_wrappee == rhs.m_wrappee;
     }
 
     template <class CT>
-    inline bool operator==(const closure_wrapper<CT>& lhs, const closure_wrapper<CT>& rhs)
+    inline bool operator==(const xclosure_wrapper<CT>& lhs, const xclosure_wrapper<CT>& rhs)
     {
         return lhs.equal(rhs);
     }
 
     template <class CT>
-    inline bool operator!=(const closure_wrapper<CT>& lhs, const closure_wrapper<CT>& rhs)
+    inline bool operator!=(const xclosure_wrapper<CT>& lhs, const xclosure_wrapper<CT>& rhs)
     {
         return !(lhs == rhs);
     }
@@ -231,13 +235,13 @@ namespace xtl
     template <class T>
     inline decltype(auto) closure(T&& t)
     {
-        return closure_wrapper<closure_type_t<T>>(std::forward<T>(t));
+        return xclosure_wrapper<closure_type_t<T>>(std::forward<T>(t));
     }
 
     template <class T>
     inline decltype(auto) const_closure(T&& t)
     {
-        return closure_wrapper<const_closure_type_t<T>>(std::forward<T>(t));
+        return xclosure_wrapper<const_closure_type_t<T>>(std::forward<T>(t));
     }
 }
 
