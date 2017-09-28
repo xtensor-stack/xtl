@@ -82,6 +82,7 @@ set(XTL_TESTS
     test_xcomplex.cpp
     test_xclosure.cpp
     test_xhash.cpp
+    test_xiterator.cpp
     test_xoptional.cpp
 )
 

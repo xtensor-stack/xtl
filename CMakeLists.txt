@@ -35,6 +35,7 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xclosure.hpp
     ${XTL_INCLUDE_DIR}/xtl/xcomplex.hpp
     ${XTL_INCLUDE_DIR}/xtl/xhash.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xiterator_base.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional_sequence.hpp
     ${XTL_INCLUDE_DIR}/xtl/xsequence.hpp
