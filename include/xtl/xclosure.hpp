@@ -85,13 +85,18 @@ namespace xtl
     {
     public:
 
-        using value_type = std::decay_t<CT>;
-        using closure_type = CT;
         using self_type = xclosure_wrapper<CT>;
+        using closure_type = CT;
+        using value_type = std::decay_t<CT>;
 
         using reference = std::conditional_t<
-          std::is_const<std::remove_reference_t<CT>>::value,
-          const value_type&, value_type&
+            std::is_const<std::remove_reference_t<CT>>::value,
+            const value_type&, value_type&
+        >;
+
+        using pointer = std::conditional_t<
+            std::is_const<std::remove_reference_t<CT>>::value,
+            const value_type*, value_type*
         >;
 
         xclosure_wrapper(value_type&& e);
@@ -105,11 +110,13 @@ namespace xtl
         closure_type get() const & noexcept;
         closure_type get() && noexcept;        
 
+        pointer operator&() noexcept;
+
         bool equal(const self_type& rhs) const;
 
     private:
 
-        using storing_type = xtl::ptr_closure_type_t<CT>;
+        using storing_type = ptr_closure_type_t<CT>;
         storing_type m_wrappee;
 
         template <class T>
@@ -119,6 +126,14 @@ namespace xtl
         template <class T>
         std::enable_if_t<!std::is_pointer<T>::value, std::add_lvalue_reference_t<T>>
         deref(T& val) const;
+
+        template <class T>
+        std::enable_if_t<std::is_pointer<T>::value, T>
+        get_pointer(T val) const;
+
+        template <class T>
+        std::enable_if_t<!std::is_pointer<T>::value, std::add_pointer_t<T>>
+        get_pointer(T& val) const;
 
         template <class T, class CTA>
         std::enable_if_t<std::is_pointer<T>::value, T>
@@ -132,6 +147,48 @@ namespace xtl
     // TODO: remove this (backward compatibility)
     template <class CT>
     using closure_wrapper = xclosure_wrapper<CT>;
+
+    /********************
+     * xclosure_pointer *
+     ********************/
+
+    template <class CT>
+    class xclosure_pointer
+    {
+    public:
+
+        using self_type = xclosure_pointer<CT>;
+        using closure_type = CT;
+        using value_type = std::decay_t<CT>;
+
+        using reference = std::conditional_t<
+            std::is_const<std::remove_reference_t<CT>>::value,
+            const value_type&, value_type&
+        >;
+
+        using const_reference = const value_type&;
+
+        using pointer = std::conditional_t<
+            std::is_const<std::remove_reference_t<CT>>::value,
+            const value_type*, value_type*
+        >;
+
+        xclosure_pointer(value_type&& e);
+        xclosure_pointer(reference e);
+
+        reference operator*() noexcept;
+        const_reference operator*() const noexcept;
+        pointer operator->() const noexcept;
+
+    private:
+
+        using storing_type = closure_type_t<CT>;
+        storing_type m_wrappee;
+    };
+
+    /***********************************
+     * xclosure_wrapper implementation *
+     ***********************************/
 
     template <class CT>
     inline xclosure_wrapper<CT>::xclosure_wrapper(value_type&& e)
@@ -179,6 +236,12 @@ namespace xtl
     }
 
     template <class CT>
+    inline auto xclosure_wrapper<CT>::operator&() noexcept -> pointer
+    {
+        return get_pointer(m_wrappee);
+    }
+
+    template <class CT>
     template <class T>
     inline std::enable_if_t<std::is_pointer<T>::value, std::add_lvalue_reference_t<std::remove_pointer_t<T>>>
     xclosure_wrapper<CT>::deref(T val) const
@@ -192,6 +255,22 @@ namespace xtl
     xclosure_wrapper<CT>::deref(T& val) const
     {
         return val;
+    }
+
+    template <class CT>
+    template <class T>
+    inline std::enable_if_t<std::is_pointer<T>::value, T>
+    xclosure_wrapper<CT>::get_pointer(T val) const
+    {
+        return val;
+    }
+
+    template <class CT>
+    template <class T>
+    inline std::enable_if_t<!std::is_pointer<T>::value, std::add_pointer_t<T>>
+    xclosure_wrapper<CT>::get_pointer(T& val) const
+    {
+        return &val;
     }
 
     template <class CT>
@@ -228,6 +307,40 @@ namespace xtl
         return !(lhs == rhs);
     }
 
+    /***********************************
+     * xclosure_pointer implementation *
+     ***********************************/
+
+    template <class CT>
+    inline xclosure_pointer<CT>::xclosure_pointer(value_type&& e)
+        : m_wrappee(std::move(e))
+    {
+    }
+
+    template <class CT>
+    inline xclosure_pointer<CT>::xclosure_pointer(reference e)
+        : m_wrappee(e)
+    {
+    }
+
+    template <class CT>
+    inline auto xclosure_pointer<CT>::operator*() noexcept -> reference
+    {
+        return m_wrappee;
+    }
+
+    template <class CT>
+    inline auto xclosure_pointer<CT>::operator*() const noexcept -> const_reference
+    {
+        return m_wrappee;
+    }
+
+    template <class CT>
+    inline auto xclosure_pointer<CT>::operator->() const noexcept -> pointer
+    {
+        return const_cast<pointer>(&m_wrappee);
+    }
+
     /*****************************
      * closure and const_closure *
      *****************************/
@@ -242,6 +355,22 @@ namespace xtl
     inline decltype(auto) const_closure(T&& t)
     {
         return xclosure_wrapper<const_closure_type_t<T>>(std::forward<T>(t));
+    }
+
+    /********************************************
+     * closure_pointer et const_closure_pointer *
+     ********************************************/
+
+    template <class T>
+    inline auto closure_pointer(T&& t)
+    {
+        return xclosure_pointer<closure_type_t<T>>(std::forward<T>(t));
+    }
+
+    template <class T>
+    inline auto const_closure_pointer(T&& t)
+    {
+        return xclosure_pointer<const_closure_type_t<T>>(std::forward<T>(t));
     }
 }
 
