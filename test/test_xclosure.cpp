@@ -31,6 +31,7 @@ namespace xtl
         auto x_closure = closure(x);
         x_closure = 1.0;
         EXPECT_EQ(x, 1.0);
+        EXPECT_EQ(&x, &x_closure);
     }
 
     TEST(xclosure, rvalue_closure_wrappers)
@@ -39,6 +40,25 @@ namespace xtl
         auto x_closure = closure(std::move(x));
         x_closure = 1.0;
         EXPECT_EQ(x, 0.0);
+        EXPECT_NE(&x, &x_closure);
+    }
+
+    TEST(xclosure_pointer, lvalue_closure_wrappers)
+    {
+        double x = 0.0;
+        auto x_closure = closure_pointer(x);
+        *x_closure = 1.0;
+        EXPECT_EQ(x, 1.0);
+        EXPECT_EQ(x_closure.operator->(), &x);
+    }
+
+    TEST(xclosure_pointer, rvalue_closure_wrappers)
+    {
+        double x = 0.0;
+        auto x_closure = closure_pointer(std::move(x));
+        *x_closure = 1.0;
+        EXPECT_EQ(x, 0.0);
+        EXPECT_NE(x_closure.operator->(), &x);
     }
 }
 
