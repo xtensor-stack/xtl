@@ -84,6 +84,7 @@ set(XTL_TESTS
     test_xhash.cpp
     test_xiterator_base.cpp
     test_xoptional.cpp
+    test_xproxy_wrapper.cpp
 )
 
 set(XTL_TARGET test_xtl)

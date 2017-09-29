@@ -9,6 +9,7 @@
 #ifndef XTL_CLOSURE_HPP
 #define XTL_CLOSURE_HPP
 
+#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -338,7 +339,7 @@ namespace xtl
     template <class CT>
     inline auto xclosure_pointer<CT>::operator->() const noexcept -> pointer
     {
-        return const_cast<pointer>(&m_wrappee);
+        return const_cast<pointer>(std::addressof(m_wrappee));
     }
 
     /*****************************
