@@ -9,7 +9,9 @@
 #ifndef XTL_XVARIANT_HPP
 #define XTL_XVARIANT_HPP
 
+#define __cpp_exceptions
 #include "xvariant_impl.hpp"
+#undef __cpp_exceptions
 
 namespace xtl
 {
@@ -17,7 +19,9 @@ namespace xtl
     using mpark::monostate;
     using mpark::bad_variant_access;
     using mpark::variant_size;
+#ifdef MPARK_VARIABLE_TEMPLATES
     using mpark::variant_size_v;
+#endif
     using mpark::variant_alternative;
     using mpark::variant_alternative_t;
     using mpark::variant_npos;

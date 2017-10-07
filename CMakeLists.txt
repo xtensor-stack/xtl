@@ -42,6 +42,8 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xsequence.hpp
     ${XTL_INCLUDE_DIR}/xtl/xtl_config.hpp
     ${XTL_INCLUDE_DIR}/xtl/xtype_traits.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xvariant.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xvariant_impl.hpp
 )
 
 OPTION(BUILD_TESTS "xtl test suite" OFF)

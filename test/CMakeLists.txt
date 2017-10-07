@@ -85,6 +85,7 @@ set(XTL_TESTS
     test_xiterator_base.cpp
     test_xoptional.cpp
     test_xproxy_wrapper.cpp
+    test_xvariant.cpp
 )
 
 set(XTL_TARGET test_xtl)
