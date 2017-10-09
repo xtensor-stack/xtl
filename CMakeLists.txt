@@ -36,6 +36,7 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xcomplex.hpp
     ${XTL_INCLUDE_DIR}/xtl/xhash.hpp
     ${XTL_INCLUDE_DIR}/xtl/xiterator_base.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xmeta_utils.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional_sequence.hpp
     ${XTL_INCLUDE_DIR}/xtl/xproxy_wrapper.hpp
@@ -66,7 +67,7 @@ include(CMakePackageConfigHelpers)
 install(FILES ${XTL_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xtl)
 
-    set(XTL_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
+set(XTL_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
     STRING "install path for xtlConfig.cmake")
 
 configure_package_config_file(${PROJECT_NAME}Config.cmake.in
