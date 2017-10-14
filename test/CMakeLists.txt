@@ -81,6 +81,7 @@ set(XTL_TESTS
     test_xbasic_fixed_string.cpp
     test_xcomplex.cpp
     test_xclosure.cpp
+    test_xdynamic_bitset.cpp
     test_xhash.cpp
     test_xiterator_base.cpp
     test_xmeta_utils.cpp
