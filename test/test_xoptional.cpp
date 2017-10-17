@@ -44,6 +44,10 @@ namespace xtl
         opt2 = 2.0;
         ASSERT_TRUE(opt2.has_value());
         ASSERT_EQ(value2, 2.0);
+
+        auto ptr_opt2 = &opt2;
+        EXPECT_TRUE(ptr_opt2->has_value());
+        EXPECT_EQ(ptr_opt2->value(), 2.0);
     }
 
     TEST(xoptional, string)
@@ -73,7 +77,8 @@ namespace xtl
         std::vector<double> res;
         for (auto it = v.cbegin(); it != v.cend(); ++it)
         {
-            res.push_back((*it).value_or(0.0));
+            //res.push_back((*it).value_or(0.0));
+            res.push_back(it->value_or(0.0));
         }
         std::vector<double> expect = {0.0, 2.0, 2.0, 2.0};
         ASSERT_TRUE(std::equal(res.begin(), res.end(), expect.begin()));
@@ -85,6 +90,28 @@ namespace xtl
         ASSERT_TRUE(optional(1.0, false) == missing<double>());
         ASSERT_FALSE(missing<double>() == 1.0);
         ASSERT_TRUE(missing<double>() != 1.0);
+    }
+
+    TEST(xoptional, vector_comparison)
+    {
+        xoptional_vector<double> v1(4, 2.0);
+        v1[0] = missing<double>();
+
+        xoptional_vector<double> v2(4, 1.0);
+        v2[0] = missing<double>();
+
+        EXPECT_TRUE(v1 == v1);
+        EXPECT_FALSE(v1 == v2);
+        EXPECT_TRUE(v1 != v2);
+        EXPECT_FALSE(v1 != v1);
+        EXPECT_TRUE(v2 < v1);
+        EXPECT_FALSE(v1 < v1);
+        EXPECT_TRUE(v1 <= v1);
+        EXPECT_FALSE(v1 <= v2);
+        EXPECT_TRUE(v1 > v2);
+        EXPECT_FALSE(v2 > v1);
+        EXPECT_TRUE(v1 >= v1);
+        EXPECT_FALSE(v2 >= v1);    
     }
 
     TEST(xoptional, io)
