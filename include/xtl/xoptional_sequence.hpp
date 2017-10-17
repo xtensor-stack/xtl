@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "xiterator_base.hpp"
 #include "xoptional.hpp"
 #include "xsequence.hpp"
 
@@ -193,59 +194,50 @@ namespace xtl
      **********************************/
 
     template <class ITV, class ITB>
-    class xoptional_iterator
+    struct xoptional_iterator_traits
+    {
+        using iterator_type = xoptional_iterator<ITV, ITB>;
+        using value_type = xoptional<typename ITV::value_type, typename ITB::value_type>;
+        using reference = xoptional<typename ITV::reference, typename ITB::reference>;
+        using pointer = xclosure_pointer<reference>;
+        using difference_type = typename ITV::difference_type;
+    };
+
+    template <class ITV, class ITB>
+    class xoptional_iterator : public xrandom_access_iterator_base2<xoptional_iterator_traits<ITV, ITB>>
     {
     public:
 
         using self_type = xoptional_iterator<ITV, ITB>;
+        using base_type = xrandom_access_iterator_base2<xoptional_iterator_traits<ITV, ITB>>;
 
-        // Internal typedefs
-        using base_value_type = typename ITV::value_type;
-        using base_reference = typename ITV::reference;
-
-        using flag_type = typename ITB::value_type;
-        using flag_reference = typename ITB::reference;
-
-        // Container typedefs
-        using value_type = xoptional<base_value_type, flag_type>;
-        using reference = xoptional<base_reference, flag_reference>;
-
-        using pointer = xclosure_pointer<reference>;
-        using difference_type = typename ITV::difference_type;
-        using iterator_category = std::random_access_iterator_tag;
+        using value_type = typename base_type::value_type;
+        using reference = typename base_type::reference;
+        using pointer = typename base_type::pointer;
+        using difference_type = typename base_type::difference_type;
 
         xoptional_iterator() = default;
         xoptional_iterator(ITV itv, ITB itb);
 
         self_type& operator++();
-        self_type operator++(int);
-
-        reference operator*() const;
-        pointer operator->() const;
-
         self_type& operator--();
-        self_type operator--(int);
 
         self_type& operator+=(difference_type n);
         self_type& operator-=(difference_type n);
 
-        self_type operator+(difference_type n) const;
-        self_type operator-(difference_type n) const;
         difference_type operator-(const self_type& rhs) const;
 
-        bool equal(const xoptional_iterator& rhs) const;
+        reference operator*() const;
+        pointer operator->() const;
+        
+        bool operator==(const self_type& rhs) const;
+        bool operator<(const self_type& rhs) const;
 
     private:
 
         ITV m_itv;
         ITB m_itb;
     };
-
-    template <class ITV, class ITB>
-    bool operator==(const xoptional_iterator<ITV, ITB>&, const xoptional_iterator<ITV, ITB>&);
-
-    template <class ITV, class ITB>
-    bool operator!=(const xoptional_iterator<ITV, ITB>&, const xoptional_iterator<ITV, ITB>&);
 
     /*************************************
      * xoptional_sequence implementation *
@@ -457,27 +449,11 @@ namespace xtl
     }
 
     template <class ITV, class ITB>
-    auto xoptional_iterator<ITV, ITB>::operator++(int) -> self_type
-    {
-        self_type tmp(*this);
-        ++(*this);
-        return tmp;
-    }
-
-    template <class ITV, class ITB>
     auto xoptional_iterator<ITV, ITB>::operator--() -> self_type&
     {
         --m_itv;
         --m_itb;
         return *this;
-    }
-
-    template <class ITV, class ITB>
-    auto xoptional_iterator<ITV, ITB>::operator--(int) -> self_type
-    {
-        self_type tmp(*this);
-        --(*this);
-        return tmp;
     }
 
     template <class ITV, class ITB>
@@ -494,18 +470,6 @@ namespace xtl
         m_itv -= n;
         m_itb -= n;
         return *this;
-    }
-
-    template <class ITV, class ITB>
-    auto xoptional_iterator<ITV, ITB>::operator+(difference_type n) const -> self_type
-    {
-        return self_type(m_itv + n, m_itb + n);
-    }
-
-    template <class ITV, class ITB>
-    auto xoptional_iterator<ITV, ITB>::operator-(difference_type n) const -> self_type
-    {
-        return self_type(m_itv - n, m_itb - n);
     }
 
     template <class ITV, class ITB>
@@ -527,21 +491,15 @@ namespace xtl
     }
 
     template <class ITV, class ITB>
-    auto xoptional_iterator<ITV, ITB>::equal(const xoptional_iterator& rhs) const -> bool
+    bool xoptional_iterator<ITV, ITB>::operator==(const self_type& rhs) const
     {
         return m_itv == rhs.m_itv && m_itb == rhs.m_itb;
     }
 
     template <class ITV, class ITB>
-    bool operator==(const xoptional_iterator<ITV, ITB>& lhs, const xoptional_iterator<ITV, ITB>& rhs)
+    bool xoptional_iterator<ITV, ITB>::operator<(const self_type& rhs) const
     {
-        return lhs.equal(rhs);
-    }
-
-    template <class ITV, class ITB>
-    bool operator!=(const xoptional_iterator<ITV, ITB>& lhs, const xoptional_iterator<ITV, ITB>& rhs)
-    {
-        return !lhs.equal(rhs);
+        return m_itv < rhs.m_itv && m_itb < rhs.m_itb;
     }
 }
 

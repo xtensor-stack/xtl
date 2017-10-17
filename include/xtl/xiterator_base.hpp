@@ -86,6 +86,12 @@ namespace xtl
         }
     };
 
+    template <class T>
+    using xrandom_access_iterator_base2 = xrandom_access_iterator_base<typename T::iterator_type,
+                                                                       typename T::value_type,
+                                                                       typename T::difference_type,
+                                                                       typename T::pointer,
+                                                                       typename T::reference>;
 }
 
 #endif
