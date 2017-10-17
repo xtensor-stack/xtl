@@ -92,6 +92,28 @@ namespace xtl
         ASSERT_TRUE(missing<double>() != 1.0);
     }
 
+    TEST(xoptional, vector_comparison)
+    {
+        xoptional_vector<double> v1(4, 2.0);
+        v1[0] = missing<double>();
+
+        xoptional_vector<double> v2(4, 1.0);
+        v2[0] = missing<double>();
+
+        EXPECT_TRUE(v1 == v1);
+        EXPECT_FALSE(v1 == v2);
+        EXPECT_TRUE(v1 != v2);
+        EXPECT_FALSE(v1 != v1);
+        EXPECT_TRUE(v2 < v1);
+        EXPECT_FALSE(v1 < v1);
+        EXPECT_TRUE(v1 <= v1);
+        EXPECT_FALSE(v1 <= v2);
+        EXPECT_TRUE(v1 > v2);
+        EXPECT_FALSE(v2 > v1);
+        EXPECT_TRUE(v1 >= v1);
+        EXPECT_FALSE(v2 >= v1);    
+    }
+
     TEST(xoptional, io)
     {
         std::ostringstream oss;
