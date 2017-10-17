@@ -44,6 +44,10 @@ namespace xtl
         opt2 = 2.0;
         ASSERT_TRUE(opt2.has_value());
         ASSERT_EQ(value2, 2.0);
+
+        auto ptr_opt2 = &opt2;
+        EXPECT_TRUE(ptr_opt2->has_value());
+        EXPECT_EQ(ptr_opt2->value(), 2.0);
     }
 
     TEST(xoptional, string)
@@ -73,7 +77,8 @@ namespace xtl
         std::vector<double> res;
         for (auto it = v.cbegin(); it != v.cend(); ++it)
         {
-            res.push_back((*it).value_or(0.0));
+            //res.push_back((*it).value_or(0.0));
+            res.push_back(it->value_or(0.0));
         }
         std::vector<double> expect = {0.0, 2.0, 2.0, 2.0};
         ASSERT_TRUE(std::equal(res.begin(), res.end(), expect.begin()));

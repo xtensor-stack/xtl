@@ -87,6 +87,7 @@ namespace xtl
     {
     public:
 
+        using self_type = xoptional<CT, CB>;
         using value_closure = CT;
         using flag_closure = CB;
 
@@ -174,6 +175,10 @@ namespace xtl
 
         template <class CTO>
         disable_xoptional<CTO, bool> equal(const CTO& rhs) const noexcept;
+
+        xclosure_pointer<self_type&> operator&() &;
+        xclosure_pointer<const self_type&> operator&() const &;
+        xclosure_pointer<self_type> operator&() &&;
 
     private:
 
@@ -500,6 +505,24 @@ namespace xtl
     auto xoptional<CT, CB>::equal(const CTO& rhs) const noexcept -> disable_xoptional<CTO, bool>
     {
         return m_flag ? (m_value == rhs) : false;
+    }
+
+    template <class CT, class CB>
+    inline auto xoptional<CT, CB>::operator&() & -> xclosure_pointer<self_type&>
+    {
+        return xclosure_pointer<self_type&>(*this);
+    }
+
+    template <class CT, class CB>
+    inline auto xoptional<CT, CB>::operator&() const & -> xclosure_pointer<const self_type&>
+    {
+        return xclosure_pointer<const self_type&>(*this);
+    }
+
+    template <class CT, class CB>
+    inline auto xoptional<CT, CB>::operator&() && ->xclosure_pointer<self_type>
+    {
+        return xclosure_pointer<self_type>(std::move(*this));
     }
 
     // External operators

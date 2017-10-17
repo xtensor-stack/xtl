@@ -53,8 +53,8 @@ namespace xtl
         using value_type = xoptional<base_value_type, flag_type>;
         using reference = xoptional<base_reference, flag_reference>;
         using const_reference = xoptional<base_const_reference, flag_const_reference>;
-        using pointer = std::nullptr_t;
-        using const_pointer = std::nullptr_t;
+        using pointer = xclosure_pointer<reference>;;
+        using const_pointer = xclosure_pointer<const_reference>;
 
         // Other typedefs
         using size_type = typename base_container_type::size_type;
@@ -210,7 +210,7 @@ namespace xtl
         using value_type = xoptional<base_value_type, flag_type>;
         using reference = xoptional<base_reference, flag_reference>;
 
-        using pointer = std::nullptr_t;
+        using pointer = xclosure_pointer<reference>;
         using difference_type = typename ITV::difference_type;
         using iterator_category = std::random_access_iterator_tag;
 
@@ -521,9 +521,9 @@ namespace xtl
     }
 
     template <class ITV, class ITB>
-    auto xoptional_iterator<ITV, ITB>::operator-> () const -> std::nullptr_t
+    auto xoptional_iterator<ITV, ITB>::operator-> () const -> pointer
     {
-        return nullptr;
+        return pointer(operator*());
     }
 
     template <class ITV, class ITB>
