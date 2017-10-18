@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "xdynamic_bitset.hpp"
 #include "xiterator_base.hpp"
 #include "xoptional.hpp"
 #include "xsequence.hpp"
@@ -146,13 +147,16 @@ namespace xtl
      * xoptional_array declarations *
      ********************************/
 
-    template <class T, std::size_t I>
-    class xoptional_array : public xoptional_sequence<std::array<T, I>, std::bitset<I>>
+    // There is no value_type in std::bitset ...
+    template <class T, std::size_t I, class BC = xdynamic_bitset<std::size_t>>
+    class xoptional_array : public xoptional_sequence<std::array<T, I>, BC>
     {
     public:
 
         using self_type = xoptional_array;
-        using base_type = xoptional_sequence<std::array<T, I>, std::bitset<I>>;
+        using base_container_type = std::array<T, I>;
+        using flag_container_type = BC;
+        using base_type = xoptional_sequence<base_container_type, flag_container_type>;
         using base_value_type = typename base_type::base_value_type;
         using size_type = typename base_type::size_type;
 
@@ -167,13 +171,15 @@ namespace xtl
      * xoptional_vector *
      ********************/
 
-    template <class T, class A = std::allocator<T>, class BA = std::allocator<bool>>
-    class xoptional_vector : public xoptional_sequence<std::vector<T, A>, std::vector<bool, BA>>
+    template <class T, class A = std::allocator<T>, class BC = xdynamic_bitset<std::size_t>>
+    class xoptional_vector : public xoptional_sequence<std::vector<T, A>, BC>
     {
     public:
 
         using self_type = xoptional_vector;
-        using base_type = xoptional_sequence<std::vector<T, A>, std::vector<bool, BA>>;
+        using base_container_type = std::vector<T, A>;
+        using flag_container_type = BC;
+        using base_type = xoptional_sequence<base_container_type, flag_container_type>;
         using base_value_type = typename base_type::base_value_type;
         using allocator_type = A;
 
@@ -472,15 +478,15 @@ namespace xtl
      * xoptional_array implementation *
      **********************************/
     
-    template <class T, std::size_t I>
-    xoptional_array<T, I>::xoptional_array(size_type s, const base_value_type& v)
+    template <class T, std::size_t I, class BC>
+    xoptional_array<T, I, BC>::xoptional_array(size_type s, const base_value_type& v)
         : base_type(s, v)
     {
     }
 
-    template <class T, std::size_t I>
+    template <class T, std::size_t I, class BC>
     template <class CTO, class CBO>
-    xoptional_array<T, I>::xoptional_array(size_type s, const xoptional<CTO, CBO>& v)
+    xoptional_array<T, I, BC>::xoptional_array(size_type s, const xoptional<CTO, CBO>& v)
         : base_type(s, v)
     {
     }
@@ -489,37 +495,37 @@ namespace xtl
      * xoptional_array and xoptional_vector implementation *
      *******************************************************/
 
-    template <class T, class A, class BA>
-    xoptional_vector<T, A, BA>::xoptional_vector(size_type s, const base_value_type& v)
+    template <class T, class A, class BC>
+    xoptional_vector<T, A, BC>::xoptional_vector(size_type s, const base_value_type& v)
         : base_type(s, v)
     {
     }
 
-    template <class T, class A, class BA>
+    template <class T, class A, class BC>
     template <class CTO, class CBO>
-    xoptional_vector<T, A, BA>::xoptional_vector(size_type s, const xoptional<CTO, CBO>& v)
+    xoptional_vector<T, A, BC>::xoptional_vector(size_type s, const xoptional<CTO, CBO>& v)
         : base_type(s, v)
     {
     }
 
-    template <class T, class A, class BA>
-    void xoptional_vector<T, A, BA>::resize(size_type s)
+    template <class T, class A, class BC>
+    void xoptional_vector<T, A, BC>::resize(size_type s)
     {
         // Default to missing
         this->m_values.resize(s);
         this->m_flags.resize(s, false);
     }
 
-    template <class T, class A, class BA>
-    void xoptional_vector<T, A, BA>::resize(size_type s, const base_value_type& v)
+    template <class T, class A, class BC>
+    void xoptional_vector<T, A, BC>::resize(size_type s, const base_value_type& v)
     {
         this->m_values.resize(s, v);
         this->m_flags.resize(s, true);
     }
 
-    template <class T, class A, class BA>
+    template <class T, class A, class BC>
     template <class CTO, class CBO>
-    void xoptional_vector<T, A, BA>::resize(size_type s, const xoptional<CTO, CBO>& v)
+    void xoptional_vector<T, A, BC>::resize(size_type s, const xoptional<CTO, CBO>& v)
     {
         this->m_values.resize(s, v.value());
         this->m_flags.resize(s, v.has_value());

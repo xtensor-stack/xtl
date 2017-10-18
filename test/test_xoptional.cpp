@@ -77,7 +77,6 @@ namespace xtl
         std::vector<double> res;
         for (auto it = v.cbegin(); it != v.cend(); ++it)
         {
-            //res.push_back((*it).value_or(0.0));
             res.push_back(it->value_or(0.0));
         }
         std::vector<double> expect = {0.0, 2.0, 2.0, 2.0};
