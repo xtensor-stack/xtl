@@ -78,6 +78,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 set(XTL_TESTS
     main.cpp
+    test_xbase64.cpp
     test_xbasic_fixed_string.cpp
     test_xcomplex.cpp
     test_xclosure.cpp
