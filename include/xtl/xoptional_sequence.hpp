@@ -100,13 +100,13 @@ namespace xtl
         const_reverse_iterator crbegin() const noexcept;
         const_reverse_iterator crend() const noexcept;
 
-        base_container_type values() && noexcept;
-        base_container_type& values() & noexcept;
-        const base_container_type& values() const & noexcept;
+        base_container_type value() && noexcept;
+        base_container_type& value() & noexcept;
+        const base_container_type& value() const & noexcept;
 
-        flag_container_type has_values() && noexcept;
-        flag_container_type& has_values() & noexcept;
-        const flag_container_type& has_values() const & noexcept;
+        flag_container_type has_value() && noexcept;
+        flag_container_type& has_value() & noexcept;
+        const flag_container_type& has_value() const & noexcept;
 
     protected:
 
@@ -417,37 +417,37 @@ namespace xtl
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::values() && noexcept -> base_container_type
+    inline auto xoptional_sequence<BC, FC>::value() && noexcept -> base_container_type
     {
         return m_values;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::values() & noexcept -> base_container_type&
+    inline auto xoptional_sequence<BC, FC>::value() & noexcept -> base_container_type&
     {
         return m_values;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::values() const & noexcept -> const base_container_type&
+    inline auto xoptional_sequence<BC, FC>::value() const & noexcept -> const base_container_type&
     {
         return m_values;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::has_values() && noexcept-> flag_container_type
+    inline auto xoptional_sequence<BC, FC>::has_value() && noexcept-> flag_container_type
     {
         return m_flags;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::has_values() & noexcept -> flag_container_type&
+    inline auto xoptional_sequence<BC, FC>::has_value() & noexcept -> flag_container_type&
     {
         return m_flags;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::has_values() const & noexcept -> const flag_container_type&
+    inline auto xoptional_sequence<BC, FC>::has_value() const & noexcept -> const flag_container_type&
     {
         return m_flags;
     }
@@ -455,7 +455,7 @@ namespace xtl
     template <class BC, class FC>
     inline bool operator==(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.values() == rhs.values() && lhs.has_values() == rhs.has_values();
+        return lhs.value() == rhs.value() && lhs.has_value() == rhs.has_value();
     }
 
     template <class BC, class FC>
@@ -467,25 +467,25 @@ namespace xtl
     template <class BC, class FC>
     inline bool operator<(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.values() < rhs.values() && lhs.has_values() == rhs.has_values();
+        return lhs.value() < rhs.value() && lhs.has_value() == rhs.has_value();
     }
 
     template <class BC, class FC>
     inline bool operator<=(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.values() <= rhs.values() && lhs.has_values() == rhs.has_values();
+        return lhs.value() <= rhs.value() && lhs.has_value() == rhs.has_value();
     }
 
     template <class BC, class FC>
     inline bool operator>(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.values() > rhs.values() && lhs.has_values() == rhs.has_values();
+        return lhs.value() > rhs.value() && lhs.has_value() == rhs.has_value();
     }
 
     template <class BC, class FC>
     inline bool operator>=(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.values() >= rhs.values() && lhs.has_values() == rhs.has_values();
+        return lhs.value() >= rhs.value() && lhs.has_value() == rhs.has_value();
     }
 
     /**********************************
