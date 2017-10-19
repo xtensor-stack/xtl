@@ -100,11 +100,13 @@ namespace xtl
         const_reverse_iterator crbegin() const noexcept;
         const_reverse_iterator crend() const noexcept;
 
-        base_container_type& values() noexcept;
-        const base_container_type& values() const noexcept;
+        base_container_type values() && noexcept;
+        base_container_type& values() & noexcept;
+        const base_container_type& values() const & noexcept;
 
-        flag_container_type& has_values() noexcept;
-        const flag_container_type& has_values() const noexcept;
+        flag_container_type has_values() && noexcept;
+        flag_container_type& has_values() & noexcept;
+        const flag_container_type& has_values() const & noexcept;
 
     protected:
 
@@ -415,25 +417,37 @@ namespace xtl
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::values() noexcept -> base_container_type&
+    inline auto xoptional_sequence<BC, FC>::values() && noexcept -> base_container_type
     {
         return m_values;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::values() const noexcept -> const base_container_type&
+    inline auto xoptional_sequence<BC, FC>::values() & noexcept -> base_container_type&
     {
         return m_values;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::has_values() noexcept -> flag_container_type&
+    inline auto xoptional_sequence<BC, FC>::values() const & noexcept -> const base_container_type&
+    {
+        return m_values;
+    }
+
+    template <class BC, class FC>
+    inline auto xoptional_sequence<BC, FC>::has_values() && noexcept-> flag_container_type
     {
         return m_flags;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::has_values() const noexcept -> const flag_container_type&
+    inline auto xoptional_sequence<BC, FC>::has_values() & noexcept -> flag_container_type&
+    {
+        return m_flags;
+    }
+
+    template <class BC, class FC>
+    inline auto xoptional_sequence<BC, FC>::has_values() const & noexcept -> const flag_container_type&
     {
         return m_flags;
     }
