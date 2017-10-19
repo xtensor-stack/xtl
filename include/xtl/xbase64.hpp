@@ -51,7 +51,7 @@ namespace xtl
         std::string output;
         int val = 0;
         int valb = -6;
-        for (char c : input)
+        for (unsigned char c : input)
         {
             val = (val << 8) + c;
             valb += 8;
