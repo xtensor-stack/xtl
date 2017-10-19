@@ -68,6 +68,8 @@ namespace xtl
         ASSERT_EQ(v[0].value(), 2.0);
         v[1] = missing<double>();
         ASSERT_FALSE(v[1].has_value());
+        ASSERT_TRUE(v.has_values().front());
+        ASSERT_FALSE(v.has_values()[1]);
     }
 
     TEST(xoptional, vector_iteration)
