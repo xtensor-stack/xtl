@@ -107,9 +107,9 @@ namespace xtl
         self_type& operator=(T&&);
 
         operator closure_type() noexcept;
-        closure_type get() & noexcept;
-        closure_type get() const & noexcept;
-        closure_type get() && noexcept;        
+        std::add_lvalue_reference_t<closure_type> get() & noexcept;
+        std::add_lvalue_reference_t<std::add_const_t<closure_type>> get() const & noexcept;
+        std::add_rvalue_reference_t<closure_type> get() && noexcept;        
 
         pointer operator&() noexcept;
 
@@ -121,27 +121,27 @@ namespace xtl
         storing_type m_wrappee;
 
         template <class T>
-        std::enable_if_t<std::is_pointer<T>::value, std::add_lvalue_reference_t<std::remove_pointer_t<T>>>
+        std::enable_if_t<std::is_lvalue_reference<CT>::value, std::add_lvalue_reference_t<std::remove_pointer_t<T>>>
         deref(T val) const;
 
         template <class T>
-        std::enable_if_t<!std::is_pointer<T>::value, std::add_lvalue_reference_t<T>>
+        std::enable_if_t<!std::is_lvalue_reference<CT>::value, std::add_lvalue_reference_t<T>>
         deref(T& val) const;
 
         template <class T>
-        std::enable_if_t<std::is_pointer<T>::value, T>
+        std::enable_if_t<std::is_lvalue_reference<CT>::value, T>
         get_pointer(T val) const;
 
         template <class T>
-        std::enable_if_t<!std::is_pointer<T>::value, std::add_pointer_t<T>>
+        std::enable_if_t<!std::is_lvalue_reference<CT>::value, std::add_pointer_t<T>>
         get_pointer(T& val) const;
 
         template <class T, class CTA>
-        std::enable_if_t<std::is_pointer<T>::value, T>
+        std::enable_if_t<std::is_lvalue_reference<CT>::value, T>
         get_storage_init(CTA&& e) const;
 
         template <class T, class CTA>
-        std::enable_if_t<!std::is_pointer<T>::value, T>
+        std::enable_if_t<!std::is_lvalue_reference<CT>::value, T>
         get_storage_init(CTA&& e) const;
     };
 
@@ -219,19 +219,19 @@ namespace xtl
     }
 
     template <class CT>
-    inline auto xclosure_wrapper<CT>::get() & noexcept -> closure_type
+    inline auto xclosure_wrapper<CT>::get() & noexcept -> std::add_lvalue_reference_t<closure_type>
     {
         return deref(m_wrappee);
     }
 
     template <class CT>
-    inline auto xclosure_wrapper<CT>::get() const & noexcept -> closure_type
+    inline auto xclosure_wrapper<CT>::get() const & noexcept -> std::add_lvalue_reference_t<std::add_const_t<closure_type>>
     {
         return deref(m_wrappee);
     }
 
     template <class CT>
-    inline auto xclosure_wrapper<CT>::get() && noexcept -> closure_type
+    inline auto xclosure_wrapper<CT>::get() && noexcept -> std::add_rvalue_reference_t<closure_type>
     {
         return deref(m_wrappee);
     }
@@ -244,7 +244,7 @@ namespace xtl
 
     template <class CT>
     template <class T>
-    inline std::enable_if_t<std::is_pointer<T>::value, std::add_lvalue_reference_t<std::remove_pointer_t<T>>>
+    inline std::enable_if_t<std::is_lvalue_reference<CT>::value, std::add_lvalue_reference_t<std::remove_pointer_t<T>>>
     xclosure_wrapper<CT>::deref(T val) const
     {
         return *val;
@@ -252,7 +252,7 @@ namespace xtl
 
     template <class CT>
     template <class T>
-    inline std::enable_if_t<!std::is_pointer<T>::value, std::add_lvalue_reference_t<T>>
+    inline std::enable_if_t<!std::is_lvalue_reference<CT>::value, std::add_lvalue_reference_t<T>>
     xclosure_wrapper<CT>::deref(T& val) const
     {
         return val;
@@ -260,7 +260,7 @@ namespace xtl
 
     template <class CT>
     template <class T>
-    inline std::enable_if_t<std::is_pointer<T>::value, T>
+    inline std::enable_if_t<std::is_lvalue_reference<CT>::value, T>
     xclosure_wrapper<CT>::get_pointer(T val) const
     {
         return val;
@@ -268,7 +268,7 @@ namespace xtl
 
     template <class CT>
     template <class T>
-    inline std::enable_if_t<!std::is_pointer<T>::value, std::add_pointer_t<T>>
+    inline std::enable_if_t<!std::is_lvalue_reference<CT>::value, std::add_pointer_t<T>>
     xclosure_wrapper<CT>::get_pointer(T& val) const
     {
         return &val;
@@ -276,7 +276,7 @@ namespace xtl
 
     template <class CT>
     template <class T, class CTA>
-    inline std::enable_if_t<std::is_pointer<T>::value, T>
+    inline std::enable_if_t<std::is_lvalue_reference<CT>::value, T>
     xclosure_wrapper<CT>::get_storage_init(CTA&& e) const
     {
         return &e;
@@ -284,7 +284,7 @@ namespace xtl
 
     template <class CT>
     template <class T, class CTA>
-    inline std::enable_if_t<!std::is_pointer<T>::value, T>
+    inline std::enable_if_t<!std::is_lvalue_reference<CT>::value, T>
     xclosure_wrapper<CT>::get_storage_init(CTA&& e) const
     {
         return e;
