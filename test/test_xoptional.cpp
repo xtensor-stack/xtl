@@ -121,4 +121,51 @@ namespace xtl
         oss << missing<int>();
         ASSERT_EQ(oss.str(), std::string("N/A"));
     }
+
+    struct implicit_double
+    {
+        implicit_double(double v) : m_value(v) {}
+        double m_value;
+    };
+
+    struct explicit_double
+    {
+        explicit explicit_double(double v) : m_value(v) {}
+        double m_value;
+    };
+
+    struct implicit_bool
+    {
+        implicit_bool(bool b) : m_value(b) {}
+        bool m_value;
+    };
+
+    struct explicit_bool
+    {
+        explicit explicit_bool(bool b) : m_value(b) {}
+        bool m_value;
+    };
+
+    TEST(xoptional, implicit_constructor)
+    {
+        bool res1 = std::is_convertible<double, implicit_double>::value;
+        bool res2 = std::is_convertible<double, explicit_double>::value;
+        EXPECT_TRUE(res1);
+        EXPECT_FALSE(res2);
+
+        bool res3 = std::is_convertible<double, xoptional<implicit_double>>::value;
+        bool res4 = std::is_convertible<double, xoptional<explicit_double>>::value;
+        EXPECT_TRUE(res3);
+        EXPECT_FALSE(res4);
+
+        bool res5 = std::is_convertible<xoptional<double>, xoptional<implicit_double >>::value;
+        bool res6 = std::is_convertible<xoptional<double>, xoptional<explicit_double >>::value;
+        EXPECT_TRUE(res5);
+        EXPECT_FALSE(res6);
+
+        bool res7 = std::is_convertible<xoptional<double, bool>, xoptional<double, implicit_bool>>::value;
+        bool res8 = std::is_convertible<xoptional<double, bool>, xoptional<double, explicit_bool>>::value;
+        EXPECT_TRUE(res7);
+        EXPECT_FALSE(res8);
+    }
 }
