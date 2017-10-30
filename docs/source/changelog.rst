@@ -7,6 +7,53 @@
 Changelog
 =========
 
+0.3.2
+-----
+
+- Improvement of xoptional value semantics (explicit constructors when underlying value type not implicitely constructable)
+
+0.3.1
+-----
+
+- Fixes in closure wrapper semantics
+
+0.3.0
+-----
+
+- Improve optional sequence
+- Use dynamic bitset in optional vector
+- Added base64encode and base64decode
+
+0.2.11
+------
+
+- Added dynamic bitset
+
+0.2.10
+------
+
+- Added meta programming tools
+
+0.2.9
+-----
+
+- Added variant implementation
+
+0.2.8
+-----
+
+- Added proxy wrapper for pointer semantics.
+
+0.2.7
+-----
+
+- Added implementation for closure pointer
+
+0.2.6
+-----
+
+- Added base class for random access iterators
+
 0.2.5
 -----
 
