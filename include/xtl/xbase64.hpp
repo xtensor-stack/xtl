@@ -33,13 +33,13 @@ namespace xtl
         {
             if (T[std::size_t(c)] == -1)
             {
-                 break;
+                break;
             }
             val = (val << 6) + T[std::size_t(c)];
             valb += 6;
             if (valb >= 0)
             {
-                output.push_back(char((val >> valb)&0xFF));
+                output.push_back(char((val >> valb) & 0xFF));
                 valb -= 8;
             }
         }
@@ -57,13 +57,13 @@ namespace xtl
             valb += 8;
             while (valb >= 0)
             {
-                output.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[(val >> valb)&0x3F]);
-                valb-=6;
+                output.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[(val >> valb) & 0x3F]);
+                valb -= 6;
             }
         }
         if (valb > -6)
         {
-            output.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[((val << 8) >> (valb + 8))&0x3F]);
+            output.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[((val << 8) >> (valb + 8)) & 0x3F]);
         }
         while (output.size() % 4)
         {
@@ -73,4 +73,3 @@ namespace xtl
     }
 }
 #endif
-

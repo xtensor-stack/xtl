@@ -79,6 +79,63 @@ namespace xtl
 
     template <class T, class U>
     using apply_cv_t = typename apply_cv<T, U>::type;
+
+    /****************************************************************
+     * C++17 logical operators (disjunction, conjunction, negation) *
+     ****************************************************************/
+
+    /********************
+     * disjunction - or *
+     ********************/
+
+    template <class...>
+    struct disjunction;
+
+    template <>
+    struct disjunction<> : std::false_type
+    {
+    };
+
+    template <class Arg>
+    struct disjunction<Arg> : Arg
+    {
+    };
+
+    template <class Arg1, class Arg2, class... Args>
+    struct disjunction<Arg1, Arg2, Args...> : std::conditional_t<Arg1::value, Arg1, disjunction<Arg2, Args...>>
+    {
+    };
+
+    /*********************
+     * conjunction - and *
+     *********************/
+
+    template <class...>
+    struct conjunction;
+
+    template <>
+    struct conjunction<> : std::true_type
+    {
+    };
+
+    template <class Arg1>
+    struct conjunction<Arg1> : Arg1
+    {
+    };
+
+    template <class Arg1, class Arg2, class... Args>
+    struct conjunction<Arg1, Arg2, Args...> : std::conditional_t<Arg1::value, conjunction<Arg2, Args...>, Arg1>
+    {
+    };
+
+    /******************
+     * negation - and *
+     ******************/
+
+    template <class Arg>
+    struct negation : std::integral_constant<bool, !Arg::value>
+    {
+    };
 }
 
 #endif

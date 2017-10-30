@@ -247,7 +247,7 @@ namespace xtl
             {
                 using type = T4;
             };
-            
+
             template <template <class...> class L, class T, class... U>
             struct back_impl<L<T, U...>> : back_impl<L<U...>>
             {
@@ -432,4 +432,3 @@ namespace xtl
 }
 
 #endif
-

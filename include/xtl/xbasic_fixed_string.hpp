@@ -41,7 +41,6 @@ namespace xtl
               class TR = std::char_traits<CT>>
     class xbasic_fixed_string
     {
-
     public:
 
         using traits_type = TR;
@@ -283,7 +282,7 @@ namespace xtl
 
     template <std::size_t N>
     using xu16fixed_string = xbasic_fixed_string<char16_t, N>;
-    
+
     template <std::size_t N>
     using xu32fixed_string = xbasic_fixed_string<char32_t, N>;
 
@@ -334,7 +333,7 @@ namespace xtl
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
     xbasic_fixed_string<CT, N, EP, TR>
     operator+(const xbasic_fixed_string<CT, N, EP, TR>&& lhs,
-             const CT* rhs);
+              const CT* rhs);
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
     xbasic_fixed_string<CT, N, EP, TR>
@@ -509,7 +508,7 @@ namespace xtl
     std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>&& input,
                                         xbasic_fixed_string<CT, N, EP, TR>& str);
 
-} // namespace xtl
+}  // namespace xtl
 
 namespace std
 {
@@ -523,7 +522,7 @@ namespace std
             return ::xtl::hash_bytes(arg.data(), arg.size(), static_cast<std::size_t>(0xc70f6907UL));
         }
     };
-} // namespace std
+}  // namespace std
 
 namespace xtl
 {
@@ -565,7 +564,7 @@ namespace xtl
                 return check_size(size1 + size2);
             }
         };
-    } // string_policy
+    }  // string_policy
 
     /**************************************
      * xbasic_fixed_string implementation *
@@ -891,7 +890,7 @@ namespace xtl
     {
         return reverse_iterator(begin());
     }
-    
+
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
     inline auto xbasic_fixed_string<CT, N, EP, TR>::rbegin() const noexcept -> const_reverse_iterator
     {
@@ -1307,7 +1306,7 @@ namespace xtl
         check_index_strict(pos1, size(), "xbasic_fixed_string::compare");
         check_index_strict(pos2, str.size(), "xbasic_fixed_string::compare");
         return compare_impl(data() + pos1, std::min(count1, size() - pos1),
-                                                    str.data() + pos2, std::min(count2, str.size() - pos2));
+                            str.data() + pos2, std::min(count2, str.size() - pos2));
     }
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
@@ -1541,8 +1540,8 @@ namespace xtl
         {
             const_pointer uptr, vptr;
             for (nm -= count - 1, vptr = data() + pos;
-                (uptr = traits_type::find(vptr, nm, *s)) != 0;
-                nm -= uptr - vptr + 1, vptr = uptr + 1)
+                 (uptr = traits_type::find(vptr, nm, *s)) != 0;
+                 nm -= uptr - vptr + 1, vptr = uptr + 1)
             {
                 if (traits_type::compare(uptr, s, count) == 0)
                 {
@@ -1598,7 +1597,7 @@ namespace xtl
                 {
                     return uptr - data();
                 }
-                else if(uptr == data())
+                else if (uptr == data())
                 {
                     break;
                 }
@@ -2059,7 +2058,7 @@ namespace xtl
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
     inline bool operator<(const xbasic_fixed_string<CT, N, EP, TR>& lhs,
-        const std::basic_string<CT, TR>& rhs) noexcept
+                          const std::basic_string<CT, TR>& rhs) noexcept
     {
         return lhs < rhs.c_str();
     }
@@ -2218,8 +2217,8 @@ namespace xtl
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
     inline std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>&& input,
-                                                xbasic_fixed_string<CT, N, EP, TR>& str,
-                                                CT delim)
+                                               xbasic_fixed_string<CT, N, EP, TR>& str,
+                                               CT delim)
     {
         std::string tmp;
         auto& ret = std::getline(std::move(input), tmp, delim);
@@ -2229,7 +2228,7 @@ namespace xtl
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
     inline std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>& input,
-                                                xbasic_fixed_string<CT, N, EP, TR>& str)
+                                               xbasic_fixed_string<CT, N, EP, TR>& str)
     {
         std::string tmp;
         auto& ret = std::getline(input, tmp);
@@ -2239,7 +2238,7 @@ namespace xtl
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
     inline std::basic_istream<CT, TR>& getline(std::basic_istream<CT, TR>&& input,
-                                                xbasic_fixed_string<CT, N, EP, TR>& str)
+                                               xbasic_fixed_string<CT, N, EP, TR>& str)
     {
         std::string tmp;
         auto& ret = std::getline(std::move(input), tmp);
@@ -2248,4 +2247,4 @@ namespace xtl
     }
 }
 
-#endif // xtl
+#endif  // xtl

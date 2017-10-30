@@ -109,7 +109,7 @@ namespace xtl
         operator closure_type() noexcept;
         std::add_lvalue_reference_t<closure_type> get() & noexcept;
         std::add_lvalue_reference_t<std::add_const_t<closure_type>> get() const & noexcept;
-        closure_type get() && noexcept;        
+        closure_type get() && noexcept;
 
         pointer operator&() noexcept;
 
@@ -206,7 +206,7 @@ namespace xtl
     template <class CT>
     template <class T>
     inline auto xclosure_wrapper<CT>::operator=(T&& t)
-        -> self_type& 
+        -> self_type&
     {
         deref(m_wrappee) = std::forward<T>(t);
         return *this;
