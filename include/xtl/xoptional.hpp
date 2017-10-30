@@ -151,20 +151,20 @@ namespace xtl
 
         // Access
         std::add_lvalue_reference_t<CT> value() & noexcept;
-        std::add_lvalue_reference_t<std::add_const_t<CT>> value() const& noexcept;
+        std::add_lvalue_reference_t<std::add_const_t<CT>> value() const & noexcept;
         std::conditional_t<std::is_reference<CT>::value, apply_cv_t<CT, value_type>&, value_type> value() && noexcept;
-        std::conditional_t<std::is_reference<CT>::value, const value_type&, value_type> value() const&& noexcept;
+        std::conditional_t<std::is_reference<CT>::value, const value_type&, value_type> value() const && noexcept;
 
         template <class U>
-        value_type value_or(U&&) const& noexcept;
+        value_type value_or(U&&) const & noexcept;
         template <class U>
-        value_type value_or(U&&) const&& noexcept;
+        value_type value_or(U&&) const && noexcept;
 
         // Access
         std::add_lvalue_reference_t<CB> has_value() & noexcept;
-        std::add_lvalue_reference_t<std::add_const_t<CB>> has_value() const& noexcept;
+        std::add_lvalue_reference_t<std::add_const_t<CB>> has_value() const & noexcept;
         std::conditional_t<std::is_reference<CB>::value, apply_cv_t<CB, flag_type>&, flag_type> has_value() && noexcept;
-        std::conditional_t<std::is_reference<CB>::value, const flag_type&, flag_type> has_value() const&& noexcept;
+        std::conditional_t<std::is_reference<CB>::value, const flag_type&, flag_type> has_value() const && noexcept;
 
         // Swap
         void swap(xoptional& other);
@@ -520,7 +520,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    inline auto xoptional<CT, CB>::operator&() && ->xclosure_pointer<self_type>
+    inline auto xoptional<CT, CB>::operator&() && -> xclosure_pointer<self_type>
     {
         return xclosure_pointer<self_type>(std::move(*this));
     }

@@ -52,7 +52,7 @@ namespace xtl
         using value_type = xoptional<base_value_type, flag_type>;
         using reference = xoptional<base_reference, flag_reference>;
         using const_reference = xoptional<base_const_reference, flag_const_reference>;
-        using pointer = xclosure_pointer<reference>;;
+        using pointer = xclosure_pointer<reference>;
         using const_pointer = xclosure_pointer<const_reference>;
 
         // Other typedefs
@@ -250,7 +250,7 @@ namespace xtl
 
         reference operator*() const;
         pointer operator->() const;
-        
+
         bool operator==(const self_type& rhs) const;
         bool operator<(const self_type& rhs) const;
 
@@ -491,7 +491,7 @@ namespace xtl
     /**********************************
      * xoptional_array implementation *
      **********************************/
-    
+
     template <class T, std::size_t I, class BC>
     xoptional_array<T, I, BC>::xoptional_array(size_type s, const base_value_type& v)
         : base_type(s, v)

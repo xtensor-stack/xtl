@@ -87,6 +87,7 @@ set(XTL_TESTS
     test_xiterator_base.cpp
     test_xmeta_utils.cpp
     test_xoptional.cpp
+    test_xtype_traits.cpp
     test_xproxy_wrapper.cpp
     test_xvariant.cpp
 )

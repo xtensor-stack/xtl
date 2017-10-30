@@ -39,7 +39,8 @@ namespace xtl
         using storage_type = std::vector<B, Allocator>;
         using value_type = bool;
         using reference = xbitset_reference<block_type, allocator_type, false>;
-        using const_reference = xbitset_reference<block_type, allocator_type, true>;;
+        using const_reference = xbitset_reference<block_type, allocator_type, true>;
+
         using pointer = typename reference::pointer;
         using const_pointer = typename const_reference::pointer;
         using size_type = typename storage_type::size_type;
@@ -50,7 +51,7 @@ namespace xtl
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
         xdynamic_bitset();
-        explicit xdynamic_bitset(const allocator_type& allocator );
+        explicit xdynamic_bitset(const allocator_type& allocator);
         xdynamic_bitset(size_type count, bool b, const allocator_type& alloc = allocator_type());
         explicit xdynamic_bitset(size_type count, const allocator_type& alloc = allocator_type());
         template <class BlockInputIt>
@@ -183,8 +184,8 @@ namespace xtl
         using bitset_type = xdynamic_bitset<B, A>;
         using self_type = xbitset_reference<B, A, is_const>;
         using pointer = std::conditional_t<is_const,
-            const xclosure_pointer<const self_type>,
-            xclosure_pointer<self_type>>;
+                                           const xclosure_pointer<const self_type>,
+                                           xclosure_pointer<self_type>>;
 
         operator bool() const noexcept;
 
@@ -220,23 +221,21 @@ namespace xtl
 
         friend class xdynamic_bitset<B, A>;
     };
-    
+
     /********************
      * xbitset_iterator *
      ********************/
 
     template <class B, class A, bool is_const>
-    class xbitset_iterator :
-        public xrandom_access_iterator_base<xbitset_iterator<B, A, is_const>,
-                                            typename xdynamic_bitset<B, A>::value_type,
-                                            typename xdynamic_bitset<B, A>::difference_type,
-                                            std::conditional_t<is_const,
-                                                               typename xdynamic_bitset<B, A>::const_pointer,
-                                                               typename xdynamic_bitset<B, A>::pointer>,
-                                            std::conditional_t<is_const,
-                                                               typename xdynamic_bitset<B, A>::const_reference,
-                                                               typename xdynamic_bitset<B, A>::reference>
-                                            >
+    class xbitset_iterator : public xrandom_access_iterator_base<xbitset_iterator<B, A, is_const>,
+                                                                 typename xdynamic_bitset<B, A>::value_type,
+                                                                 typename xdynamic_bitset<B, A>::difference_type,
+                                                                 std::conditional_t<is_const,
+                                                                                    typename xdynamic_bitset<B, A>::const_pointer,
+                                                                                    typename xdynamic_bitset<B, A>::pointer>,
+                                                                 std::conditional_t<is_const,
+                                                                                    typename xdynamic_bitset<B, A>::const_reference,
+                                                                                    typename xdynamic_bitset<B, A>::reference>>
     {
     public:
 
@@ -387,7 +386,7 @@ namespace xtl
         size_type old_block_count = block_count();
         size_type new_block_count = compute_block_count(size);
         block_type value = b ? ~block_type(0) : block_type(0);
-        
+
         if (new_block_count != old_block_count)
         {
             m_buffer.resize(new_block_count, value);
@@ -612,8 +611,8 @@ namespace xtl
         {
             return reset();
         }
-        
-        if(pos > 0)
+
+        if (pos > 0)
         {
             size_type last = block_count() - 1;
             size_type div = pos / s_bits_per_block;
@@ -660,7 +659,7 @@ namespace xtl
             return reset();
         }
 
-        if(pos > 0)
+        if (pos > 0)
         {
             size_type last = block_count() - 1;
             size_type div = pos / s_bits_per_block;

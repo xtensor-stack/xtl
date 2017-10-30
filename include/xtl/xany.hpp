@@ -7,7 +7,9 @@
 
 namespace xtl
 {
-    // Implementation of N4562 std::experimental::any (merged into C++17) for C++11 compilers.
+    /**************************************
+     * Implementation of C++17's std::any *
+     **************************************/
 
     // Copyright (c) 2016 Denilson das Mercês Amorim
     //
