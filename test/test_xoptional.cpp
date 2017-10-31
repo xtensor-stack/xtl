@@ -168,4 +168,45 @@ namespace xtl
         EXPECT_TRUE(res7);
         EXPECT_FALSE(res8);
     }
+
+    TEST(xoptional, xoptional_proxy)
+    {
+        using optional = xoptional<double, bool>;
+        using optional_ref = xoptional<double&, bool&>;
+        double d1 = 1.2;
+        bool b1 = true;
+        double d2 = 2.3;
+        bool b2 = true;
+
+        optional_ref o1(d1, b1);
+        optional_ref o2(d2, b2);
+
+        auto res1 = o1 + o2;
+        EXPECT_EQ(res1, optional(d1 + d2, true));
+
+        auto res2 = o1 - o2;
+        EXPECT_EQ(res2, optional(d1 - d2, true));
+
+        auto res3 = o1 * o2;
+        EXPECT_EQ(res3, optional(d1 * d2, true));
+
+        auto res4 = o1 / o2;
+        EXPECT_EQ(res4, optional(d1 / d2, true));
+
+        auto res5 = o1 || o2;
+        EXPECT_EQ(res5, optional(d1 || d2, true));
+
+        auto res6 = o1 && o2;
+        EXPECT_EQ(res6, optional(d1 && d2, true));
+
+        xoptional<bool> res7 = o1 < o2;
+        EXPECT_TRUE(res7.value());
+
+        double d3 = 4.5;
+        bool b3 = true;
+        optional_ref o3(d3, b3);
+
+        auto res8 = fma(o1, o2, o3);
+        EXPECT_EQ(res8, std::fma(d1, d2, d3));
+    }
 }
