@@ -7,6 +7,16 @@
 Changelog
 =========
 
+0.3.4
+-----
+
+- Better semantics for assignment operators in `xoptional`.
+
+0.3.3
+-----
+
+- Work around Visual Studio compiler bug in `xoptional_proxy`.
+
 0.3.2
 -----
 
