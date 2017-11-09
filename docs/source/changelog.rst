@@ -11,6 +11,8 @@ Changelog
 -----
 
 - Better semantics for assignment operators in `xoptional`.
+- Addition of `static_if` in `xtl::mpl`.
+- Addition of `xtl::identity` functor in xfunctional.
 
 0.3.3
 -----
