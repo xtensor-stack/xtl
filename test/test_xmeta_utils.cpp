@@ -160,5 +160,26 @@ namespace xtl
         bool res2 = std::is_same<res_type2, vector_t>::value;
         EXPECT_TRUE(res2);
     }
+
+    template <bool B>
+    int static_if_tester()
+    {
+        int input = 0;
+        return mpl::static_if<B == false>([&](auto self)
+        {
+            return input;
+        }, /*else*/ [&](auto self)
+        {
+            return input + 1;
+        });
+    }
+
+    TEST(mpl, static_if)
+    {
+        int output_0 = static_if_tester<false>();
+        int output_1 = static_if_tester<true>();
+        EXPECT_EQ(output_0, 0);
+        EXPECT_EQ(output_1, 1);
+    }
 }
 

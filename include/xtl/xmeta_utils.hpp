@@ -12,6 +12,8 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "xfunctional.hpp"
+
 namespace xtl
 {
     namespace mpl
@@ -428,6 +430,28 @@ namespace xtl
 
         template <class S1, class S2>
         using merge_set_t = typename merge_set<S1, S2>::type;
+
+        /*************
+         * static_if *
+         *************/
+
+        template <class TF, class FF>
+        auto static_if(std::true_type, const TF& tf, const FF&)
+        {
+            return tf(identity());
+        }
+
+        template <class TF, class FF>
+        auto static_if(std::false_type, const TF&, const FF& ff)
+        {
+            return ff(identity());
+        }
+
+        template <bool cond, class TF, class FF>
+        auto static_if(const TF& tf, const FF& ff)
+        {
+            return static_if(std::integral_constant<bool, cond>(), tf, ff);
+        }
     }
 }
 
