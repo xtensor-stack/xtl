@@ -290,7 +290,6 @@ namespace xtl
         std::enable_if_t<
           conjunction<
             negation<std::is_same<xoptional<CT, CB>, std::decay_t<T>>>,
-            std::is_constructible<std::decay_t<CT>, T>,
             std::is_assignable<std::add_lvalue_reference_t<CT>, T>
           >::value,
          xoptional&>
@@ -304,7 +303,6 @@ namespace xtl
         template <class CTO, class CBO>
         std::enable_if_t<conjunction<
           negation<std::is_same<xoptional<CT, CB>, xoptional<CTO, CBO>>>,
-          std::is_constructible<std::decay_t<CT>, std::add_lvalue_reference_t<std::add_const_t<CTO>>>,
           std::is_assignable<std::add_lvalue_reference_t<CT>, CTO>,
           negation<detail::converts_from_xoptional<CT, CTO, CBO>>,
           negation<detail::assigns_from_xoptional<CT, CTO, CBO>>
@@ -320,7 +318,6 @@ namespace xtl
         template <class CTO, class CBO>
         std::enable_if_t<conjunction<
           negation<std::is_same<xoptional<CT, CB>, xoptional<CTO, CBO>>>,
-          std::is_constructible<std::decay_t<CT>, CTO>,
           std::is_assignable<std::add_lvalue_reference_t<CT>, CTO>,
           negation<detail::converts_from_xoptional<CT, CTO, CBO>>,
           negation<detail::assigns_from_xoptional<CT, CTO, CBO>>
