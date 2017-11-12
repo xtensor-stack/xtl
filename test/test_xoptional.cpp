@@ -209,4 +209,32 @@ namespace xtl
         auto res8 = fma(o1, o2, o3);
         EXPECT_EQ(res8, std::fma(d1, d2, d3));
     }
+
+    TEST(xoptional, free_functions)
+    {
+        // Test uninitialized == missing
+        xoptional<double, bool> v0;
+        ASSERT_FALSE(has_value(v0));
+
+        // Test initialization from value
+        xoptional<double, bool> v1(1.0);
+        ASSERT_TRUE(has_value(v1));
+        ASSERT_EQ(value(v1), 1.0);
+
+        // Test lvalue closure types
+        double value1 = 3.0;
+        int there = 0;
+        auto opt1 = optional(value1, there);
+        ASSERT_FALSE(has_value(opt1));
+        opt1 = 1.0;
+        ASSERT_TRUE(has_value(opt1));
+        ASSERT_EQ(value1, 1.0);
+
+        // Test rvalue closure type for boolean
+        double value2 = 3.0;
+        auto opt2 = optional(value2, true);
+        value(opt2) = 2.0;
+        ASSERT_TRUE(has_value(opt2));
+        ASSERT_EQ(value2, 2.0);
+    }
 }

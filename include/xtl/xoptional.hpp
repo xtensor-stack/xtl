@@ -389,6 +389,58 @@ namespace xtl
         CB m_flag;
     };
 
+    // value
+
+    template <class T, class U = disable_xoptional<std::decay_t<T>>>
+    T&& value(T&& v)
+    {
+        return std::forward<T>(v);
+    }
+
+    template <class CT, class CB>
+    decltype(auto) value(xtl::xoptional<CT, CB>&& v)
+    {
+        return std::move(v).value();
+    }
+
+    template <class CT, class CB>
+    decltype(auto) value(xtl::xoptional<CT, CB>& v)
+    {
+        return v.value();
+    }
+
+    template <class CT, class CB>
+    decltype(auto) value(const xtl::xoptional<CT, CB>& v)
+    {
+        return v.value();
+    }
+
+    // has_value
+
+    template <class T, class U = disable_xoptional<std::decay_t<T>>>
+    bool has_value(T&&)
+    {
+        return true;
+    }
+
+    template <class CT, class CB>
+    decltype(auto) has_value(xtl::xoptional<CT, CB>&& v)
+    {
+        return std::move(v).has_value();
+    }
+
+    template <class CT, class CB>
+    decltype(auto) has_value(xtl::xoptional<CT, CB>& v)
+    {
+        return std::move(v).has_value();
+    }
+
+    template <class CT, class CB>
+    decltype(auto) has_value(const xtl::xoptional<CT, CB>& v)
+    {
+        return std::move(v).has_value();
+    }
+
     /***************************************
      * optional and missing implementation *
      ***************************************/
