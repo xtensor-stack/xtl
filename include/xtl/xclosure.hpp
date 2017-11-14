@@ -293,7 +293,7 @@ namespace xtl
     template <class CT>
     inline bool xclosure_wrapper<CT>::equal(const self_type& rhs) const
     {
-        return m_wrappee == rhs.m_wrappee;
+        return deref(m_wrappee) == rhs.deref(rhs.m_wrappee);
     }
 
     template <class CT>
