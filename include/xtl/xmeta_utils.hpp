@@ -6,7 +6,7 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#ifndef XTl_XMETA_UTILS_HPP
+#ifndef XTL_XMETA_UTILS_HPP
 #define XTL_XMETA_UTILS_HPP
 
 #include <cstddef>
