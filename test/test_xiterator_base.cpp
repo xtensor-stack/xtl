@@ -6,6 +6,9 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
+#include <map>
+#include <string>
+
 #include "gtest/gtest.h"
 
 #include "xtl/xiterator_base.hpp"
@@ -151,6 +154,25 @@ namespace xtl
         EXPECT_TRUE(it2 < it);
         EXPECT_TRUE(it >= it2);
         EXPECT_TRUE(it > it2);
+    }
+
+    TEST(xiterator_base, xkey_iterator)
+    {
+        using map_type = std::map<std::string, int>;
+        map_type m = { {"a", 0}, {"b", 1}, {"c", 2} };
+        using iterator = xkey_iterator<map_type>;
+
+        iterator it(m.begin());
+        EXPECT_EQ(*it, "a");
+        iterator it2 = it;
+        EXPECT_EQ(it, it2);
+        ++it2;
+        EXPECT_EQ(*it2, "b");
+        EXPECT_NE(it, it2);
+        ++it2;
+        EXPECT_EQ(*it2, "c");
+        ++it2;
+        EXPECT_EQ(it2, iterator(m.end()));
     }
 }
 
