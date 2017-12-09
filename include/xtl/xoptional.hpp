@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "xclosure.hpp"
+#include "xmeta_utils.hpp"
 #include "xtl_config.hpp"
 #include "xtype_traits.hpp"
 
@@ -78,10 +79,26 @@ namespace xtl
             using type = std::conditional_t < is_xoptional_impl<T>::value , T, xoptional<T >> ;
         };
 
+        template <class T>
+        struct identity
+        {
+            using type = T;
+        };
+
+        template <class T>
+        struct get_value_type
+        {
+            using type = typename T::value_type;
+        };
+
         template<class T1, class T2>
         struct common_optional_impl<T1, T2>
         {
-            using type = xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>;
+            using decay_t1 = std::decay_t<T1>;
+            using decay_t2 = std::decay_t<T2>;
+            using type1 = xtl::mpl::eval_if_t<std::is_fundamental<decay_t1>, identity<decay_t1>, get_value_type<decay_t1>>;
+            using type2 = xtl::mpl::eval_if_t<std::is_fundamental<decay_t2>, identity<decay_t2>, get_value_type<decay_t2>>;
+            using type = xoptional<std::common_type_t<type1, type2>>;
         };
 
         template <class T1, class T2, class B2>

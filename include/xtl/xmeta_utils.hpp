@@ -53,6 +53,30 @@ namespace xtl
         template <class B, class T, class F>
         using if_t = typename if_<B, T, F>::type;
 
+        /***********
+         * eval_if *
+         ***********/
+
+        template <bool B, class T, class F>
+        struct eval_if_c
+        {
+            using type = typename T::type;
+        };
+
+        template <class T, class F>
+        struct eval_if_c<false, T, F>
+        {
+            using type = typename F::type;
+        };
+
+        template <class B, class T, class F>
+        struct eval_if : eval_if_c<B::value, T, F>
+        {
+        };
+
+        template <class B, class T, class F>
+        using eval_if_t = typename eval_if<B, T, F>::type;
+
         /********
          * cast *
          ********/
