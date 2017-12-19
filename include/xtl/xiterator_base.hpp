@@ -91,7 +91,7 @@ namespace xtl
 
         inline reference operator[](difference_type n) const
         {
-            return *(*this + n);
+            return *(*static_cast<const derived_type*>(this) + n);
         }
 
         inline friend derived_type operator+(const derived_type& it, difference_type n)
@@ -179,6 +179,10 @@ namespace xtl
 
         subiterator m_it;
     };
+
+    /**************************
+     * iterator_tag promotion *
+     **************************/
 }
 
 #endif
