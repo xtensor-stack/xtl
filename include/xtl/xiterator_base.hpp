@@ -91,7 +91,7 @@ namespace xtl
 
         inline reference operator[](difference_type n) const
         {
-            return *(*this + n);
+            return *(*static_cast<const derived_type*>(this) + n);
         }
 
         inline friend derived_type operator+(const derived_type& it, difference_type n)
@@ -179,6 +179,18 @@ namespace xtl
 
         subiterator m_it;
     };
+
+    /***********************
+     * common_iterator_tag *
+     ***********************/
+
+    template <class... Its>
+    struct common_iterator_tag : std::common_type<typename std::iterator_traits<Its>::iterator_category...>
+    {
+    };
+
+    template <class... Its>
+    using common_iterator_tag_t = typename common_iterator_tag<Its...>::type;
 }
 
 #endif

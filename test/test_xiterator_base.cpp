@@ -6,8 +6,10 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
+#include <list>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
 
@@ -15,13 +17,13 @@
 
 namespace adl
 {
-    class iterator_test : public xtl::xrandom_access_iterator_base<iterator_test, int, int>
+    class iterator_test : public xtl::xrandom_access_iterator_base<iterator_test, int, int, int*, int>
     {
 
     public:
 
         using self_type = iterator_test;
-        using base_type = xtl::xrandom_access_iterator_base<self_type, int, int>;
+        using base_type = xtl::xrandom_access_iterator_base<self_type, int, int, int*, int>;
         using value_type = typename base_type::value_type;
         using reference = typename base_type::reference;
         using pointer = typename base_type::pointer;
@@ -142,6 +144,12 @@ namespace xtl
         EXPECT_EQ(5, diff);
     }
 
+    TEST(xiterator_base, random_access)
+    {
+        iterator it;
+        EXPECT_EQ(it[5], *(it + 5));
+    }
+
     TEST(xiterator_base, comparison)
     {
         iterator it;
@@ -173,6 +181,21 @@ namespace xtl
         EXPECT_EQ(*it2, "c");
         ++it2;
         EXPECT_EQ(it2, iterator(m.end()));
+    }
+
+    TEST(xiterator_base, tag_promotion)
+    {
+        using random_iterator = std::vector<int>::iterator;
+        using bidirectional_iterator = std::list<int>::iterator;
+
+        using type1 = common_iterator_tag_t<random_iterator, bidirectional_iterator>;
+        using type2 = common_iterator_tag_t<random_iterator, random_iterator>;
+
+        bool b1 = std::is_same<type1, std::bidirectional_iterator_tag>::value;
+        bool b2 = std::is_same<type2, std::random_access_iterator_tag>::value;
+
+        EXPECT_TRUE(b1);
+        EXPECT_TRUE(b2);
     }
 }
 
