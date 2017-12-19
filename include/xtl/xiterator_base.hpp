@@ -180,9 +180,17 @@ namespace xtl
         subiterator m_it;
     };
 
-    /**************************
-     * iterator_tag promotion *
-     **************************/
+    /***********************
+     * common_iterator_tag *
+     ***********************/
+
+    template <class... Its>
+    struct common_iterator_tag : std::common_type<typename std::iterator_traits<Its>::iterator_category...>
+    {
+    };
+
+    template <class... Its>
+    using common_iterator_tag_t = typename common_iterator_tag<Its...>::type;
 }
 
 #endif

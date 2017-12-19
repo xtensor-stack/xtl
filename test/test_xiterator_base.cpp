@@ -6,8 +6,10 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
+#include <list>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
 
@@ -179,6 +181,21 @@ namespace xtl
         EXPECT_EQ(*it2, "c");
         ++it2;
         EXPECT_EQ(it2, iterator(m.end()));
+    }
+
+    TEST(xiterator_base, tag_promotion)
+    {
+        using random_iterator = std::vector<int>::iterator;
+        using bidirectional_iterator = std::list<int>::iterator;
+
+        using type1 = common_iterator_tag_t<random_iterator, bidirectional_iterator>;
+        using type2 = common_iterator_tag_t<random_iterator, random_iterator>;
+
+        bool b1 = std::is_same<type1, std::bidirectional_iterator_tag>::value;
+        bool b2 = std::is_same<type2, std::random_access_iterator_tag>::value;
+
+        EXPECT_TRUE(b1);
+        EXPECT_TRUE(b2);
     }
 }
 
