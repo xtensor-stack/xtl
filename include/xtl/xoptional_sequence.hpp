@@ -104,9 +104,9 @@ namespace xtl
         base_container_type& value() & noexcept;
         const base_container_type& value() const & noexcept;
 
-        flag_container_type has_value() && noexcept;
-        flag_container_type& has_value() & noexcept;
-        const flag_container_type& has_value() const & noexcept;
+        flag_container_type flag() && noexcept;
+        flag_container_type& flag() & noexcept;
+        const flag_container_type& flag() const & noexcept;
 
     protected:
 
@@ -274,7 +274,7 @@ namespace xtl
     template <class BC, class FC>
     template <class CTO, class CBO>
     inline xoptional_sequence<BC, FC>::xoptional_sequence(size_type s, const xoptional<CTO, CBO>& v)
-        : m_values(make_sequence<base_container_type>(s, v.value())), m_flags(make_sequence<flag_container_type>(s, v.has_value()))
+        : m_values(make_sequence<base_container_type>(s, v.value())), m_flags(make_sequence<flag_container_type>(s, v.flag()))
     {
     }
 
@@ -435,19 +435,19 @@ namespace xtl
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::has_value() && noexcept-> flag_container_type
+    inline auto xoptional_sequence<BC, FC>::flag() && noexcept-> flag_container_type
     {
         return m_flags;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::has_value() & noexcept -> flag_container_type&
+    inline auto xoptional_sequence<BC, FC>::flag() & noexcept -> flag_container_type&
     {
         return m_flags;
     }
 
     template <class BC, class FC>
-    inline auto xoptional_sequence<BC, FC>::has_value() const & noexcept -> const flag_container_type&
+    inline auto xoptional_sequence<BC, FC>::flag() const & noexcept -> const flag_container_type&
     {
         return m_flags;
     }
@@ -455,7 +455,7 @@ namespace xtl
     template <class BC, class FC>
     inline bool operator==(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.value() == rhs.value() && lhs.has_value() == rhs.has_value();
+        return lhs.value() == rhs.value() && lhs.flag() == rhs.flag();
     }
 
     template <class BC, class FC>
@@ -467,25 +467,25 @@ namespace xtl
     template <class BC, class FC>
     inline bool operator<(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.value() < rhs.value() && lhs.has_value() == rhs.has_value();
+        return lhs.value() < rhs.value() && lhs.flag() == rhs.flag();
     }
 
     template <class BC, class FC>
     inline bool operator<=(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.value() <= rhs.value() && lhs.has_value() == rhs.has_value();
+        return lhs.value() <= rhs.value() && lhs.flag() == rhs.flag();
     }
 
     template <class BC, class FC>
     inline bool operator>(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.value() > rhs.value() && lhs.has_value() == rhs.has_value();
+        return lhs.value() > rhs.value() && lhs.flag() == rhs.flag();
     }
 
     template <class BC, class FC>
     inline bool operator>=(const xoptional_sequence<BC, FC>& lhs, const xoptional_sequence<BC, FC>& rhs)
     {
-        return lhs.value() >= rhs.value() && lhs.has_value() == rhs.has_value();
+        return lhs.value() >= rhs.value() && lhs.flag() == rhs.flag();
     }
 
     /**********************************
@@ -542,7 +542,7 @@ namespace xtl
     void xoptional_vector<T, A, BC>::resize(size_type s, const xoptional<CTO, CBO>& v)
     {
         this->m_values.resize(s, v.value());
-        this->m_flags.resize(s, v.has_value());
+        this->m_flags.resize(s, v.flag());
     }
 
     /*************************************

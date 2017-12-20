@@ -35,7 +35,7 @@ namespace xtl
      * xoptional declaration *
      *************************/
 
-    template <class CT, class CB = bool>
+    template <class CT, class CB = bool, bool EXISTS = true>
     class xoptional;
 
     namespace detail
@@ -45,29 +45,29 @@ namespace xtl
         {
         };
 
-        template <class CT, class CB>
-        struct is_xoptional_impl<xoptional<CT, CB>> : std::true_type
+        template <class CT, class CB, bool EXISTS>
+        struct is_xoptional_impl<xoptional<CT, CB, EXISTS>> : std::true_type
         {
         };
 
-        template <class CT, class CTO, class CBO>
+        template <class CT, class CTO, class CBO, bool EXISTSO>
         using converts_from_xoptional = disjunction<
-            std::is_constructible<CT, const xoptional<CTO, CBO>&>,
-            std::is_constructible<CT, xoptional<CTO, CBO>&>,
-            std::is_constructible<CT, const xoptional<CTO, CBO>&&>,
-            std::is_constructible<CT, xoptional<CTO, CBO>&&>,
-            std::is_convertible<const xoptional<CTO, CBO>&, CT>,
-            std::is_convertible<xoptional<CTO, CBO>&, CT>,
-            std::is_convertible<const xoptional<CTO, CBO>&&, CT>,
-            std::is_convertible<xoptional<CTO, CBO>&&, CT>
+            std::is_constructible<CT, const xoptional<CTO, CBO, EXISTSO>&>,
+            std::is_constructible<CT, xoptional<CTO, CBO, EXISTSO>&>,
+            std::is_constructible<CT, const xoptional<CTO, CBO, EXISTSO>&&>,
+            std::is_constructible<CT, xoptional<CTO, CBO, EXISTSO>&&>,
+            std::is_convertible<const xoptional<CTO, CBO, EXISTSO>&, CT>,
+            std::is_convertible<xoptional<CTO, CBO, EXISTSO>&, CT>,
+            std::is_convertible<const xoptional<CTO, CBO, EXISTSO>&&, CT>,
+            std::is_convertible<xoptional<CTO, CBO, EXISTSO>&&, CT>
         >;
 
-        template <class CT, class CTO, class CBO>
+        template <class CT, class CTO, class CBO, bool EXISTSO>
         using assigns_from_xoptional = disjunction<
-            std::is_assignable<std::add_lvalue_reference_t<CT>, const xoptional<CTO, CBO>&>,
-            std::is_assignable<std::add_lvalue_reference_t<CT>, xoptional<CTO, CBO>&>,
-            std::is_assignable<std::add_lvalue_reference_t<CT>, const xoptional<CTO, CBO>&&>,
-            std::is_assignable<std::add_lvalue_reference_t<CT>, xoptional<CTO, CBO>&&>
+            std::is_assignable<std::add_lvalue_reference_t<CT>, const xoptional<CTO, CBO, EXISTSO>&>,
+            std::is_assignable<std::add_lvalue_reference_t<CT>, xoptional<CTO, CBO, EXISTSO>&>,
+            std::is_assignable<std::add_lvalue_reference_t<CT>, const xoptional<CTO, CBO, EXISTSO>&&>,
+            std::is_assignable<std::add_lvalue_reference_t<CT>, xoptional<CTO, CBO, EXISTSO>&&>
         >;
 
         template <class... Args>
@@ -76,7 +76,7 @@ namespace xtl
         template <class T>
         struct common_optional_impl<T>
         {
-            using type = std::conditional_t < is_xoptional_impl<T>::value , T, xoptional<T >> ;
+            using type = std::conditional_t<is_xoptional_impl<T>::value, T, xoptional<T>> ;
         };
 
         template <class T>
@@ -175,12 +175,12 @@ namespace xtl
      * with CT and CB being reference types. In other words, it serves as a reference proxy.
      *
      */
-    template <class CT, class CB>
+    template <class CT, class CB, bool EXISTS>
     class xoptional
     {
     public:
 
-        using self_type = xoptional<CT, CB>;
+        using self_type = xoptional<CT, CB, EXISTS>;
         using value_closure = CT;
         using flag_closure = CB;
 
@@ -189,110 +189,110 @@ namespace xtl
 
         // Constructors
         inline xoptional()
-            : m_value(), m_flag(false)
+            : m_value(), m_flag(!EXISTS)
         {
         }
 
         template <class T,
           std::enable_if_t<
             conjunction<
-              negation<std::is_same<xoptional<CT, CB>, std::decay_t<T>>>,
+              negation<std::is_same<xoptional<CT, CB, EXISTS>, std::decay_t<T>>>,
               std::is_constructible<CT, T&&>,
               std::is_convertible<T&&, CT>
             >::value,
             bool
           > = true>
         inline constexpr xoptional(T&& rhs)
-            : m_value(std::forward<T>(rhs)), m_flag(true)
+            : m_value(std::forward<T>(rhs)), m_flag(EXISTS)
         {
         }
 
         template <class T,
           std::enable_if_t<
             conjunction<
-              negation<std::is_same<xoptional<CT, CB>, std::decay_t<T>>>,
+              negation<std::is_same<xoptional<CT, CB, EXISTS>, std::decay_t<T>>>,
               std::is_constructible<CT, T&&>,
               negation<std::is_convertible<T&&, CT>>
             >::value,
             bool
           > = false>
         inline explicit constexpr xoptional(T&& value)
-            : m_value(std::forward<T>(value)), m_flag(true)
+            : m_value(std::forward<T>(value)), m_flag(EXISTS)
         {
         }
 
-        template <class CTO, class CBO,
+        template <class CTO, class CBO, bool EXISTSO,
           std::enable_if_t<
             conjunction<
-              negation<std::is_same<xoptional<CT, CB>, xoptional<CTO, CBO>>>,
+              negation<std::is_same<xoptional<CT, CB, EXISTS>, xoptional<CTO, CBO, EXISTSO>>>,
               std::is_constructible<CT, std::add_lvalue_reference_t<std::add_const_t<CTO>>>,
               std::is_constructible<CB, std::add_lvalue_reference_t<std::add_const_t<CBO>>>,
               conjunction<
                 std::is_convertible<std::add_lvalue_reference_t<std::add_const_t<CTO>>, CT>,
                 std::is_convertible<std::add_lvalue_reference_t<std::add_const_t<CBO>>, CB>
               >,
-              negation<detail::converts_from_xoptional<CT, CTO, CBO>>
+              negation<detail::converts_from_xoptional<CT, CTO, CBO, EXISTSO>>
             >::value,
             bool
           > = true>
-        inline constexpr xoptional(const xoptional<CTO, CBO>& rhs)
+        inline constexpr xoptional(const xoptional<CTO, CBO, EXISTSO>& rhs)
             : m_value(rhs.value()), m_flag(rhs.has_value())
         {
         }
 
-        template <class CTO, class CBO,
+        template <class CTO, class CBO, bool EXISTSO,
           std::enable_if_t<
             conjunction<
-              negation<std::is_same<xoptional<CT, CB>, xoptional<CTO, CBO>>>,
+              negation<std::is_same<xoptional<CT, CB, EXISTS>, xoptional<CTO, CBO, EXISTSO>>>,
               std::is_constructible<CT, std::add_lvalue_reference_t<std::add_const_t<CTO>>>,
               std::is_constructible<CB, std::add_lvalue_reference_t<std::add_const_t<CBO>>>,
               disjunction<
                 negation<std::is_convertible<std::add_lvalue_reference_t<std::add_const_t<CTO>>, CT>>,
                 negation<std::is_convertible<std::add_lvalue_reference_t<std::add_const_t<CBO>>, CB>>
               >,
-              negation<detail::converts_from_xoptional<CT, CTO, CBO>>
+              negation<detail::converts_from_xoptional<CT, CTO, CBO, EXISTSO>>
             >::value,
             bool
           > = false>
-        inline explicit constexpr xoptional(const xoptional<CTO, CBO>& rhs)
+        inline explicit constexpr xoptional(const xoptional<CTO, CBO, EXISTSO>& rhs)
             : m_value(rhs.value()), m_flag(rhs.has_value())
         {
         }
 
-        template <class CTO, class CBO,
+        template <class CTO, class CBO, bool EXISTSO,
           std::enable_if_t<
             conjunction<
-              negation<std::is_same<xoptional<CT, CB>, xoptional<CTO, CBO>>>,
+              negation<std::is_same<xoptional<CT, CB, EXISTS>, xoptional<CTO, CBO, EXISTSO>>>,
               std::is_constructible<CT, std::conditional_t<std::is_reference<CT>::value, const std::decay_t<CTO>&, std::decay_t<CTO>&&>>,
               std::is_constructible<CB, std::conditional_t<std::is_reference<CB>::value, const std::decay_t<CBO>&, std::decay_t<CBO>&&>>,
               conjunction<
                 std::is_convertible<std::conditional_t<std::is_reference<CT>::value, const std::decay_t<CTO>&, std::decay_t<CTO>&&>, CT>,
                 std::is_convertible<std::conditional_t<std::is_reference<CB>::value, const std::decay_t<CBO>&, std::decay_t<CBO>&&>, CB>
               >,
-              negation<detail::converts_from_xoptional<CT, CTO, CBO>>
+              negation<detail::converts_from_xoptional<CT, CTO, CBO, EXISTSO>>
             >::value,
             bool
           > = true>
-        inline constexpr xoptional(xoptional<CTO, CBO>&& rhs)
+        inline constexpr xoptional(xoptional<CTO, CBO, EXISTSO>&& rhs)
             : m_value(std::move(rhs).value()), m_flag(std::move(rhs).has_value())
         {
         }
 
-        template <class CTO, class CBO,
+        template <class CTO, class CBO, bool EXISTSO,
           std::enable_if_t<
             conjunction<
-              negation<std::is_same<xoptional<CT, CB>, xoptional<CTO, CBO>>>,
+              negation<std::is_same<xoptional<CT, CB, EXISTS>, xoptional<CTO, CBO, EXISTSO>>>,
               std::is_constructible<CT, std::conditional_t<std::is_reference<CT>::value, const std::decay_t<CTO>&, std::decay_t<CTO>&&>>,
               std::is_constructible<CB, std::conditional_t<std::is_reference<CB>::value, const std::decay_t<CBO>&, std::decay_t<CBO>&&>>,
               disjunction<
                 negation<std::is_convertible<std::conditional_t<std::is_reference<CT>::value, const std::decay_t<CTO>&, std::decay_t<CTO>&&>, CT>>,
                 negation<std::is_convertible<std::conditional_t<std::is_reference<CB>::value, const std::decay_t<CBO>&, std::decay_t<CBO>&&>, CB>>
               >,
-              negation<detail::converts_from_xoptional<CT, CTO, CBO>>
+              negation<detail::converts_from_xoptional<CT, CTO, CBO, EXISTSO>>
             >::value,
             bool
           > = false>
-        inline explicit constexpr xoptional(xoptional<CTO, CBO>&& rhs)
+        inline explicit constexpr xoptional(xoptional<CTO, CBO, EXISTSO>&& rhs)
             : m_value(std::move(rhs).value()), m_flag(std::move(rhs).has_value())
         {
         }
@@ -306,7 +306,7 @@ namespace xtl
         template <class T>
         std::enable_if_t<
           conjunction<
-            negation<std::is_same<xoptional<CT, CB>, std::decay_t<T>>>,
+            negation<std::is_same<xoptional<CT, CB, EXISTS>, std::decay_t<T>>>,
             std::is_assignable<std::add_lvalue_reference_t<CT>, T>
           >::value,
          xoptional&>
@@ -317,30 +317,30 @@ namespace xtl
             return *this;
         }
 
-        template <class CTO, class CBO>
+        template <class CTO, class CBO, bool EXISTSO>
         std::enable_if_t<conjunction<
-          negation<std::is_same<xoptional<CT, CB>, xoptional<CTO, CBO>>>,
+          negation<std::is_same<xoptional<CT, CB, EXISTS>, xoptional<CTO, CBO, EXISTSO>>>,
           std::is_assignable<std::add_lvalue_reference_t<CT>, CTO>,
-          negation<detail::converts_from_xoptional<CT, CTO, CBO>>,
-          negation<detail::assigns_from_xoptional<CT, CTO, CBO>>
+          negation<detail::converts_from_xoptional<CT, CTO, CBO, EXISTSO>>,
+          negation<detail::assigns_from_xoptional<CT, CTO, CBO, EXISTSO>>
         >::value,
         xoptional&>
-        inline operator=(const xoptional<CTO, CBO>& rhs)
+        inline operator=(const xoptional<CTO, CBO, EXISTSO>& rhs)
         {
             m_flag = rhs.has_value();
             m_value = rhs.value();
             return *this;
         }
 
-        template <class CTO, class CBO>
+        template <class CTO, class CBO, bool EXISTSO>
         std::enable_if_t<conjunction<
-          negation<std::is_same<xoptional<CT, CB>, xoptional<CTO, CBO>>>,
+          negation<std::is_same<xoptional<CT, CB, EXISTS>, xoptional<CTO, CBO, EXISTSO>>>,
           std::is_assignable<std::add_lvalue_reference_t<CT>, CTO>,
-          negation<detail::converts_from_xoptional<CT, CTO, CBO>>,
-          negation<detail::assigns_from_xoptional<CT, CTO, CBO>>
+          negation<detail::converts_from_xoptional<CT, CTO, CBO, EXISTSO>>,
+          negation<detail::assigns_from_xoptional<CT, CTO, CBO, EXISTSO>>
         >::value,
         xoptional&>
-        inline operator=(xoptional<CTO, CBO>&& rhs)
+        inline operator=(xoptional<CTO, CBO, EXISTSO>&& rhs)
         {
             m_flag = std::move(rhs).has_value();
             m_value = std::move(rhs).value();
@@ -348,14 +348,14 @@ namespace xtl
         }
 
         // Operators
-        template <class CTO, class CBO>
-        xoptional& operator+=(const xoptional<CTO, CBO>&);
-        template <class CTO, class CBO>
-        xoptional& operator-=(const xoptional<CTO, CBO>&);
-        template <class CTO, class CBO>
-        xoptional& operator*=(const xoptional<CTO, CBO>&);
-        template <class CTO, class CBO>
-        xoptional& operator/=(const xoptional<CTO, CBO>&);
+        template <class CTO, class CBO, bool EXISTSO>
+        xoptional& operator+=(const xoptional<CTO, CBO, EXISTSO>&);
+        template <class CTO, class CBO, bool EXISTSO>
+        xoptional& operator-=(const xoptional<CTO, CBO, EXISTSO>&);
+        template <class CTO, class CBO, bool EXISTSO>
+        xoptional& operator*=(const xoptional<CTO, CBO, EXISTSO>&);
+        template <class CTO, class CBO, bool EXISTSO>
+        xoptional& operator/=(const xoptional<CTO, CBO, EXISTSO>&);
 
         template <class T>
         disable_xoptional<T, xoptional&> operator+=(const T&);
@@ -378,17 +378,19 @@ namespace xtl
         value_type value_or(U&&) const && noexcept;
 
         // Access
-        std::add_lvalue_reference_t<CB> has_value() & noexcept;
-        std::add_lvalue_reference_t<std::add_const_t<CB>> has_value() const & noexcept;
-        std::conditional_t<std::is_reference<CB>::value, apply_cv_t<CB, flag_type>&, flag_type> has_value() && noexcept;
-        std::conditional_t<std::is_reference<CB>::value, const flag_type&, flag_type> has_value() const && noexcept;
+        std::add_lvalue_reference_t<CB> flag() & noexcept;
+        std::add_lvalue_reference_t<std::add_const_t<CB>> flag() const & noexcept;
+        std::conditional_t<std::is_reference<CB>::value, apply_cv_t<CB, flag_type>&, flag_type> flag() && noexcept;
+        std::conditional_t<std::is_reference<CB>::value, const flag_type&, flag_type> flag() const && noexcept;
+
+        bool has_value() const noexcept;
 
         // Swap
         void swap(xoptional& other);
 
         // Comparison
-        template <class CTO, class CBO>
-        bool equal(const xoptional<CTO, CBO>& rhs) const noexcept;
+        template <class CTO, class CBO, bool EXISTSO>
+        bool equal(const xoptional<CTO, CBO, EXISTSO>& rhs) const noexcept;
 
         template <class CTO>
         disable_xoptional<CTO, bool> equal(const CTO& rhs) const noexcept;
@@ -399,7 +401,7 @@ namespace xtl
 
     private:
 
-        template <class CTO, class CBO>
+        template <class CTO, class CBO, bool EXISTSO>
         friend class xoptional;
 
         CT m_value;
@@ -414,20 +416,20 @@ namespace xtl
         return std::forward<T>(v);
     }
 
-    template <class CT, class CB>
-    decltype(auto) value(xtl::xoptional<CT, CB>&& v)
+    template <class CT, class CB, bool EXISTS>
+    decltype(auto) value(xtl::xoptional<CT, CB, EXISTS>&& v)
     {
         return std::move(v).value();
     }
 
-    template <class CT, class CB>
-    decltype(auto) value(xtl::xoptional<CT, CB>& v)
+    template <class CT, class CB, bool EXISTS>
+    decltype(auto) value(xtl::xoptional<CT, CB, EXISTS>& v)
     {
         return v.value();
     }
 
-    template <class CT, class CB>
-    decltype(auto) value(const xtl::xoptional<CT, CB>& v)
+    template <class CT, class CB, bool EXISTS>
+    decltype(auto) value(const xtl::xoptional<CT, CB, EXISTS>& v)
     {
         return v.value();
     }
@@ -440,20 +442,20 @@ namespace xtl
         return true;
     }
 
-    template <class CT, class CB>
-    decltype(auto) has_value(xtl::xoptional<CT, CB>&& v)
+    template <class CT, class CB, bool EXISTS>
+    decltype(auto) has_value(xtl::xoptional<CT, CB, EXISTS>&& v)
     {
         return std::move(v).has_value();
     }
 
-    template <class CT, class CB>
-    decltype(auto) has_value(xtl::xoptional<CT, CB>& v)
+    template <class CT, class CB, bool EXISTS>
+    decltype(auto) has_value(xtl::xoptional<CT, CB, EXISTS>& v)
     {
         return std::move(v).has_value();
     }
 
-    template <class CT, class CB>
-    decltype(auto) has_value(const xtl::xoptional<CT, CB>& v)
+    template <class CT, class CB, bool EXISTS>
+    decltype(auto) has_value(const xtl::xoptional<CT, CB, EXISTS>& v)
     {
         return std::move(v).has_value();
     }
@@ -481,6 +483,7 @@ namespace xtl
     template <class T>
     auto missing() noexcept
     {
+        // TODO fix hardcoded false
         return xoptional<T, bool>(T(), false);
     }
 
@@ -489,34 +492,34 @@ namespace xtl
      ****************************/
 
     // Constructors
-    template <class CT, class CB>
-    xoptional<CT, CB>::xoptional(value_type&& value, flag_type&& flag)
+    template <class CT, class CB, bool EXISTS>
+    xoptional<CT, CB, EXISTS>::xoptional(value_type&& value, flag_type&& flag)
         : m_value(std::move(value)), m_flag(std::move(flag))
     {
     }
 
-    template <class CT, class CB>
-    xoptional<CT, CB>::xoptional(std::add_lvalue_reference_t<CT> value, std::add_lvalue_reference_t<CB> flag)
+    template <class CT, class CB, bool EXISTS>
+    xoptional<CT, CB, EXISTS>::xoptional(std::add_lvalue_reference_t<CT> value, std::add_lvalue_reference_t<CB> flag)
         : m_value(value), m_flag(flag)
     {
     }
 
-    template <class CT, class CB>
-    xoptional<CT, CB>::xoptional(value_type&& value, std::add_lvalue_reference_t<CB> flag)
+    template <class CT, class CB, bool EXISTS>
+    xoptional<CT, CB, EXISTS>::xoptional(value_type&& value, std::add_lvalue_reference_t<CB> flag)
         : m_value(std::move(value)), m_flag(flag)
     {
     }
 
-    template <class CT, class CB>
-    xoptional<CT, CB>::xoptional(std::add_lvalue_reference_t<CT> value, flag_type&& flag)
+    template <class CT, class CB, bool EXISTS>
+    xoptional<CT, CB, EXISTS>::xoptional(std::add_lvalue_reference_t<CT> value, flag_type&& flag)
         : m_value(value), m_flag(std::move(flag))
     {
     }
 
     // Operators
-    template <class CT, class CB>
-    template <class CTO, class CBO>
-    auto xoptional<CT, CB>::operator+=(const xoptional<CTO, CBO>& rhs) -> xoptional&
+    template <class CT, class CB, bool EXISTS>
+    template <class CTO, class CBO, bool EXISTSO>
+    auto xoptional<CT, CB, EXISTS>::operator+=(const xoptional<CTO, CBO, EXISTSO>& rhs) -> xoptional&
     {
         m_flag = m_flag && rhs.m_flag;
         if (m_flag)
@@ -526,9 +529,9 @@ namespace xtl
         return *this;
     }
 
-    template <class CT, class CB>
-    template <class CTO, class CBO>
-    auto xoptional<CT, CB>::operator-=(const xoptional<CTO, CBO>& rhs) -> xoptional&
+    template <class CT, class CB, bool EXISTS>
+    template <class CTO, class CBO, bool EXISTSO>
+    auto xoptional<CT, CB, EXISTS>::operator-=(const xoptional<CTO, CBO, EXISTSO>& rhs) -> xoptional&
     {
         m_flag = m_flag && rhs.m_flag;
         if (m_flag)
@@ -538,9 +541,9 @@ namespace xtl
         return *this;
     }
 
-    template <class CT, class CB>
-    template <class CTO, class CBO>
-    auto xoptional<CT, CB>::operator*=(const xoptional<CTO, CBO>& rhs) -> xoptional&
+    template <class CT, class CB, bool EXISTS>
+    template <class CTO, class CBO, bool EXISTSO>
+    auto xoptional<CT, CB, EXISTS>::operator*=(const xoptional<CTO, CBO, EXISTSO>& rhs) -> xoptional&
     {
         m_flag = m_flag && rhs.m_flag;
         if (m_flag)
@@ -550,9 +553,9 @@ namespace xtl
         return *this;
     }
 
-    template <class CT, class CB>
-    template <class CTO, class CBO>
-    auto xoptional<CT, CB>::operator/=(const xoptional<CTO, CBO>& rhs) -> xoptional&
+    template <class CT, class CB, bool EXISTS>
+    template <class CTO, class CBO, bool EXISTSO>
+    auto xoptional<CT, CB, EXISTS>::operator/=(const xoptional<CTO, CBO, EXISTSO>& rhs) -> xoptional&
     {
         m_flag = m_flag && rhs.m_flag;
         if (m_flag)
@@ -562,9 +565,9 @@ namespace xtl
         return *this;
     }
 
-    template <class CT, class CB>
+    template <class CT, class CB, bool EXISTS>
     template <class T>
-    auto xoptional<CT, CB>::operator+=(const T& rhs) -> disable_xoptional<T, xoptional&>
+    auto xoptional<CT, CB, EXISTS>::operator+=(const T& rhs) -> disable_xoptional<T, xoptional&>
     {
         if (m_flag)
         {
@@ -573,9 +576,9 @@ namespace xtl
         return *this;
     }
 
-    template <class CT, class CB>
+    template <class CT, class CB, bool EXISTS>
     template <class T>
-    auto xoptional<CT, CB>::operator-=(const T& rhs) -> disable_xoptional<T, xoptional&>
+    auto xoptional<CT, CB, EXISTS>::operator-=(const T& rhs) -> disable_xoptional<T, xoptional&>
     {
         if (m_flag)
         {
@@ -584,9 +587,9 @@ namespace xtl
         return *this;
     }
 
-    template <class CT, class CB>
+    template <class CT, class CB, bool EXISTS>
     template <class T>
-    auto xoptional<CT, CB>::operator*=(const T& rhs) -> disable_xoptional<T, xoptional&>
+    auto xoptional<CT, CB, EXISTS>::operator*=(const T& rhs) -> disable_xoptional<T, xoptional&>
     {
         if (m_flag)
         {
@@ -595,9 +598,9 @@ namespace xtl
         return *this;
     }
 
-    template <class CT, class CB>
+    template <class CT, class CB, bool EXISTS>
     template <class T>
-    auto xoptional<CT, CB>::operator/=(const T& rhs) -> disable_xoptional<T, xoptional&>
+    auto xoptional<CT, CB, EXISTS>::operator/=(const T& rhs) -> disable_xoptional<T, xoptional&>
     {
         if (m_flag)
         {
@@ -607,106 +610,112 @@ namespace xtl
     }
 
     // Access
-    template <class CT, class CB>
-    auto xoptional<CT, CB>::value() & noexcept -> std::add_lvalue_reference_t<CT>
+    template <class CT, class CB, bool EXISTS>
+    auto xoptional<CT, CB, EXISTS>::value() & noexcept -> std::add_lvalue_reference_t<CT>
     {
         return m_value;
     }
 
-    template <class CT, class CB>
-    auto xoptional<CT, CB>::value() const & noexcept -> std::add_lvalue_reference_t<std::add_const_t<CT>>
+    template <class CT, class CB, bool EXISTS>
+    auto xoptional<CT, CB, EXISTS>::value() const & noexcept -> std::add_lvalue_reference_t<std::add_const_t<CT>>
     {
         return m_value;
     }
 
-    template <class CT, class CB>
-    auto xoptional<CT, CB>::value() && noexcept -> std::conditional_t<std::is_reference<CT>::value, apply_cv_t<CT, value_type>&, value_type>
+    template <class CT, class CB, bool EXISTS>
+    auto xoptional<CT, CB, EXISTS>::value() && noexcept -> std::conditional_t<std::is_reference<CT>::value, apply_cv_t<CT, value_type>&, value_type>
     {
         return m_value;
     }
 
-    template <class CT, class CB>
-    auto xoptional<CT, CB>::value() const && noexcept -> std::conditional_t<std::is_reference<CT>::value, const value_type&, value_type>
+    template <class CT, class CB, bool EXISTS>
+    auto xoptional<CT, CB, EXISTS>::value() const && noexcept -> std::conditional_t<std::is_reference<CT>::value, const value_type&, value_type>
     {
         return m_value;
     }
 
-    template <class CT, class CB>
+    template <class CT, class CB, bool EXISTS>
     template <class U>
-    auto xoptional<CT, CB>::value_or(U&& default_value) const & noexcept -> value_type
+    auto xoptional<CT, CB, EXISTS>::value_or(U&& default_value) const & noexcept -> value_type
     {
-        return m_flag ? m_value : std::forward<U>(default_value);
+        return m_flag == EXISTS ? m_value : std::forward<U>(default_value);
     }
 
-    template <class CT, class CB>
+    template <class CT, class CB, bool EXISTS>
     template <class U>
-    auto xoptional<CT, CB>::value_or(U&& default_value) const && noexcept -> value_type
+    auto xoptional<CT, CB, EXISTS>::value_or(U&& default_value) const && noexcept -> value_type
     {
-        return m_flag ? m_value : std::forward<U>(default_value);
+        return m_flag == EXISTS ? m_value : std::forward<U>(default_value);
     }
 
     // Access
-    template <class CT, class CB>
-    auto xoptional<CT, CB>::has_value() & noexcept -> std::add_lvalue_reference_t<CB>
+    template <class CT, class CB, bool EXISTS>
+    inline auto xoptional<CT, CB, EXISTS>::flag() & noexcept -> std::add_lvalue_reference_t<CB>
     {
         return m_flag;
     }
 
-    template <class CT, class CB>
-    auto xoptional<CT, CB>::has_value() const & noexcept -> std::add_lvalue_reference_t<std::add_const_t<CB>>
+    template <class CT, class CB, bool EXISTS>
+    inline auto xoptional<CT, CB, EXISTS>::flag() const & noexcept -> std::add_lvalue_reference_t<std::add_const_t<CB>>
     {
         return m_flag;
     }
 
-    template <class CT, class CB>
-    auto xoptional<CT, CB>::has_value() && noexcept -> std::conditional_t<std::is_reference<CB>::value, apply_cv_t<CB, flag_type>&, flag_type>
+    template <class CT, class CB, bool EXISTS>
+    inline auto xoptional<CT, CB, EXISTS>::flag() && noexcept -> std::conditional_t<std::is_reference<CB>::value, apply_cv_t<CB, flag_type>&, flag_type>
     {
         return m_flag;
     }
 
-    template <class CT, class CB>
-    auto xoptional<CT, CB>::has_value() const && noexcept -> std::conditional_t<std::is_reference<CB>::value, const flag_type&, flag_type>
+    template <class CT, class CB, bool EXISTS>
+    inline auto xoptional<CT, CB, EXISTS>::flag() const && noexcept -> std::conditional_t<std::is_reference<CB>::value, const flag_type&, flag_type>
     {
         return m_flag;
+    }
+
+    template <class CT, class CB, bool EXISTS>
+    inline bool xoptional<CT, CB, EXISTS>::has_value() const noexcept
+    {
+        return flag() == EXISTS;
     }
 
     // Swap
-    template <class CT, class CB>
-    void xoptional<CT, CB>::swap(xoptional& other)
+    template <class CT, class CB, bool EXISTS>
+    void xoptional<CT, CB, EXISTS>::swap(xoptional& other)
     {
         std::swap(m_value, other.m_flag);
         std::swap(m_flag, other.m_flag);
     }
 
     // Comparison
-    template <class CT, class CB>
-    template <class CTO, class CBO>
-    auto xoptional<CT, CB>::equal(const xoptional<CTO, CBO>& rhs) const noexcept -> bool
+    template <class CT, class CB, bool EXISTS>
+    template <class CTO, class CBO, bool EXISTSO>
+    auto xoptional<CT, CB, EXISTS>::equal(const xoptional<CTO, CBO, EXISTSO>& rhs) const noexcept -> bool
     {
         return (!m_flag && !rhs.m_flag) || (m_value == rhs.m_value && (m_flag && rhs.m_flag));
     }
 
-    template <class CT, class CB>
+    template <class CT, class CB, bool EXISTS>
     template <class CTO>
-    auto xoptional<CT, CB>::equal(const CTO& rhs) const noexcept -> disable_xoptional<CTO, bool>
+    auto xoptional<CT, CB, EXISTS>::equal(const CTO& rhs) const noexcept -> disable_xoptional<CTO, bool>
     {
-        return m_flag ? (m_value == rhs) : false;
+        return m_flag == EXISTS ? (m_value == rhs) : false;
     }
 
-    template <class CT, class CB>
-    inline auto xoptional<CT, CB>::operator&() & -> xclosure_pointer<self_type&>
+    template <class CT, class CB, bool EXISTS>
+    inline auto xoptional<CT, CB, EXISTS>::operator&() & -> xclosure_pointer<self_type&>
     {
         return xclosure_pointer<self_type&>(*this);
     }
 
-    template <class CT, class CB>
-    inline auto xoptional<CT, CB>::operator&() const & -> xclosure_pointer<const self_type&>
+    template <class CT, class CB, bool EXISTS>
+    inline auto xoptional<CT, CB, EXISTS>::operator&() const & -> xclosure_pointer<const self_type&>
     {
         return xclosure_pointer<const self_type&>(*this);
     }
 
-    template <class CT, class CB>
-    inline auto xoptional<CT, CB>::operator&() && -> xclosure_pointer<self_type>
+    template <class CT, class CB, bool EXISTS>
+    inline auto xoptional<CT, CB, EXISTS>::operator&() && -> xclosure_pointer<self_type>
     {
         return xclosure_pointer<self_type>(std::move(*this));
     }
