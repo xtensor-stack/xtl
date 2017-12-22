@@ -119,7 +119,7 @@ namespace xtl
     {
         std::ostringstream oss;
         oss << missing<int>();
-        ASSERT_EQ(oss.str(), std::string("N/A"));
+        ASSERT_EQ(oss.str(), std::string("NA()"));
     }
 
     struct implicit_double
