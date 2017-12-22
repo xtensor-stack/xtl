@@ -112,7 +112,7 @@ namespace xtl
         EXPECT_TRUE(v1 > v2);
         EXPECT_FALSE(v2 > v1);
         EXPECT_TRUE(v1 >= v1);
-        EXPECT_FALSE(v2 >= v1);    
+        EXPECT_FALSE(v2 >= v1);
     }
 
     TEST(xoptional, io)

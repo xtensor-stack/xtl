@@ -312,7 +312,7 @@ namespace xtl
          xoptional&>
         inline operator=(T&& rhs)
         {
-            m_flag = true;
+            m_flag = EXISTS;
             m_value = std::forward<T>(rhs);
             return *this;
         }
@@ -327,7 +327,7 @@ namespace xtl
         xoptional&>
         inline operator=(const xoptional<CTO, CBO, EXISTSO>& rhs)
         {
-            m_flag = rhs.has_value();
+            m_flag = rhs.flag();
             m_value = rhs.value();
             return *this;
         }
@@ -342,7 +342,7 @@ namespace xtl
         xoptional&>
         inline operator=(xoptional<CTO, CBO, EXISTSO>&& rhs)
         {
-            m_flag = std::move(rhs).has_value();
+            m_flag = std::move(rhs).flag();
             m_value = std::move(rhs).value();
             return *this;
         }
