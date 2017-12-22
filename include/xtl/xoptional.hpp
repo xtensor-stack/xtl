@@ -236,7 +236,7 @@ namespace xtl
             bool
           > = true>
         inline constexpr xoptional(const xoptional<CTO, CBO, EXISTSO>& rhs)
-            : m_value(rhs.value()), m_flag(rhs.has_value())
+            : m_value(rhs.value()), m_flag(rhs.flag())
         {
         }
 
@@ -255,7 +255,7 @@ namespace xtl
             bool
           > = false>
         inline explicit constexpr xoptional(const xoptional<CTO, CBO, EXISTSO>& rhs)
-            : m_value(rhs.value()), m_flag(rhs.has_value())
+            : m_value(rhs.value()), m_flag(rhs.flag())
         {
         }
 
@@ -274,7 +274,7 @@ namespace xtl
             bool
           > = true>
         inline constexpr xoptional(xoptional<CTO, CBO, EXISTSO>&& rhs)
-            : m_value(std::move(rhs).value()), m_flag(std::move(rhs).has_value())
+            : m_value(std::move(rhs).value()), m_flag(std::move(rhs).flag())
         {
         }
 
@@ -293,7 +293,7 @@ namespace xtl
             bool
           > = false>
         inline explicit constexpr xoptional(xoptional<CTO, CBO, EXISTSO>&& rhs)
-            : m_value(std::move(rhs).value()), m_flag(std::move(rhs).has_value())
+            : m_value(std::move(rhs).value()), m_flag(std::move(rhs).flag())
         {
         }
 
@@ -486,6 +486,18 @@ namespace xtl
         // TODO fix hardcoded false
         return xoptional<T, bool>(T(), false);
     }
+
+    /**
+     * Auto-castable struct to xoptional
+     */
+    struct NA
+    {
+        template <class T>
+        operator xoptional<T, bool>()
+        {
+            return xoptional<T, bool>(T(), false);
+        }
+    };
 
     /****************************
      * xoptional implementation *
@@ -721,8 +733,8 @@ namespace xtl
     }
 
     // External operators
-    template <class T, class B, class OC, class OT>
-    inline std::basic_ostream<OC, OT>& operator<<(std::basic_ostream<OC, OT>& out, const xoptional<T, B>& v)
+    template <class T, class B, class OC, class OT, bool EXISTS>
+    inline std::basic_ostream<OC, OT>& operator<<(std::basic_ostream<OC, OT>& out, const xoptional<T, B, EXISTS>& v)
     {
         if (v.has_value())
         {
@@ -730,7 +742,7 @@ namespace xtl
         }
         else
         {
-            out << "N/A";
+            out << "NA()";
         }
         return out;
     }
