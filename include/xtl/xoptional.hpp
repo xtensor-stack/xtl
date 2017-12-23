@@ -101,20 +101,20 @@ namespace xtl
             using type = xoptional<std::common_type_t<type1, type2>>;
         };
 
-        template <class T1, class T2, class B2>
-        struct common_optional_impl<T1, xoptional<T2, B2>>
+        template <class T1, class T2, class B2, bool E2>
+        struct common_optional_impl<T1, xoptional<T2, B2, E2>>
             : common_optional_impl<T1, T2>
         {
         };
 
-        template <class T1, class B1, class T2>
-        struct common_optional_impl<xoptional<T1, B1>, T2>
-            : common_optional_impl<T2, xoptional<T1, B1>>
+        template <class T1, class B1, bool E1, class T2>
+        struct common_optional_impl<xoptional<T1, B1, E1>, T2>
+            : common_optional_impl<T2, xoptional<T1, B1, E1>>
         {
         };
 
-        template <class T1, class B1, class T2, class B2>
-        struct common_optional_impl<xoptional<T1, B1>, xoptional<T2, B2>>
+        template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+        struct common_optional_impl<xoptional<T1, B1, E1>, xoptional<T2, B2, E2>>
             : common_optional_impl<T1, T2>
         {
         };
@@ -747,50 +747,50 @@ namespace xtl
         return out;
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator==(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator==(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> bool
     {
         return e1.equal(e2);
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator==(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator==(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> disable_xoptional<T2, bool>
     {
         return e1.equal(e2);
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator==(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator==(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> disable_xoptional<T1, bool>
     {
         return e2.equal(e1);
     }
 
-    template <class T, class B>
-    inline auto operator+(const xoptional<T, B>& e) noexcept
+    template <class T, class B, bool E>
+    inline auto operator+(const xoptional<T, B, E>& e) noexcept
         -> xoptional<std::decay_t<T>>
     {
         return e;
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator!=(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator!=(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> bool
     {
         return !e1.equal(e2);
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator!=(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator!=(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> disable_xoptional<T2, bool>
     {
         return !e1.equal(e2);
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator!=(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator!=(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> disable_xoptional<T1, bool>
     {
         return !e2.equal(e1);
@@ -805,120 +805,120 @@ namespace xtl
         return e.has_value() ? -e.value() : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator+(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator+(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() && e2.has_value() ? e1.value() + e2.value() : missing<value_type>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator+(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator+(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> disable_xoptional<T1, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e2.has_value() ? e1 + e2.value() : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator+(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator+(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> disable_xoptional<T2, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() ? e1.value() + e2 : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator-(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator-(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() && e2.has_value() ? e1.value() - e2.value() : missing<value_type>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator-(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator-(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> disable_xoptional<T1, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e2.has_value() ? e1 - e2.value() : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator-(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator-(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> disable_xoptional<T2, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() ? e1.value() - e2 : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator*(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator*(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() && e2.has_value() ? e1.value() * e2.value() : missing<value_type>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator*(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator*(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> disable_xoptional<T1, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e2.has_value() ? e1 * e2.value() : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator*(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator*(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> disable_xoptional<T2, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() ? e1.value() * e2 : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator/(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator/(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() && e2.has_value() ? e1.value() / e2.value() : missing<value_type>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator/(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator/(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> disable_xoptional<T1, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e2.has_value() ? e1 / e2.value() : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator/(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator/(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> disable_xoptional<T2, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() ? e1.value() / e2 : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator||(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator||(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() && e2.has_value() ? e1.value() || e2.value() : missing<value_type>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator||(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator||(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> disable_xoptional<T1, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e2.has_value() ? e1 || e2.value() : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator||(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator||(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> disable_xoptional<T2, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
@@ -926,24 +926,24 @@ namespace xtl
     }
 
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator&&(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator&&(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() && e2.has_value() ? e1.value() && e2.value() : missing<value_type>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator&&(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator&&(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> disable_xoptional<T1, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e2.has_value() ? e1 && e2.value() : missing<value_type>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator&&(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator&&(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> disable_xoptional<T2, common_optional_t<T1, T2>>
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
@@ -957,85 +957,85 @@ namespace xtl
         return e.has_value() ? !e.value() : missing<bool>();
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator<(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator<(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<bool>
     {
         return e1.has_value() && e2.has_value() ? e1.value() < e2.value() : missing<bool>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator<(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator<(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<bool>
     {
         return e2.has_value() ? e1 < e2.value() : missing<bool>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator<(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator<(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> xoptional<bool>
     {
         return e1.has_value() ? e1.value() < e2 : missing<bool>();
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator<=(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator<=(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<bool>
     {
         return e1.has_value() && e2.has_value() ? e1.value() <= e2.value() : missing<bool>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator<=(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator<=(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<bool>
     {
         return e2.has_value() ? e1 <= e2.value() : missing<bool>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator<=(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator<=(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> xoptional<bool>
     {
         return e1.has_value() ? e1.value() <= e2 : missing<bool>();
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator>(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator>(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<bool>
     {
         return e1.has_value() && e2.has_value() ? e1.value() > e2.value() : missing<bool>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator>(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator>(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<bool>
     {
         return e2.has_value() ? e1 > e2.value() : missing<bool>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator>(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator>(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> xoptional<bool>
     {
         return e1.has_value() ? e1.value() > e2 : missing<bool>();
     }
 
-    template <class T1, class B1, class T2, class B2>
-    inline auto operator>=(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>
+    inline auto operator>=(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<bool>
     {
         return e1.has_value() && e2.has_value() ? e1.value() >= e2.value() : missing<bool>();
     }
 
-    template <class T1, class T2, class B2>
-    inline auto operator>=(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+    template <class T1, class T2, class B2, bool E2>
+    inline auto operator>=(const T1& e1, const xoptional<T2, B2, E2>& e2) noexcept
         -> xoptional<bool>
     {
         return e2.has_value() ? e1 >= e2.value() : missing<bool>();
     }
 
-    template <class T1, class B1, class T2>
-    inline auto operator>=(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+    template <class T1, class B1, bool E1, class T2>
+    inline auto operator>=(const xoptional<T1, B1, E1>& e1, const T2& e2) noexcept
         -> xoptional<bool>
     {
         return e1.has_value() ? e1.value() >= e2 : missing<bool>();
@@ -1058,8 +1058,8 @@ namespace xtl
     }
 
 #define BINARY_OPTIONAL_1(NAME)                                                    \
-    template <class T1, class B1, class T2>                                        \
-    inline auto NAME(const xoptional<T1, B1>& e1, const T2& e2)                    \
+    template <class T1, class B1, bool E1, class T2>                               \
+    inline auto NAME(const xoptional<T1, B1, E1>& e1, const T2& e2)                \
         -> disable_xoptional<T2, common_optional_t<T1, T2>>                        \
     {                                                                              \
         using std::NAME;                                                           \
@@ -1067,10 +1067,9 @@ namespace xtl
         return e1.has_value() ? NAME(e1.value(), e2) : missing<value_type>();      \
     }
 
-
 #define BINARY_OPTIONAL_2(NAME)                                                    \
-    template <class T1, class T2, class B2>                                        \
-    inline auto NAME(const T1& e1, const xoptional<T2, B2>& e2)                    \
+    template <class T1, class T2, class B2, bool E2>                               \
+    inline auto NAME(const T1& e1, const xoptional<T2, B2, E2>& e2)                \
         -> disable_xoptional<T1, common_optional_t<T1, T2>>                        \
     {                                                                              \
         using std::NAME;                                                           \
@@ -1079,8 +1078,8 @@ namespace xtl
     }
 
 #define BINARY_OPTIONAL_12(NAME)                                                                        \
-    template <class T1, class B1, class T2, class B2>                                                   \
-    inline auto NAME(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2)                          \
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2>                                 \
+    inline auto NAME(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2)                  \
     {                                                                                                   \
         using std::NAME;                                                                                \
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;                      \
@@ -1093,8 +1092,8 @@ namespace xtl
     BINARY_OPTIONAL_12(NAME)
 
 #define TERNARY_OPTIONAL_1(NAME)                                                                     \
-    template <class T1, class B1, class T2, class T3>                                                \
-    inline auto NAME(const xoptional<T1, B1>& e1, const T2& e2, const T3& e3)                        \
+    template <class T1, class B1, bool E1, class T2, class T3>                                       \
+    inline auto NAME(const xoptional<T1, B1, E1>& e1, const T2& e2, const T3& e3)                    \
         -> disable_both_xoptional<T2, T3, common_optional_t<T1, T2, T3>>                             \
     {                                                                                                \
         using std::NAME;                                                                             \
@@ -1103,8 +1102,8 @@ namespace xtl
     }
 
 #define TERNARY_OPTIONAL_2(NAME)                                                                     \
-    template <class T1, class T2, class B2, class T3>                                                \
-    inline auto NAME(const T1& e1, const xoptional<T2, B2>& e2, const T3& e3)                        \
+    template <class T1, class T2, class B2, bool E2, class T3>                                       \
+    inline auto NAME(const T1& e1, const xoptional<T2, B2, E2>& e2, const T3& e3)                    \
         -> disable_both_xoptional<T1, T3, common_optional_t<T1, T2, T3>>                             \
     {                                                                                                \
         using std::NAME;                                                                             \
@@ -1113,8 +1112,8 @@ namespace xtl
     }
 
 #define TERNARY_OPTIONAL_3(NAME)                                                                     \
-    template <class T1, class T2, class T3, class B3>                                                \
-    inline auto NAME(const T1& e1, const T2& e2, const xoptional<T3, B3>& e3)                        \
+    template <class T1, class T2, class T3, class B3, bool E3>                                       \
+    inline auto NAME(const T1& e1, const T2& e2, const xoptional<T3, B3, E3>& e3)                    \
         -> disable_both_xoptional<T1, T2, common_optional_t<T1, T2, T3>>                             \
     {                                                                                                \
         using std::NAME;                                                                             \
@@ -1123,8 +1122,8 @@ namespace xtl
     }
 
 #define TERNARY_OPTIONAL_12(NAME)                                                                             \
-    template <class T1, class B1, class T2, class B2, class T3>                                               \
-    inline auto NAME(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2, const T3& e3)                  \
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2, class T3>                             \
+    inline auto NAME(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2, const T3& e3)          \
         -> disable_xoptional<T3, common_optional_t<T1, T2, T3>>                                               \
     {                                                                                                         \
         using std::NAME;                                                                                      \
@@ -1133,8 +1132,8 @@ namespace xtl
     }
 
 #define TERNARY_OPTIONAL_13(NAME)                                                                             \
-    template <class T1, class B1, class T2, class T3, class B3>                                               \
-    inline auto NAME(const xoptional<T1, B1>& e1, const T2& e2, const xoptional<T3, B3>& e3)                  \
+    template <class T1, class B1, bool E1, class T2, class T3, class B3, bool E3>                             \
+    inline auto NAME(const xoptional<T1, B1, E1>& e1, const T2& e2, const xoptional<T3, B3, E3>& e3)          \
         -> disable_xoptional<T2, common_optional_t<T1, T2, T3>>                                               \
     {                                                                                                         \
         using std::NAME;                                                                                      \
@@ -1143,8 +1142,8 @@ namespace xtl
     }
 
 #define TERNARY_OPTIONAL_23(NAME)                                                                             \
-    template <class T1, class T2, class B2, class T3, class B3>                                               \
-    inline auto NAME(const T1& e1, const xoptional<T2, B2>& e2, const xoptional<T3, B3>& e3)                  \
+    template <class T1, class T2, class B2, bool E2, class T3, class B3, bool E3>                             \
+    inline auto NAME(const T1& e1, const xoptional<T2, B2, E2>& e2, const xoptional<T3, B3, E3>& e3)          \
         -> disable_xoptional<T1, common_optional_t<T1, T2, T3>>                                               \
     {                                                                                                         \
         using std::NAME;                                                                                      \
@@ -1153,8 +1152,8 @@ namespace xtl
     }
 
 #define TERNARY_OPTIONAL_123(NAME)                                                                                                      \
-    template <class T1, class B1, class T2, class B2, class T3, class B3>                                                               \
-    inline auto NAME(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2, const xoptional<T3, B3>& e3)                             \
+    template <class T1, class B1, bool E1, class T2, class B2, bool E2, class T3, class B3, bool E3>                                    \
+    inline auto NAME(const xoptional<T1, B1, E1>& e1, const xoptional<T2, B2, E2>& e2, const xoptional<T3, B3, E3>& e3)                 \
     {                                                                                                                                   \
         using std::NAME;                                                                                                                \
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>, std::decay_t<T3>>;                                    \
