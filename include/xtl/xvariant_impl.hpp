@@ -1257,7 +1257,7 @@ namespace mpark {
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4244)
+#pragma warning(disable : 4244 4800 )
 #endif
             template <typename... Args>
             inline explicit constexpr alt(in_place_t, Args &&... args)
