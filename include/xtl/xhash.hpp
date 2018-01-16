@@ -129,7 +129,7 @@ namespace xtl
         }
 #elif INTPTR_MAX == INT32_MAX
         //64-bits hash for 32-bits platform
-        inline void mmix(uint32_t& h, uint32_t& k, const uint32_t m, const int r)
+        inline void mmix(uint32_t& h, uint32_t& k, uint32_t m, int r)
         {
             k *= m; k ^= k >> r; k *= m; h *= m; h ^= k;
         }
@@ -141,7 +141,7 @@ namespace xtl
             const int r = 24;
             uint32_t l = length;
 
-            const unsigned char * data = (const unsigned char *)buffer;
+            const auto* data = reinterpret_cast<const unsigned char*>(buffer);
 
             uint32_t h = seed;
 
