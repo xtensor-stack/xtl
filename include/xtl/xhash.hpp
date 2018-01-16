@@ -129,7 +129,10 @@ namespace xtl
         }
 #elif INTPTR_MAX == INT32_MAX
         //64-bits hash for 32-bits platform
-#define mmix(h,k) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
+        inline void mmix(uint32_t& h, uint32_t& k, const uint32_t m, const int r)
+        {
+            k *= m; k ^= k >> r; k *= m; h *= m; h ^= k;
+        }
 
         template <>
         inline std::size_t murmur_hash<8>(const void* buffer, std::size_t length, std::size_t seed)
@@ -146,7 +149,7 @@ namespace xtl
             {
                 uint32_t k = *(uint32_t*)data;
 
-                mmix(h, k);
+                mmix(h, k, m, r);
 
                 data += 4;
                 length -= 4;
@@ -161,8 +164,8 @@ namespace xtl
             case 1: t ^= data[0];
             };
 
-            mmix(h, t);
-            mmix(h, l);
+            mmix(h, t, m, r);
+            mmix(h, l, m, r);
 
             h ^= h >> 13;
             h *= m;
