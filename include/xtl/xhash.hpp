@@ -129,69 +129,48 @@ namespace xtl
         }
 #elif INTPTR_MAX == INT32_MAX
         //64-bits hash for 32-bits platform
+        inline void mmix(uint32_t& h, uint32_t& k, uint32_t m, int r)
+        {
+            k *= m; k ^= k >> r; k *= m; h *= m; h ^= k;
+        }
+
         template <>
         inline std::size_t murmur_hash<8>(const void* buffer, std::size_t length, std::size_t seed)
         {
-            constexpr uint32_t m = 0x5bd1e995;
-            constexpr int r = 24;
+            const uint32_t m = 0x5bd1e995;
+            const int r = 24;
+            uint32_t l = length;
 
-            uint32_t h1 = uint32_t(seed) ^ int(length);
-            uint32_t h2 = uint32_t(seed >> 32);
+            const auto* data = reinterpret_cast<const unsigned char*>(buffer);
 
-            const uint32_t* data = static_cast<const uint32_t*>(buffer);
+            uint32_t h = seed;
 
-            while (length >= 8)
+            while (length >= 4)
             {
-                uint32_t k1 = *data++;
-                k1 *= m;
-                k1 ^= k1 >> r;
-                k1 *= m;
-                h1 *= m;
-                h1 ^= k1;
-                length -= 4;
+                uint32_t k = *(uint32_t*)data;
 
-                uint32_t k2 = *data++;
-                k2 *= m;
-                k2 ^= k2 >> r;
-                k2 *= m;
-                h2 *= m;
-                h2 ^= k2;
+                mmix(h, k, m, r);
+
+                data += 4;
                 length -= 4;
             }
 
-            if (length >= 4)
-            {
-                uint32_t k1 = *data++;
-                k1 *= m;
-                k1 ^= k1 >> r;
-                k1 *= m;
-                h1 *= m;
-                h1 ^= k1;
-                length -= 4;
-            }
+            uint32_t t = 0;
 
             switch (length)
             {
-            case 3:
-                h2 ^= ((unsigned char*)data)[2] << 16;
-            case 2:
-                h2 ^= ((unsigned char*)data)[1] << 8;
-            case 1:
-                h2 ^= ((unsigned char*)data)[0];
-                h2 *= m;
-            }
+            case 3: t ^= data[2] << 16;
+            case 2: t ^= data[1] << 8;
+            case 1: t ^= data[0];
+            };
 
-            h1 ^= h2 >> 18;
-            h1 *= m;
-            h2 ^= h1 >> 22;
-            h2 *= m;
-            h1 ^= h2 >> 17;
-            h1 *= m;
-            h2 ^= h1 >> 19;
-            h2 *= m;
+            mmix(h, t, m, r);
+            mmix(h, l, m, r);
 
-            uint64_t h = h1;
-            h = (h << 32) | h2;
+            h ^= h >> 13;
+            h *= m;
+            h ^= h >> 15;
+
             return h;
         }
 #else
