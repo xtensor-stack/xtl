@@ -68,8 +68,8 @@ namespace xtl
         ASSERT_EQ(v[0].value(), 2.0);
         v[1] = missing<double>();
         ASSERT_FALSE(v[1].has_value());
-        ASSERT_TRUE(v.has_value().front());
-        ASSERT_FALSE(v.has_value()[1]);
+        ASSERT_TRUE(v.flag().front());
+        ASSERT_FALSE(v.flag()[1]);
     }
 
     TEST(xoptional, vector_iteration)
@@ -112,14 +112,14 @@ namespace xtl
         EXPECT_TRUE(v1 > v2);
         EXPECT_FALSE(v2 > v1);
         EXPECT_TRUE(v1 >= v1);
-        EXPECT_FALSE(v2 >= v1);    
+        EXPECT_FALSE(v2 >= v1);
     }
 
     TEST(xoptional, io)
     {
         std::ostringstream oss;
         oss << missing<int>();
-        ASSERT_EQ(oss.str(), std::string("N/A"));
+        ASSERT_EQ(oss.str(), std::string("NA()"));
     }
 
     struct implicit_double
