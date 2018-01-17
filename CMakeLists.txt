@@ -50,6 +50,11 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xvariant_impl.hpp
 )
 
+add_library(xtl INTERFACE)
+target_include_directories(xtl INTERFACE $<BUILD_INTERFACE:${XTL_INCLUDE_DIR}>
+                                         $<INSTALL_INTERFACE:include>)
+
+
 OPTION(BUILD_TESTS "xtl test suite" OFF)
 OPTION(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
 
@@ -66,6 +71,13 @@ endif()
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+
+install(TARGETS xtl
+        EXPORT ${PROJECT_NAME}-targets)
+
+# Makes the project importable from the build directory
+export(EXPORT ${PROJECT_NAME}-targets
+       FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
 install(FILES ${XTL_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xtl)
@@ -89,4 +101,6 @@ set(CMAKE_SIZEOF_VOID_P ${_XTL_CMAKE_SIZEOF_VOID_P})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
         DESTINATION ${XTL_CMAKECONFIG_INSTALL_DIR})
-
+install(EXPORT ${PROJECT_NAME}-targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        DESTINATION ${XTL_CMAKECONFIG_INSTALL_DIR})
