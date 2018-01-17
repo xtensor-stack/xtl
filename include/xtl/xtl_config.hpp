@@ -10,7 +10,7 @@
 #define XTL_CONFIG_HPP
 
 #define XTL_VERSION_MAJOR 0
-#define XTL_VERSION_MINOR 3
-#define XTL_VERSION_PATCH 9
+#define XTL_VERSION_MINOR 4
+#define XTL_VERSION_PATCH 0
 
 #endif
