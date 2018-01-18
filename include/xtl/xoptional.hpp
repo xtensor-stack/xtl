@@ -449,13 +449,13 @@ namespace xtl
     template <class CT, class CB>
     decltype(auto) has_value(xtl::xoptional<CT, CB>& v)
     {
-        return std::move(v).has_value();
+        return v.has_value();
     }
 
     template <class CT, class CB>
     decltype(auto) has_value(const xtl::xoptional<CT, CB>& v)
     {
-        return std::move(v).has_value();
+        return v.has_value();
     }
 
     /***************************************
