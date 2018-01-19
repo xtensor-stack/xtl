@@ -7,6 +7,44 @@
 Changelog
 =========
 
+0.4.1
+-----
+
+- Bug fix in move semantics for xoptional free functions (`value` and `has_value`)
+
+0.4.0
+-----
+
+- Migration to modern target-based cmake
+
+0.3.9
+-----
+
+- Bug fix in the computing of hashes for 32 bit platforms
+- Fixing warnings
+
+0.3.8
+-----
+
+- Improvements and fixes in base iterators (common iterator tag)
+
+0.3.7
+-----
+
+- Fixes in `xoptional`.
+
+0.3.6
+-----
+
+- Addition of base iterators for linear containers, and associative containers.
+
+0.3.5
+-----
+
+- Addition of `value` and `has_value` free functions.
+- Bug fix in comparison operator for `xclosure_wrapper`.
+
+
 0.3.4
 -----
 
