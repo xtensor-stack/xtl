@@ -5,6 +5,8 @@
 #include <type_traits>
 #include <typeinfo>
 
+#include "xtl/xmeta_utils.hpp"
+
 namespace xtl
 {
     /**************************************
@@ -334,10 +336,13 @@ namespace xtl
 
             this->vtable = vtable_for_type<T>();
 
-            if (requires_allocation<T>::value)
-                storage.dynamic = new T(std::forward<ValueType>(value));
-            else
-                new (&storage.stack) T(std::forward<ValueType>(value));
+            return xtl::mpl::static_if<requires_allocation<T>::value>([&](auto self)
+            {
+                self(*this).storage.dynamic = new T(std::forward<ValueType>(value));
+            }, /*else*/ [&](auto self)
+            {
+                new (&self(*this).storage.stack) T(std::forward<ValueType>(value));
+            });
         }
     };
 
