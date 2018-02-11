@@ -36,6 +36,18 @@ A package for xtl is available on the conda package manager.
 
     conda install -c conda-forge xtl 
 
+.. image:: spack.svg
+
+Using the Spack package
+-----------------------
+
+A package for xtl is available on the Spack package manager.
+
+.. code::
+
+    spack install xtl
+    spack load xtl
+
 .. image:: cmake.svg
 
 From source with cmake
