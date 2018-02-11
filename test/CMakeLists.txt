@@ -89,6 +89,7 @@ set(XTL_TESTS
     test_xtype_traits.cpp
     test_xproxy_wrapper.cpp
     test_xvariant.cpp
+    test_xthreadpool.cpp
 )
 
 set(XTL_TARGET test_xtl)
