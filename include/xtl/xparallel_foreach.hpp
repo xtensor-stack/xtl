@@ -304,6 +304,22 @@ namespace xtl
     template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
     void xparallel_foreach(
         const integer size,
+        xthreadpool & pool,
+        functor&& f
+    ){
+        if(pool.n_worker_threads()!=0){
+            detail::xparallel_integer_foreach_impl(size, pool, std::forward<functor>(f));
+        }
+        else{
+            detail::seriell_integer_foreach_impl(size, std::forward<functor>(f));
+        }
+    }
+
+
+
+    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
+    void xparallel_foreach(
+        const integer size,
         const std::size_t n_threads,
         functor&& f
     ){

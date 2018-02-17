@@ -50,7 +50,6 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xtype_traits.hpp
     ${XTL_INCLUDE_DIR}/xtl/xvariant.hpp
     ${XTL_INCLUDE_DIR}/xtl/xvariant_impl.hpp
-    ${XTL_INCLUDE_DIR}/xtl/xvariant_impl.hpp
 )
 
 add_library(xtl INTERFACE)

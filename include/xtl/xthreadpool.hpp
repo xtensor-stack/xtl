@@ -17,6 +17,9 @@
 #include <thread>
 #include <numeric>
 
+
+#define XTL_XTHREADPOOL_USE_RAW_PTR 1
+
 namespace xtl
 {
     enum class n_thread_settings{
@@ -295,9 +298,15 @@ namespace xtl
         {
             typedef decltype(f(0)) result_type;
             typedef std::packaged_task<result_type(std::size_t)> packaged_task_type;
-            auto task = std::make_shared<packaged_task_type>(f);
 
-            auto res = task->get_future();
+            #if XTL_XTHREADPOOL_USE_RAW_PTR
+            auto task_ptr = new packaged_task_type(f);
+            #else
+            auto task_ptr = std::make_shared<packaged_task_type>(f);
+            #endif
+            
+
+            auto res = task_ptr->get_future();
 
             if(m_threads.size()>0)
             {
@@ -309,14 +318,27 @@ namespace xtl
 
                     static_assert(sizeof ... (prio_or_none)==0 || sizeof ... (prio_or_none) == 1, "internal error");
                     
-                    m_queue.emplace([task](std::size_t worker_index){(*task)(worker_index);},
-                        prio_or_none...);
+                    #if XTL_XTHREADPOOL_USE_RAW_PTR
+                    auto task_lambda = [task_ptr](std::size_t worker_index){
+                        (*task_ptr)(worker_index);
+                        delete task_ptr;
+                    };
+                    #else
+                    auto task_lambda = [task_ptr](std::size_t worker_index){
+                        (*task_ptr)(worker_index);
+                    };
+                    #endif
+
+                    m_queue.emplace(task_lambda,prio_or_none...);
                 }
                 m_worker_condition.notify_one();
             }
             else
             {
-                (*task)(0);
+                (*task_ptr)(0);
+                #if XTL_XTHREADPOOL_USE_RAW_PTR     
+                delete task_ptr;
+                #endif      
             }
 
             return res;
