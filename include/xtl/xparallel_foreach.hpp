@@ -13,9 +13,6 @@ namespace xtl
     ///\cond
     namespace detail{
 
-
-
-
         template<class integer>
         inline integer get_chunk_size(integer workload, std::size_t n_workers)
         {
@@ -26,7 +23,7 @@ namespace xtl
         }
 
 
-        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
+        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value, int>::type = 0>
         void xparallel_integer_foreach_impl(
             integer start,
             integer stop,
@@ -70,13 +67,12 @@ namespace xtl
                
 
                 futures.emplace_back(
-                    pool.enqueue([&f, task_workload, f_arg, step](auto thread_id)
+                    // mutable keyword is needed to get a NON-CONST COPY of f_arg
+                    pool.enqueue([&f, task_workload, f_arg, step](auto thread_id) mutable
                     {
-
-
-                        for(integer j=0,f_arg_cp = f_arg; j<task_workload; ++j, f_arg_cp += step)
+                        for(integer j=0; j<task_workload; ++j, f_arg += step)
                         {
-                            f(thread_id, f_arg_cp);
+                            f(thread_id, f_arg);
                         }
                     })
                 );
@@ -93,7 +89,7 @@ namespace xtl
             }
         }
 
-        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
+        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value, int>::type = 0>
         void seriell_integer_foreach_impl(
             const integer start,
             const integer stop,
@@ -107,7 +103,7 @@ namespace xtl
             }
         }
 
-        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
+        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value, int>::type = 0>
         void xparallel_integer_foreach_impl(
             const integer size,
             xthreadpool& pool,
@@ -154,7 +150,7 @@ namespace xtl
             }
         }
 
-        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
+        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value, int>::type = 0>
         void seriell_integer_foreach_impl(
             const integer size,
             functor&& f
@@ -172,7 +168,8 @@ namespace xtl
         struct xparallel_iterator_foreach_impl;
 
         template<>
-        struct xparallel_iterator_foreach_impl<std::random_access_iterator_tag>{
+        struct xparallel_iterator_foreach_impl<std::random_access_iterator_tag>
+        {
             template<class iterator, class functor>
             static void op(
                 iterator iter,
@@ -228,7 +225,8 @@ namespace xtl
         };
 
         template<>
-        struct xparallel_iterator_foreach_impl<std::forward_iterator_tag>{
+        struct xparallel_iterator_foreach_impl<std::forward_iterator_tag>
+        {
             template<class iterator, class functor>
             static void op(
                 iterator iter,
@@ -238,10 +236,7 @@ namespace xtl
                 functor&& f
             )
             {
-
                 typedef typename std::iterator_traits<iterator>::difference_type difference_type;
-
-
                 auto workload = size > 0 ? size : std::distance(iter, end);
                 const auto chunk_size = get_chunk_size(workload, pool.n_worker_threads());
                 
@@ -262,14 +257,13 @@ namespace xtl
                     // here we pass a copy of the current iterator to the 
                     // task function
                     futures.emplace_back(
-                        pool.enqueue([&f, iter, task_workload] (int worker_index)
+                        // mutable keyword is needed to get a NON-CONST COPY captured iter
+                        pool.enqueue([&f, iter, task_workload] (int worker_index) mutable
                         {
-                            auto iter_copy = iter;
-
                             for(difference_type i=0; i<task_workload; ++i)
                             {
-                                f(worker_index, *iter_copy);
-                                ++iter_copy;
+                                f(worker_index, *iter);
+                                ++iter;
                             }
 
                         })
@@ -300,11 +294,13 @@ namespace xtl
 
         template<>
         struct xparallel_iterator_foreach_impl<std::bidirectional_iterator_tag>
-        :   public xparallel_iterator_foreach_impl<std::forward_iterator_tag>{
+        :   public xparallel_iterator_foreach_impl<std::forward_iterator_tag>
+        {
         };
 
         template<>
-        struct xparallel_iterator_foreach_impl<std::input_iterator_tag>{
+        struct xparallel_iterator_foreach_impl<std::input_iterator_tag>
+        {
             template<class iterator, class functor>
             static void op(
                 iterator iter,
@@ -339,7 +335,6 @@ namespace xtl
             } 
         };
 
-
         template<class iterator, class functor>
         void seriell_iterator_foreach_impl(
             iterator iter,
@@ -353,12 +348,12 @@ namespace xtl
                 ++iter;
             }
         }
-    }
-
+    } // end namespace xtl::detail
+    ///\endcond
 
 
     // strided 
-    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
+    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value, int>::type = 0>
     void xparallel_foreach(
         const integer start,
         const integer stop,
@@ -378,7 +373,7 @@ namespace xtl
 
 
     // non strided start at zero
-    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
+    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value, int>::type = 0>
     void xparallel_foreach(
         const integer size,
         xthreadpool & pool,
@@ -395,9 +390,8 @@ namespace xtl
     }
 
 
-
     // iterator overloads
-    template<class iterator, class functor, typename std::enable_if<!std::is_integral<iterator>::value ,int>::type = 0>
+    template<class iterator, class functor, typename std::enable_if<!std::is_integral<iterator>::value, int>::type = 0>
     void xparallel_foreach(
         iterator begin,
         iterator end,
@@ -420,14 +414,8 @@ namespace xtl
     }
 
 
-  
-
-
-
-
-
     // container overloads
-    template<class CONTAINER, class functor, typename std::enable_if<!std::is_integral<CONTAINER>::value ,int>::type = 0>
+    template<class CONTAINER, class functor, typename std::enable_if<!std::is_integral<CONTAINER>::value, int>::type = 0>
     void xparallel_foreach(
         CONTAINER& container,
         xthreadpool & pool,
@@ -451,10 +439,7 @@ namespace xtl
 
     }
 
-
-
-
-    ///\endcond
+    
 } // end namespace xtl
 
 #endif // XTL_XPARALLEL_FOR_EACH_HPP
