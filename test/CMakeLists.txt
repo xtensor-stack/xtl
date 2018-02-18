@@ -90,6 +90,7 @@ set(XTL_TESTS
     test_xproxy_wrapper.cpp
     test_xvariant.cpp
     test_xthreadpool.cpp
+    test_xparallel_foreach.cpp
 )
 
 set(XTL_TARGET test_xtl)

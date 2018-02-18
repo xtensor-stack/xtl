@@ -241,7 +241,7 @@ namespace xtl
         inline void xthreadpool_impl<queue>::init(const std::size_t n)
         {
             m_busy.store(0);
-            for(auto worker_index = 0; worker_index<n; ++worker_index)
+            for(std::size_t worker_index = 0; worker_index<n; ++worker_index)
             {   
                 m_threads.emplace_back(&xthreadpool_impl<queue>::run, this, worker_index);
             }
@@ -294,8 +294,12 @@ namespace xtl
         xthreadpool_impl<queue>::enqueue_impl(
             functor&& f, 
             arguments&& ... prio_or_none
-        )// -> std::future<decltype(f(0))>
+        )
         {
+
+            static_assert(sizeof ... (prio_or_none)==0 || sizeof ... (prio_or_none) == 1, "internal error");
+
+
             typedef decltype(f(0)) result_type;
             typedef std::packaged_task<result_type(std::size_t)> packaged_task_type;
 
@@ -308,18 +312,13 @@ namespace xtl
 
             auto res = task_ptr->get_future();
 
-            if(m_threads.size()>0)
+            if(!m_threads.empty())
             {
                 {
-                    unique_lock_type lock(m_queue_mutex);
-      
-                    if(m_destructed)
-                        throw std::runtime_error("enqueue on a destructed xthreadpool_impl is disallowed");
-
-                    static_assert(sizeof ... (prio_or_none)==0 || sizeof ... (prio_or_none) == 1, "internal error");
                     
                     #if XTL_XTHREADPOOL_USE_RAW_PTR
-                    auto task_lambda = [task_ptr](std::size_t worker_index){
+                    auto task_lambda = [task_ptr](std::size_t worker_index)
+                    {
                         (*task_ptr)(worker_index);
                         delete task_ptr;
                     };
@@ -328,6 +327,10 @@ namespace xtl
                         (*task_ptr)(worker_index);
                     };
                     #endif
+
+                    unique_lock_type lock(m_queue_mutex);
+                    if(m_destructed)
+                        throw std::runtime_error("enqueue on a destructed xthreadpool_impl is disallowed");
 
                     m_queue.emplace(task_lambda,prio_or_none...);
                 }

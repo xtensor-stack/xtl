@@ -16,88 +16,80 @@ namespace xtl
 
 
 
+        template<class integer>
+        inline integer get_chunk_size(integer workload, std::size_t n_workers)
+        {
+            // how much work needs to be done by each thread
+            const auto work_per_thread = double(workload) / double(n_workers);
+            const auto tmp = std::llround(work_per_thread / double(XTL_DEFAULT_CHUNKING_FACTOR));
+            return std::max(integer(tmp), integer(1));
+        }
+
 
         template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
         void xparallel_integer_foreach_impl(
-            const integer start,
-            const integer stop,
-            const integer step, 
+            integer start,
+            integer stop,
+            integer step, 
             xthreadpool& pool,
             functor&& f
-        ){
+        )
+        {
+            // precondition
+            assert(pool.n_worker_threads() > 0);
+
+            // compute the size / workload
             const auto dist = stop - start;
-            const auto size = static_cast<integer>(std::ceil(static_cast<float>(dist)/static_cast<float>(step)));
+            const auto size = static_cast<integer>(std::ceil(float(dist)/float(step)));
+            
+
+            // we bundle a chunk of functor calls to a task
+            // which is enqueued to the threadpool to minimize 
+            // overhead from pool.enqueue
+            const auto chunk_size = get_chunk_size(size, pool.n_worker_threads());
+            
+            // all possible exceptions are stored 
+            // into futures (todo: here we could speedup
+            // with a stack allocated vector)
+            // => also we need this to wait properly
+            std::vector<std::future<void> > futures;
+            futures.reserve(std::size_t(size/chunk_size + 1));
+
 
             auto workload = size;
-            const auto work_per_thread = workload / pool.n_worker_threads();
-            const auto tmp = std::llround(double(work_per_thread) / double(XTL_DEFAULT_CHUNKING_FACTOR));
-            const auto chunk_size = std::max(static_cast<integer>(tmp), static_cast<integer>(1));
-            
-            std::vector<std::future<void> > futures;
-            futures.reserve(workload/chunk_size + 1);
 
-            // TODO: this reads horrible!!!
-            // rewrite me
-            uint64_t real_index = start;
-            for(integer i=0; i<size; i += chunk_size){
-                const size_t lc = std::min(workload, chunk_size);
-                workload -= lc;
+            // the actual argument for functor
+            integer f_arg = start;
+
+            // dense loop starting from 0
+            for(integer i=0; i<size; i += chunk_size)
+            {
+
+                // workload for this task
+                const auto task_workload = std::min(workload, chunk_size);
+               
+
                 futures.emplace_back(
-                    pool.enqueue([&f, i, lc, real_index, step](int thread_id){
+                    pool.enqueue([&f, task_workload, f_arg, step](auto thread_id)
+                    {
 
-                        uint64_t real_index_cp = real_index; // i get a const copy of real_index?
 
-                        for(integer j=0; j<lc; ++j){
-                            f(thread_id, real_index_cp);
-                            real_index_cp += step;
+                        for(integer j=0,f_arg_cp = f_arg; j<task_workload; ++j, f_arg_cp += step)
+                        {
+                            f(thread_id, f_arg_cp);
                         }
                     })
                 );
-                real_index += lc*step;
+
+                // update workload and functor arg
+                workload -= task_workload;
+                f_arg += task_workload*step;
             }
-            for (auto& fut : futures){
+
+            // this will wait until all tasks above are done
+            for (auto& fut : futures)
+            {
                 fut.get();
-            }
-        }
-
-
-        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
-        void xparallel_integer_foreach_impl(
-            const integer size,
-            xthreadpool& pool,
-            functor&& f
-        ){
-            auto workload = size;
-            const auto work_per_thread = workload / pool.n_worker_threads();
-            const auto tmp = std::llround(double(work_per_thread) / double(XTL_DEFAULT_CHUNKING_FACTOR));
-            const auto chunk_size = std::max(integer(tmp), integer(1));
-            
-            std::vector<std::future<void> > futures;
-            futures.reserve(workload/chunk_size + 1);
-
-            for(integer i=0; i<size; i += chunk_size){
-                const size_t lc = std::min(workload, chunk_size);
-                workload -= lc;
-                futures.emplace_back(
-                    pool.enqueue([&f, i, lc](int thread_id){
-                        for(integer j=i; j<i+lc; ++j){
-                            f(thread_id, j);
-                        }
-                    })
-                );
-            }
-            for (auto& fut : futures){
-                fut.get();
-            }
-        }
-
-        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
-        void seriell_integer_foreach_impl(
-            const integer size,
-            functor&& f
-        ){
-            for(integer i=0; i<size; ++i){
-                f(int(0), i);
             }
         }
 
@@ -107,160 +99,276 @@ namespace xtl
             const integer stop,
             const integer step,
             functor&& f
-        ){
-            for(integer i=start; i<stop; i += step){
-                f(int(0), i);
+        )
+        {
+            for(integer i=start; i<stop; i += step)
+            {
+                f(std::size_t(0), i);
             }
         }
 
-        template<class ITERATOR, class functor>
-        void xparallel_iterator_foreach_impl(
-            ITERATOR iter,
-            ITERATOR end,
-            const uint64_t size,
+        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
+        void xparallel_integer_foreach_impl(
+            const integer size,
             xthreadpool& pool,
-            functor&& f,
-            const std::random_access_iterator_tag
-        ){
-            uint64_t workload = size > 0 ? size : static_cast<uint64_t>(std::distance(iter, end));
-            const uint64_t work_per_thread = workload / pool.n_worker_threads();
-            const uint64_t tmp = static_cast<uint64_t>(std::llround(double(work_per_thread) / double(XTL_DEFAULT_CHUNKING_FACTOR)));
-            const uint64_t chunk_size = std::max(uint64_t(tmp), uint64_t(1));
+            functor&& f
+        )
+        {
+            // we bundle a chunk of functor calls to a task
+            // which is enqueued to the threadpool to minimize 
+            // overhead from pool.enqueue
+            const auto chunk_size = get_chunk_size(size, pool.n_worker_threads());
             
+            // all possible exceptions are stored 
+            // into futures (todo: here we could speedup
+            // with a stack allocated vector)
+            // => also we need this to wait properly
             std::vector<std::future<void> > futures;
-            futures.reserve(workload/chunk_size + 1);
+            futures.reserve(size/chunk_size + 1);
 
-            for(;iter<end; iter+= static_cast<std::ptrdiff_t>(chunk_size)){
+            auto workload = size;
+            for(integer i=0; i<size; i += chunk_size)
+            {
 
-                const std::size_t lc = std::min(workload, chunk_size);
-                workload -= lc;
+                // workload for this task
+                const auto task_workload = std::min(workload, chunk_size);
+
+                
                 futures.emplace_back(
-                    pool.enqueue(
-                        [&f, iter, lc](int worker_index)
+                    pool.enqueue([&f, i, task_workload](int thread_id)
+                    {
+                        for(integer f_arg=i; f_arg<i+task_workload; ++f_arg)
                         {
-                            for(std::size_t i=0; i<lc; ++i)
-                                f(worker_index, iter[i]);
+                            f(thread_id, f_arg);
                         }
-                    )
-                );
-            }
-
-            for (auto& fut : futures){
-                fut.get();
-            }
-        }
-
-
-        template<class ITERATOR, class functor>
-        void xparallel_iterator_foreach_impl(
-            ITERATOR iter,
-            ITERATOR end,
-            const uint64_t size,
-            xthreadpool& pool,
-            functor&& f,
-            const std::forward_iterator_tag
-        ){
-            uint64_t workload = size > 0 ? size : static_cast<uint64_t>(std::distance(iter, end));
-            const uint64_t work_per_thread = workload / pool.n_worker_threads();
-            const uint64_t tmp = static_cast<uint64_t>(std::llround(double(work_per_thread) / double(XTL_DEFAULT_CHUNKING_FACTOR)));
-            const uint64_t chunk_size = std::max(uint64_t(tmp), uint64_t(1));
-            
-            std::vector<std::future<void> > futures;
-            futures.reserve(workload/chunk_size + 1);
-
-            for(;;){
-
-                const uint64_t lc = std::min(chunk_size, workload);
-                workload -= lc;
-                futures.emplace_back(
-                    pool.enqueue([&f, iter, lc] (int worker_index){
-                        auto iter_copy = iter;
-
-                        for(uint64_t i=0; i<lc; ++i){
-                            f(worker_index, *iter_copy);
-                            ++iter_copy;
-                        }
-
                     })
                 );
-                for (uint64_t i = 0; i < lc; ++i)
-                {
-                    ++iter;
-                    if (iter == end){
-                        assert(workload == 0);
-                        break;
-                    }
-                }
-                if(workload==0)
-                    break;
+                // update workload
+                workload -= task_workload;
             }
 
-
-
-            for (auto& fut : futures){
-                fut.get();
-            }
-        }
-
-
-        template<class ITERATOR, class functor>
-        void xparallel_iterator_foreach_impl(
-            ITERATOR iter,
-            ITERATOR end,
-            const uint64_t size,
-            xthreadpool& pool,
-            functor&& f,
-            const std::input_iterator_tag
-        ){
-            // todo use better impl if size is known (aka size!=0)
-            // also it could be very expensive to store 
-            // a future for each single item
-
-            std::vector<std::future<void> > futures;
-
-            for (; iter != end; ++iter)
+            // this will wait until all tasks above are done
+            for (auto& fut : futures)
             {
-                auto item = *iter;
-                futures.emplace_back(
-                    pool.enqueue(
-                        [&f,&item](int id){
-                            f(id, item);
-                        }
-                    )
-                );
-            }
-            for (auto& fut : futures){
                 fut.get();
             }
         }
 
+        template<class integer, class functor,typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
+        void seriell_integer_foreach_impl(
+            const integer size,
+            functor&& f
+        )
+        {
+            for(integer i=0; i<size; ++i)
+            {
+                f(std::size_t(0), i);
+            }
+        }
 
-        template<class ITERATOR, class functor, class TAG>
+        
+
+        template<class TAG>
+        struct xparallel_iterator_foreach_impl;
+
+        template<>
+        struct xparallel_iterator_foreach_impl<std::random_access_iterator_tag>{
+            template<class iterator, class functor>
+            static void op(
+                iterator iter,
+                iterator end,
+                const typename std::iterator_traits<iterator>::difference_type size,
+                xthreadpool& pool,
+                functor&& f
+            )
+            {
+
+                typedef typename std::iterator_traits<iterator>::difference_type difference_type;
+
+                // if size is already specified we do not call std::distance 
+                // (this is not at all crucial for random_access_iterator_tag but
+                // we use this trick for also for forward iterators and here for consistency)
+                difference_type workload = size > 0 ? size : std::distance(iter, end);
+
+                // we bundle a chunk of functor calls to a task
+                // which is enqueued to the threadpool to minimize 
+                // overhead from pool.enqueue
+                const auto chunk_size = get_chunk_size(workload, pool.n_worker_threads());
+                
+                // all possible exceptions are stored 
+                // into futures (todo: here we could speedup
+                // with a stack allocated vector)
+                // => also we need this to wait properly
+                std::vector<std::future<void> > futures;
+                futures.reserve(std::size_t(workload/chunk_size + 1));
+
+                for( ;iter != end; iter += difference_type(chunk_size))
+                {
+
+                    const auto task_workload = difference_type(std::min(workload, chunk_size));
+                    
+                    futures.emplace_back(
+                        pool.enqueue(
+                            [&f, iter, task_workload](int worker_index)
+                            {
+                                for(difference_type i=0; i<task_workload; ++i)
+                                    f(worker_index, iter[i]);
+                            }
+                        )
+                    );
+                    // update workload
+                    workload -= task_workload;
+                }
+
+                for (auto& fut : futures)
+                {
+                    fut.get();
+                }
+            } 
+        };
+
+        template<>
+        struct xparallel_iterator_foreach_impl<std::forward_iterator_tag>{
+            template<class iterator, class functor>
+            static void op(
+                iterator iter,
+                iterator end,
+                const typename std::iterator_traits<iterator>::difference_type size,
+                xthreadpool& pool,
+                functor&& f
+            )
+            {
+
+                typedef typename std::iterator_traits<iterator>::difference_type difference_type;
+
+
+                auto workload = size > 0 ? size : std::distance(iter, end);
+                const auto chunk_size = get_chunk_size(workload, pool.n_worker_threads());
+                
+                // all possible exceptions are stored 
+                // into futures (todo: here we could speedup
+                // with a stack allocated vector)
+                // => also we need this to wait properly
+                std::vector<std::future<void> > futures;
+                futures.reserve(std::size_t(workload/chunk_size + 1));
+
+
+                for(;;)
+                {
+
+                    // workload for a single task
+                    const auto task_workload = std::min(chunk_size, workload);
+
+                    // here we pass a copy of the current iterator to the 
+                    // task function
+                    futures.emplace_back(
+                        pool.enqueue([&f, iter, task_workload] (int worker_index)
+                        {
+                            auto iter_copy = iter;
+
+                            for(difference_type i=0; i<task_workload; ++i)
+                            {
+                                f(worker_index, *iter_copy);
+                                ++iter_copy;
+                            }
+
+                        })
+                    );
+
+                    // increment iterator in a serial fashion
+                    for (difference_type i = 0; i < task_workload; ++i)
+                    {
+                        ++iter;
+                        if (iter == end)
+                        {
+                            break;
+                        }
+                    }
+
+                    // update workload
+                    workload -= task_workload;
+                    if(workload==0)
+                        break;
+                }
+
+                for (auto& fut : futures)
+                {
+                    fut.get();
+                }
+            }
+        };
+
+        template<>
+        struct xparallel_iterator_foreach_impl<std::bidirectional_iterator_tag>
+        :   public xparallel_iterator_foreach_impl<std::forward_iterator_tag>{
+        };
+
+        template<>
+        struct xparallel_iterator_foreach_impl<std::input_iterator_tag>{
+            template<class iterator, class functor>
+            static void op(
+                iterator iter,
+                iterator end,
+                const typename std::iterator_traits<iterator>::difference_type size,
+                xthreadpool& pool,
+                functor&& f
+            )
+            {
+                // todo use better impl if size is known (aka size!=0)
+                // also it could be very expensive to store 
+                // a future for each single item
+
+                std::vector<std::future<void> > futures;
+
+                for (; iter != end; ++iter)
+                {
+                    auto item = *iter;
+                    futures.emplace_back(
+                        pool.enqueue(
+                            [&f,&item](int id)
+                            {
+                                f(id, item);
+                            }
+                        )
+                    );
+                }
+                for (auto& fut : futures)
+                {
+                    fut.get();
+                }
+            } 
+        };
+
+
+        template<class iterator, class functor>
         void seriell_iterator_foreach_impl(
-            ITERATOR iter,
-            ITERATOR end,
-            functor&& f,
-            const TAG& 
-        ){
-            while(iter!=end){
-                f(int(0), *iter);
+            iterator iter,
+            iterator end,
+            functor&& f
+        )
+        {
+            while(iter!=end)
+            {
+                f(std::size_t(0), *iter);
                 ++iter;
             }
         }
-
     }
 
-    // strided
+
+
+    // strided 
     template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
     void xparallel_foreach(
         const integer start,
         const integer stop,
         const integer step,
-        const std::size_t n_threads,
+        xthreadpool & pool,
         functor&& f
-    ){
-        if(n_threads!=0){
-            xthreadpool pool(n_threads);
+    )
+    {
+        if(pool.n_worker_threads()!=0)
+        {
             detail::xparallel_integer_foreach_impl(start,stop,step, pool, std::forward<functor>(f));
         }
         else{
@@ -269,222 +377,80 @@ namespace xtl
     }
 
 
-    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
-    void xparallel_foreach(
-        const integer start,
-        const integer stop,
-        const integer step,
-        const n_thread_settings & settings,
-        functor&& f
-    ){
-        if(settings != n_thread_settings::no_threads){
-            xthreadpool pool(settings);
-            detail::xparallel_integer_foreach_impl(start,stop,step, pool, std::forward<functor>(f));
-        }
-        else{
-            detail::seriell_integer_foreach_impl(start,stop,step, std::forward<functor>(f));
-        }
-    }
-
-
-    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
-    void xparallel_foreach(
-        const integer start,
-        const integer stop,
-        const integer step,
-        functor&& f
-    ){
-        
-        xthreadpool pool(n_thread_settings::default_n_threads);
-        detail::xparallel_integer_foreach_impl(start,stop,step, pool, std::forward<functor>(f));
-    }
-
-    
     // non strided start at zero
     template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
     void xparallel_foreach(
         const integer size,
         xthreadpool & pool,
         functor&& f
-    ){
-        if(pool.n_worker_threads()!=0){
+    )
+    {
+        if(pool.n_worker_threads()!=0)
+        {
             detail::xparallel_integer_foreach_impl(size, pool, std::forward<functor>(f));
         }
         else{
             detail::seriell_integer_foreach_impl(size, std::forward<functor>(f));
         }
     }
-
-
-
-    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
-    void xparallel_foreach(
-        const integer size,
-        const std::size_t n_threads,
-        functor&& f
-    ){
-        if(n_threads!=0){
-            xthreadpool pool(n_threads);
-            detail::xparallel_integer_foreach_impl(size, pool, std::forward<functor>(f));
-        }
-        else{
-            detail::seriell_integer_foreach_impl(size, std::forward<functor>(f));
-        }
-    }
-
-    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
-    void xparallel_foreach(
-        const integer size,
-        const n_thread_settings & settings,
-        functor&& f
-    ){
-        if(settings!=n_thread_settings::no_threads){
-            xthreadpool pool(settings);
-            detail::xparallel_integer_foreach_impl(size, pool, std::forward<functor>(f));
-        }
-        else{
-            detail::seriell_integer_foreach_impl(size, std::forward<functor>(f));
-        }
-    }
-
-
-
-    template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value ,int>::type = 0>
-    void xparallel_foreach(
-        const integer size,
-        functor&& f
-    ){
-        xthreadpool pool(n_thread_settings::default_n_threads);
-        detail::xparallel_integer_foreach_impl(size, std::forward<functor>(f));
-    }
-
 
 
 
     // iterator overloads
-    template<class ITERATOR, class functor, typename std::enable_if<!std::is_integral<ITERATOR>::value ,int>::type = 0>
+    template<class iterator, class functor, typename std::enable_if<!std::is_integral<iterator>::value ,int>::type = 0>
     void xparallel_foreach(
-        ITERATOR begin,
-        ITERATOR end,
-        const std::size_t n_threads,
+        iterator begin,
+        iterator end,
+        xthreadpool & pool,
         functor&& f
-    ){
-        const auto size = std::distance(begin, end);
-        typedef typename std::iterator_traits<ITERATOR>::iterator_category iterator_category;  
-
-        if(n_threads !=0){
-            xthreadpool pool((n_threads));
-            detail::xparallel_iterator_foreach_impl(begin ,end, size, pool, std::forward<functor>(f), iterator_category());
-        }
-        else{
-            detail::seriell_iterator_foreach_impl(begin ,end, std::forward<functor>(f), iterator_category());
-        }
-    }
-
-
-    template<class ITERATOR, class functor>
-    void xparallel_foreach(
-        ITERATOR begin,
-        ITERATOR end,
-        const n_thread_settings & settings,
-        functor&& f
-    ){
-        const auto size = std::distance(begin, end);
-        typedef typename std::iterator_traits<ITERATOR>::iterator_category iterator_category;  
-
-        if(settings != n_thread_settings::no_threads){
-            xthreadpool pool((settings));
-            detail::xparallel_iterator_foreach_impl(begin ,end, size, pool, std::forward<functor>(f), iterator_category());
-        }
-        else{
-            detail::seriell_iterator_foreach_impl(begin ,end, std::forward<functor>(f), iterator_category());
-        }
-    }
-
-    template<class ITERATOR, class functor>
-    void xparallel_foreach(
-        ITERATOR begin,
-        ITERATOR end,
-        functor&& f
-    ){
-        const auto size = std::distance(begin, end);
-        typedef typename std::iterator_traits<ITERATOR>::iterator_category iterator_category;  
-
-        xthreadpool pool((n_thread_settings::default_n_threads));
-        detail::xparallel_iterator_foreach_impl(begin ,end, size, pool, std::forward<functor>(f), iterator_category());
+    )
+    {
         
+        typedef typename std::iterator_traits<iterator>::iterator_category iterator_category;  
+
+        if(pool.n_worker_threads()!=0)
+        {
+            const auto size = std::distance(begin, end);
+            detail::xparallel_iterator_foreach_impl<iterator_category>::op(
+                begin, end, size, pool, std::forward<functor>(f), iterator_category());
+        }
+        else{
+            detail::seriell_iterator_foreach_impl(begin, end, std::forward<functor>(f));
+        }
     }
 
+
+  
 
 
 
 
 
     // container overloads
-
     template<class CONTAINER, class functor, typename std::enable_if<!std::is_integral<CONTAINER>::value ,int>::type = 0>
     void xparallel_foreach(
         CONTAINER& container,
-        const std::size_t n_threads,
+        xthreadpool & pool,
         functor&& f
-    ){
+    )
+    {
         auto begin = std::begin(container);
         auto end  = std::end(container);
         typedef typename std::decay<decltype(begin)>::type iterator_type;
         typedef typename std::iterator_traits<iterator_type>::iterator_category iterator_category; 
 
-        const uint64_t size = static_cast<uint64_t>(std::distance(begin, end));
-    
-        if(n_threads !=0){
-            xthreadpool pool((n_threads));
-            detail::xparallel_iterator_foreach_impl(begin ,end,size, pool, std::forward<functor>(f), iterator_category());
+        if(pool.n_worker_threads()!=0)
+        {
+            const auto size = std::distance(begin, end);
+            detail::xparallel_iterator_foreach_impl<iterator_category>::op(
+                begin, end, size, pool, std::forward<functor>(f));
         }
         else{
-            detail::seriell_iterator_foreach_impl(begin ,end, std::forward<functor>(f), iterator_category());
+            detail::seriell_iterator_foreach_impl(begin, end, std::forward<functor>(f));
         }
 
     }
 
-
-    template<class CONTAINER, class functor, typename std::enable_if<!std::is_integral<CONTAINER>::value ,int>::type = 0>
-    void xparallel_foreach(
-        CONTAINER& container,
-        const n_thread_settings & settings,
-        functor&& f
-    ){
-        auto begin = std::begin(container);
-        auto end  = std::end(container);
-        typedef typename std::decay<decltype(begin)>::type iterator_type;
-        typedef typename std::iterator_traits<iterator_type>::iterator_category iterator_category; 
-
-        const uint64_t size = static_cast<uint64_t>(std::distance(begin, end));
-
-        if(settings != n_thread_settings::no_threads){  
-            xthreadpool pool((settings));
-            detail::xparallel_iterator_foreach_impl(begin ,end, size, pool, std::forward<functor>(f), iterator_category());
-        }
-        else{
-            detail::seriell_iterator_foreach_impl(begin ,end, std::forward<functor>(f), iterator_category());
-        }
-
-    }
-
-    template<class CONTAINER, class functor, typename std::enable_if<!std::is_integral<CONTAINER>::value ,int>::type = 0>
-    void xparallel_foreach(
-        CONTAINER& container,
-        functor&& f
-    ){
-        auto begin = std::begin(container);
-        auto end  = std::end(container);
-        typedef typename std::decay<decltype(begin)>::type iterator_type;
-        typedef typename std::iterator_traits<iterator_type>::iterator_category iterator_category; 
-
-        const uint64_t size = static_cast<uint64_t>(std::distance(begin, end));
-        xthreadpool pool((n_thread_settings::default_n_threads));
-        detail::xparallel_iterator_foreach_impl(begin ,end, size, pool, std::forward<functor>(f), iterator_category());
-
-
-    }
 
 
 
