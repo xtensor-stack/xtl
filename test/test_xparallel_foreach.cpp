@@ -12,6 +12,15 @@
 #include <chrono>
 #include <thread>
 
+
+#include <random>
+#include <algorithm>
+#include <iterator>
+#include <iostream>
+#include <functional>
+
+
+
 #include "gtest/gtest.h"
 
 #include "xtl/xthreadpool.hpp"
@@ -336,5 +345,49 @@ namespace xtl
         }
 
     }
+
+
+    TEST(xparallel_foreach, same_as_seriell)
+    {
+
+        std::random_device rnd_device;
+        // Specify the engine and distribution.
+        std::mt19937 mersenne_engine(rnd_device());
+        std::uniform_int_distribution<int> dist(1, 10000000);
+        xthreadpool pool(n_thread_settings::default_n_threads);
+
+        auto gen = std::bind(dist, mersenne_engine);
+        
+        auto test_it = [&](const std::size_t  size)
+        {
+
+            std::vector<int> vec(size), res_p(size), res_s(size);
+            std::generate(begin(vec), end(vec), gen);
+
+            xtl::xparallel_foreach(size, pool, [&](std::size_t , auto i)
+            {
+                res_p[i] = vec[i];
+            });
+
+
+            for(std::size_t i=0; i<size; ++i){
+                res_s[i] = vec[i];
+            }
+
+            for(std::size_t i=0; i<size; ++i){
+                EXPECT_EQ(res_s[i], res_p[i]);
+            }
+        };
+
+        test_it(10);
+        test_it(101);
+        test_it(999);
+        test_it(2001);
+        test_it(20003);
+
+    }
+
+
+
 }
 
