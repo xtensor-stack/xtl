@@ -370,6 +370,7 @@ namespace xtl
             });
 
 
+
             for(std::size_t i=0; i<size; ++i){
                 res_s[i] = vec[i];
             }
@@ -379,11 +380,11 @@ namespace xtl
             }
         };
 
-        test_it(10);
-        test_it(101);
-        test_it(999);
-        test_it(2001);
-        test_it(20003);
+        test_it(std::size_t(10));
+        test_it(std::size_t(101));
+        test_it(std::size_t(999));
+        test_it(std::size_t(2001));
+        test_it(std::size_t(20003));
 
     }
 

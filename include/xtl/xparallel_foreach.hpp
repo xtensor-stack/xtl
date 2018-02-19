@@ -145,7 +145,7 @@ namespace xtl
 
                 
                 futures.emplace_back(
-                    pool.enqueue([&f, i, task_workload](int thread_id)
+                    pool.enqueue([&f, i, task_workload](std::size_t thread_id)
                     {
                         for(integer f_arg=i; f_arg<i+task_workload; ++f_arg)
                         {
@@ -213,7 +213,7 @@ namespace xtl
                 std::vector<std::future<void> > futures;
                 futures.reserve(std::size_t(workload/chunk_size + 1));
 
-                for( ;iter != end; iter += difference_type(chunk_size))
+                for( ;iter != end; )
                 {
 
                     const auto task_workload = difference_type(std::min(workload, chunk_size));
@@ -229,6 +229,8 @@ namespace xtl
                     );
                     // update workload
                     workload -= task_workload;
+
+                    iter += task_workload;
                 }
 
                 for (auto& fut : futures)
