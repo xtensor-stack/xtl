@@ -104,6 +104,7 @@ namespace xtl
         // with the crucial difference that any  enqueued function get a consecutive worker
         // index as argument. is allows for ``thread-private`` / per-thread-storage.
         // Furthermore we allow for different queues (including priority queues)  
+        // and removed a superfluous shared_ptr
         //
         // The implementation of https://github.com/progschj/ThreadPool/ 
         // has the following copyright notice:

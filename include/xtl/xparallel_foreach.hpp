@@ -8,6 +8,20 @@
 #include "xtl/xthreadpool.hpp"
 
 
+// todos:
+// 
+// make a faster, yet not exception save
+// and void only impl
+// 
+// faster impl of function:
+// https://github.com/skarupke/std_function/blob/master/function.h
+// https://probablydance.com/2013/01/13/a-faster-implementation-of-stdfunction/
+//
+// funtion_queue as alternate to std::queue<function>
+// https://groups.google.com/a/isocpp.org/forum/#!topic/sg14/O3bKyEJ7L04
+//
+
+
 namespace xtl
 {      
     ///\cond
@@ -372,7 +386,7 @@ namespace xtl
     }
 
 
-    // non strided start at zero
+    // non strided, start at zero
     template<class integer, class functor, typename std::enable_if<std::is_integral<integer>::value, int>::type = 0>
     void xparallel_foreach(
         const integer size,
