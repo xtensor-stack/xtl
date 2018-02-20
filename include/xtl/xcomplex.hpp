@@ -160,6 +160,74 @@ namespace xtl
     {
         return forward_imag(std::forward<E>(e));
     }
+
+    /******************************************************
+     * operator overloads for complex and closure wrapper *
+     *****************************************************/
+
+    template <class C, class T, std::enable_if_t<!xtl::is_complex<T>::value, int> = 0>
+    std::complex<C> operator+(const std::complex<C>& c, const T& t)
+    {
+        std::complex<C> result(c);
+        result += t;
+        return result;
+    }
+
+    template <class C, class T, std::enable_if_t<!xtl::is_complex<T>::value, int> = 0>
+    std::complex<C> operator+(const T& t, const std::complex<C>& c)
+    {
+        std::complex<C> result(t);
+        result += c;
+        return result;
+    }
+
+    template <class C, class T, std::enable_if_t<!xtl::is_complex<T>::value, int> = 0>
+    std::complex<C> operator-(const std::complex<C>& c, const T& t)
+    {
+        std::complex<C> result(c);
+        result -= t;
+        return result;
+    }
+
+    template <class C, class T, std::enable_if_t<!xtl::is_complex<T>::value, int> = 0>
+    std::complex<C> operator-(const T& t, const std::complex<C>& c)
+    {
+        std::complex<C> result(t);
+        result -= c;
+        return result;
+    }
+
+    template <class C, class T, std::enable_if_t<!xtl::is_complex<T>::value, int> = 0>
+    std::complex<C> operator*(const std::complex<C>& c, const T& t)
+    {
+        std::complex<C> result(c);
+        result *= t;
+        return result;
+    }
+
+    template <class C, class T, std::enable_if_t<!xtl::is_complex<T>::value, int> = 0>
+    std::complex<C> operator*(const T& t, const std::complex<C>& c)
+    {
+        std::complex<C> result(t);
+        result *= c;
+        return result;
+    }
+
+    template <class C, class T, std::enable_if_t<!xtl::is_complex<T>::value, int> = 0>
+    std::complex<C> operator/(const std::complex<C>& c, const T& t)
+    {
+        std::complex<C> result(c);
+        result /= t;
+        return result;
+    }
+
+    template <class C, class T, std::enable_if_t<!xtl::is_complex<T>::value, int> = 0>
+    std::complex<C> operator/(const T& t, const std::complex<C>& c)
+    {
+        std::complex<C> result(t);
+        result /= c;
+        return result;
+    }
 }
 
 #endif

@@ -11,6 +11,7 @@
 #include <complex>
 
 #include "xtl/xcomplex.hpp"
+#include "xtl/xclosure.hpp"
 
 namespace xtl
 {
@@ -39,6 +40,21 @@ namespace xtl
         ASSERT_EQ(0.0, imag(d));
         real(d) = 2.0;
         ASSERT_EQ(2.0, d);
+    }
+
+    TEST(xcomplex, closure)
+    {
+        double x = 5.0;
+        auto x_closure = closure(x);
+        std::complex<double> b(0, 5), c;
+        EXPECT_EQ(b + x_closure, b + 5.0);
+        EXPECT_EQ(x_closure + b, 5.0 + b);
+        EXPECT_EQ(b - x_closure, b - 5.0);
+        EXPECT_EQ(x_closure - b, 5.0 - b);
+        EXPECT_EQ(b * x_closure, b * 5.0);
+        EXPECT_EQ(x_closure * b, 5.0 * b);
+        EXPECT_EQ(b / x_closure, b / 5.0);
+        EXPECT_EQ(x_closure / b, 5.0 / b);
     }
 }
 
