@@ -9,7 +9,6 @@
 #ifndef XTL_CLOSURE_HPP
 #define XTL_CLOSURE_HPP
 
-#include <complex>
 #include <memory>
 #include <type_traits>
 #include <utility>
