@@ -88,6 +88,7 @@ namespace xtl
 
         using self_type = xclosure_wrapper<CT>;
         using closure_type = CT;
+        using const_closure_type = std::add_const_t<CT>;
         using value_type = std::decay_t<CT>;
 
         using reference = std::conditional_t<
@@ -107,6 +108,8 @@ namespace xtl
         self_type& operator=(T&&);
 
         operator closure_type() noexcept;
+        operator const_closure_type() const noexcept;
+
         std::add_lvalue_reference_t<closure_type> get() & noexcept;
         std::add_lvalue_reference_t<std::add_const_t<closure_type>> get() const & noexcept;
         closure_type get() && noexcept;
@@ -214,6 +217,12 @@ namespace xtl
 
     template <class CT>
     inline xclosure_wrapper<CT>::operator typename xclosure_wrapper<CT>::closure_type() noexcept
+    {
+        return deref(m_wrappee);
+    }
+
+    template <class CT>
+    inline xclosure_wrapper<CT>::operator typename xclosure_wrapper<CT>::const_closure_type() const noexcept
     {
         return deref(m_wrappee);
     }
