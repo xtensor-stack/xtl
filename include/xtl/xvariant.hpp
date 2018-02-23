@@ -9,9 +9,13 @@
 #ifndef XTL_XVARIANT_HPP
 #define XTL_XVARIANT_HPP
 
-#define __cpp_exceptions
-#include "xvariant_impl.hpp"
-#undef __cpp_exceptions
+#ifndef __cpp_exceptions
+    #define __cpp_exceptions
+    #include "xvariant_impl.hpp"
+    #undef __cpp_exceptions
+#else
+    #include "xvariant_impl.hpp"
+#endif
 
 namespace xtl
 {
