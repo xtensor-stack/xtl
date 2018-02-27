@@ -11,6 +11,10 @@ Changelog
 -----
 
 - Bug fix in move semantics for xoptional free functions (`value` and `has_value`)
+- Use `static_if` instead of regular `if` to remove gcc-6 warning.
+- Document installation with the Spack package manager.
+- Fix complex operators with closure wrappers.
+- Integrate upstream fix for the variant implementation.
 
 0.4.0
 -----
@@ -43,7 +47,6 @@ Changelog
 
 - Addition of `value` and `has_value` free functions.
 - Bug fix in comparison operator for `xclosure_wrapper`.
-
 
 0.3.4
 -----
