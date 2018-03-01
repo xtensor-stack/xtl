@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.4.2
+-----
+
+- added missing operators for xoptional
+- removed compiler warning if cpp_exceptions already defined
+
 0.4.1
 -----
 
