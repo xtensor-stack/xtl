@@ -356,6 +356,14 @@ namespace xtl
         xoptional& operator*=(const xoptional<CTO, CBO>&);
         template <class CTO, class CBO>
         xoptional& operator/=(const xoptional<CTO, CBO>&);
+        template <class CTO, class CBO>
+        xoptional& operator%=(const xoptional<CTO, CBO>&);
+        template <class CTO, class CBO>
+        xoptional& operator&=(const xoptional<CTO, CBO>&);
+        template <class CTO, class CBO>
+        xoptional& operator|=(const xoptional<CTO, CBO>&);
+        template <class CTO, class CBO>
+        xoptional& operator^=(const xoptional<CTO, CBO>&);
 
         template <class T>
         disable_xoptional<T, xoptional&> operator+=(const T&);
@@ -365,6 +373,14 @@ namespace xtl
         disable_xoptional<T, xoptional&> operator*=(const T&);
         template <class T>
         disable_xoptional<T, xoptional&> operator/=(const T&);
+        template <class T>
+        disable_xoptional<T, xoptional&> operator%=(const T&);
+        template <class T>
+        disable_xoptional<T, xoptional&> operator&=(const T&);
+        template <class T>
+        disable_xoptional<T, xoptional&> operator|=(const T&);
+        template <class T>
+        disable_xoptional<T, xoptional&> operator^=(const T&);
 
         // Access
         std::add_lvalue_reference_t<CT> value() & noexcept;
@@ -563,6 +579,54 @@ namespace xtl
     }
 
     template <class CT, class CB>
+    template <class CTO, class CBO>
+    auto xoptional<CT, CB>::operator%=(const xoptional<CTO, CBO>& rhs) -> xoptional&
+    {
+        m_flag = m_flag && rhs.m_flag;
+        if (m_flag)
+        {
+            m_value %= rhs.m_value;
+        }
+        return *this;
+    }
+
+    template <class CT, class CB>
+    template <class CTO, class CBO>
+    auto xoptional<CT, CB>::operator&=(const xoptional<CTO, CBO>& rhs) -> xoptional&
+    {
+        m_flag = m_flag && rhs.m_flag;
+        if (m_flag)
+        {
+            m_value &= rhs.m_value;
+        }
+        return *this;
+    }
+
+    template <class CT, class CB>
+    template <class CTO, class CBO>
+    auto xoptional<CT, CB>::operator|=(const xoptional<CTO, CBO>& rhs) -> xoptional&
+    {
+        m_flag = m_flag && rhs.m_flag;
+        if (m_flag)
+        {
+            m_value |= rhs.m_value;
+        }
+        return *this;
+    }
+
+    template <class CT, class CB>
+    template <class CTO, class CBO>
+    auto xoptional<CT, CB>::operator^=(const xoptional<CTO, CBO>& rhs) -> xoptional&
+    {
+        m_flag = m_flag && rhs.m_flag;
+        if (m_flag)
+        {
+            m_value ^= rhs.m_value;
+        }
+        return *this;
+    }
+
+    template <class CT, class CB>
     template <class T>
     auto xoptional<CT, CB>::operator+=(const T& rhs) -> disable_xoptional<T, xoptional&>
     {
@@ -602,6 +666,50 @@ namespace xtl
         if (m_flag)
         {
             m_value /= rhs;
+        }
+        return *this;
+    }
+
+    template <class CT, class CB>
+    template <class T>
+    auto xoptional<CT, CB>::operator%=(const T& rhs) -> disable_xoptional<T, xoptional&>
+    {
+        if (m_flag)
+        {
+            m_value %= rhs;
+        }
+        return *this;
+    }
+
+    template <class CT, class CB>
+    template <class T>
+    auto xoptional<CT, CB>::operator&=(const T& rhs) -> disable_xoptional<T, xoptional&>
+    {
+        if (m_flag)
+        {
+            m_value &= rhs;
+        }
+        return *this;
+    }
+
+    template <class CT, class CB>
+    template <class T>
+    auto xoptional<CT, CB>::operator|=(const T& rhs) -> disable_xoptional<T, xoptional&>
+    {
+        if (m_flag)
+        {
+            m_value |= rhs;
+        }
+        return *this;
+    }
+
+    template <class CT, class CB>
+    template <class T>
+    auto xoptional<CT, CB>::operator^=(const T& rhs) -> disable_xoptional<T, xoptional&>
+    {
+        if (m_flag)
+        {
+            m_value ^= rhs;
         }
         return *this;
     }
@@ -878,6 +986,110 @@ namespace xtl
     {
         using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
         return e1.has_value() ? e1.value() / e2 : missing<value_type>();
+    }
+
+    template <class T1, class B1, class T2, class B2>
+    inline auto operator%(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+        -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e1.has_value() && e2.has_value() ? e1.value() % e2.value() : missing<value_type>();
+    }
+
+    template <class T1, class T2, class B2>
+    inline auto operator%(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+        -> disable_xoptional<T1, common_optional_t<T1, T2>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e2.has_value() ? e1 % e2.value() : missing<value_type>();
+    }
+
+    template <class T1, class B1, class T2>
+    inline auto operator%(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+        -> disable_xoptional<T2, common_optional_t<T1, T2>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e1.has_value() ? e1.value() % e2 : missing<value_type>();
+    }
+
+    template <class T, class B>
+    inline auto operator~(const xoptional<T, B>& e) noexcept
+        -> xoptional<std::decay_t<T>>
+    {
+        using value_type = std::decay_t<T>;
+        return e.has_value() ? ~e.value() : missing<value_type>();
+    }
+
+    template <class T1, class B1, class T2, class B2>
+    inline auto operator&(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+        -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e1.has_value() && e2.has_value() ? e1.value() & e2.value() : missing<value_type>();
+    }
+
+    template <class T1, class T2, class B2>
+    inline auto operator&(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+        -> disable_xoptional<T1, common_optional_t<T1, T2>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e2.has_value() ? e1 & e2.value() : missing<value_type>();
+    }
+
+    template <class T1, class B1, class T2>
+    inline auto operator&(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+        -> disable_xoptional<T2, common_optional_t<T1, T2>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e1.has_value() ? e1.value() & e2 : missing<value_type>();
+    }
+
+    template <class T1, class B1, class T2, class B2>
+    inline auto operator|(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+        -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e1.has_value() && e2.has_value() ? e1.value() | e2.value() : missing<value_type>();
+    }
+
+    template <class T1, class T2, class B2>
+    inline auto operator|(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+        -> disable_xoptional<T1, common_optional_t<T1, T2>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e2.has_value() ? e1 | e2.value() : missing<value_type>();
+    }
+
+    template <class T1, class B1, class T2>
+    inline auto operator|(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+        -> disable_xoptional<T2, common_optional_t<T1, T2>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e1.has_value() ? e1.value() | e2 : missing<value_type>();
+    }
+
+    template <class T1, class B1, class T2, class B2>
+    inline auto operator^(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept
+        -> xoptional<std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e1.has_value() && e2.has_value() ? e1.value() ^ e2.value() : missing<value_type>();
+    }
+
+    template <class T1, class T2, class B2>
+    inline auto operator^(const T1& e1, const xoptional<T2, B2>& e2) noexcept
+        -> disable_xoptional<T1, common_optional_t<T1, T2>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e2.has_value() ? e1 ^ e2.value() : missing<value_type>();
+    }
+
+    template <class T1, class B1, class T2>
+    inline auto operator^(const xoptional<T1, B1>& e1, const T2& e2) noexcept
+        -> disable_xoptional<T2, common_optional_t<T1, T2>>
+    {
+        using value_type = std::common_type_t<std::decay_t<T1>, std::decay_t<T2>>;
+        return e1.has_value() ? e1.value() ^ e2 : missing<value_type>();
     }
 
     template <class T1, class B1, class T2, class B2>

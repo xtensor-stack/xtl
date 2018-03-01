@@ -208,6 +208,29 @@ namespace xtl
 
         auto res8 = fma(o1, o2, o3);
         EXPECT_EQ(res8, std::fma(d1, d2, d3));
+
+        using optional_int = xoptional<int, bool>;
+        using optional_int_ref = xoptional<int&, bool&>;
+        int i1 = 9;
+        int i2 = 4;
+
+        optional_int_ref oi1(i1, b1);
+        optional_int_ref oi2(i2, b2);
+
+        auto res9 = oi1 % oi2;
+        EXPECT_EQ(res9, optional(i1 % i2, true));
+
+        auto res10 = oi1 & oi2;
+        EXPECT_EQ(res10, optional(i1 & i2, true));
+
+        auto res11 = oi1 | oi2;
+        EXPECT_EQ(res11, optional(i1 | i2, true));
+
+        auto res12 = oi1 ^ oi2;
+        EXPECT_EQ(res12, optional(i1 ^ i2, true));
+
+        auto res13 = ~oi1;
+        EXPECT_EQ(res13, optional(~i1, true));
     }
 
     TEST(xoptional, free_functions)
