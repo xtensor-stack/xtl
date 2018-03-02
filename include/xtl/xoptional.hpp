@@ -136,13 +136,13 @@ namespace xtl
     using disable_xoptional = std::enable_if_t<!is_xoptional<E>::value, R>;
 
     template <class E1, class E2, class R = void>
-    using disable_both_xoptional = std::enable_if<!is_xoptional<E1>::value && !is_xoptional<E2>::value, R>;
+    using disable_both_xoptional = std::enable_if_t<!is_xoptional<E1>::value && !is_xoptional<E2>::value, R>;
 
     template <class E, class R = void>
     using enable_xoptional = std::enable_if_t<is_xoptional<E>::value, R>;
 
     template <class E1, class E2, class R = void>
-    using enable_both_xoptional = std::enable_if<is_xoptional<E1>::value && is_xoptional<E2>::value, R>;
+    using enable_both_xoptional = std::enable_if_t<is_xoptional<E1>::value && is_xoptional<E2>::value, R>;
 
     template <class... Args>
     struct common_optional : detail::common_optional_impl<Args...>
@@ -1397,6 +1397,12 @@ namespace xtl
     UNARY_OPTIONAL(erfc)
     UNARY_OPTIONAL(tgamma)
     UNARY_OPTIONAL(lgamma)
+    UNARY_OPTIONAL(ceil)
+    UNARY_OPTIONAL(floor)
+    UNARY_OPTIONAL(trunc)
+    UNARY_OPTIONAL(round)
+    UNARY_OPTIONAL(nearbyint)
+    UNARY_OPTIONAL(rint)
     UNARY_BOOL_OPTIONAL(isfinite)
     UNARY_BOOL_OPTIONAL(isinf)
     UNARY_BOOL_OPTIONAL(isnan)
