@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.4.3
+-----
+
+- missing near integers functions for `xoptional`
+- `xoptional` compilation issue fixed
+
 0.4.2
 -----
 
