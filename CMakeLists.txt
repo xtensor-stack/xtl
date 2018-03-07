@@ -38,6 +38,7 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xdynamic_bitset.hpp
     ${XTL_INCLUDE_DIR}/xtl/xfunctional.hpp
     ${XTL_INCLUDE_DIR}/xtl/xhash.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xhierarchy_generator.hpp
     ${XTL_INCLUDE_DIR}/xtl/xiterator_base.hpp
     ${XTL_INCLUDE_DIR}/xtl/xmeta_utils.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional.hpp

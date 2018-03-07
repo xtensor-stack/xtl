@@ -83,6 +83,7 @@ set(XTL_TESTS
     test_xclosure.cpp
     test_xdynamic_bitset.cpp
     test_xhash.cpp
+    test_xhierarchy_generator.cpp
     test_xiterator_base.cpp
     test_xmeta_utils.cpp
     test_xoptional.cpp
