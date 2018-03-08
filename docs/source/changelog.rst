@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.4.4
+-----
+
+- bug fix in any
+- hierarchy generators
+
 0.4.3
 -----
 
