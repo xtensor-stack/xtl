@@ -45,12 +45,27 @@ namespace xtl
     class xlinear_hierarchy_generator<mpl::vector<T0, Args...>, U, Root>
         : public U<T0, xlinear_hierarchy_generator<mpl::vector<Args...>, U, Root>>
     {
+    public:
+
+        using base_type = U<T0, xlinear_hierarchy_generator<mpl::vector<Args...>, U, Root>>;
+        template <class... T>
+        inline xlinear_hierarchy_generator(T&&... args)
+            : base_type(std::forward<T>(args)...)
+        {
+        }
     };
 
     template <template <class, class> class U, class Root>
     class xlinear_hierarchy_generator<mpl::vector<>, U, Root>
         : public Root
     {
+    public:
+
+        template <class... T>
+        inline xlinear_hierarchy_generator(T&&... args)
+            : Root(std::forward<T>(args)...)
+        {
+        }
     };
 }
 
