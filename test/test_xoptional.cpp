@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "xtl/xany.hpp"
 #include "xtl/xoptional.hpp"
 #include "xtl/xoptional_sequence.hpp"
 
@@ -260,4 +261,18 @@ namespace xtl
         ASSERT_TRUE(has_value(opt2));
         ASSERT_EQ(value2, 2.0);
     }
+
+    TEST(xoptional, any)
+    {
+        using opt_type = xoptional<const double&, const bool&>;
+        double d = 1.;
+        bool f = true;
+        opt_type o(d, f);
+        xtl::any a(o);
+
+        opt_type res = any_cast<opt_type>(a);
+        EXPECT_EQ(res.value(), o.value());
+        EXPECT_EQ(res.has_value(), o.has_value());
+    }
+
 }

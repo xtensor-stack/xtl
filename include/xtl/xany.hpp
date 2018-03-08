@@ -256,7 +256,10 @@ namespace xtl
 
             static void swap(storage_union& lhs, storage_union& rhs) noexcept
             {
-                std::swap(reinterpret_cast<T&>(lhs.stack), reinterpret_cast<T&>(rhs.stack));
+                storage_union tmp_storage;
+                move(rhs, tmp_storage);
+                move(lhs, rhs);
+                move(tmp_storage, lhs);
             }
         };
 
