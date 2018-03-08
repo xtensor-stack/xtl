@@ -50,6 +50,11 @@ namespace xtl
     {
     public:
 
+        node_implem(int i, double d)
+            : B(i, d)
+        {
+        }
+
         virtual ~node_implem() {}
 
         int get_value(T) const override
@@ -67,6 +72,11 @@ namespace xtl
     {
     public:
 
+        scatter_node(int i, double d)
+            : m_i(i), m_d(d)
+        {
+        }
+
         virtual ~scatter_node() {}
 
         template <class T>
@@ -75,14 +85,25 @@ namespace xtl
             const node<T>& n = *this;
             return n.get_value(arg);
         }
+
+        int get_int() const { return m_i; }
+        double get_double() const { return m_d; }
+
+    private:
+
+        int m_i;
+        double m_d;
     };
+
     using implementation_test = xlinear_hierarchy_generator<node_list, node_implem, scatter_node>;
 
     TEST(xhierarchy, linear)
     {
-        implementation_test t;
+        implementation_test t(1, 2.5);
         EXPECT_EQ(0, t.do_get_value(int(0)));
         EXPECT_EQ(1, t.do_get_value(double(0)));
         EXPECT_EQ(2, t.do_get_value(std::string()));
+        EXPECT_EQ(1, t.get_int());
+        EXPECT_EQ(2.5, t.get_double());
     }
 }
