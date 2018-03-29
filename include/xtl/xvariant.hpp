@@ -17,6 +17,8 @@
     #include "xvariant_impl.hpp"
 #endif
 
+#include "xclosure.hpp"
+
 namespace xtl
 {
     using mpark::variant;
@@ -34,6 +36,89 @@ namespace xtl
     using mpark::holds_alternative;
     using mpark::get;
     using mpark::get_if;
+
+    namespace detail
+    {
+        template <class T>
+        struct xgetter
+        {
+            template <class... Ts>
+            static inline constexpr T& get(xtl::variant<Ts...>& v)
+            {
+                return xtl::get<T>(v);
+            }
+
+            template <class... Ts>
+            static inline constexpr T&& get(xtl::variant<Ts...>&& v)
+            {
+                return xtl::get<T>(std::move(v));
+            }
+
+            template <class... Ts>
+            static inline constexpr const T& get(const xtl::variant<Ts...>& v)
+            {
+                return xtl::get<T>(v);
+            }
+
+            template <class... Ts>
+            static inline constexpr const T&& get(const xtl::variant<Ts...>&& v)
+            {
+                return xtl::get<T>(std::move(v));
+            }
+        };
+
+        template <class T>
+        struct xgetter<T&>
+        {
+            template <class... Ts>
+            static inline constexpr T& get(xtl::variant<Ts...>& v)
+            {
+                return xtl::get<xtl::xclosure_wrapper<T&>>(v).get();
+            }
+
+            template <class... Ts>
+            static inline constexpr T&& get(xtl::variant<Ts...>&& v)
+            {
+                return xtl::get<xtl::xclosure_wrapper<T&>>(std::move(v)).get();
+            }
+
+            template <class... Ts>
+            static inline constexpr const T& get(const xtl::variant<Ts...>& v)
+            {
+                return xtl::get<xtl::xclosure_wrapper<T&>>(v).get();
+            }
+
+            template <class... Ts>
+            static inline constexpr const T&& get(const xtl::variant<Ts...>&& v)
+            {
+                return xtl::get<xtl::xclosure_wrapper<T&>>(std::move(v)).get();
+            }
+        };
+    }
+
+    template <class T, class... Ts>
+    inline constexpr decltype(auto) xget(xtl::variant<Ts...>& v)
+    {
+        return detail::xgetter<T>::get(v);
+    }
+
+    template <class T, class... Ts>
+    inline constexpr decltype(auto) xget(xtl::variant<Ts...>&& v)
+    {
+        return detail::xgetter<T>::get(std::move(v));
+    }
+
+    template <class T, class... Ts>
+    inline constexpr decltype(auto) xget(const xtl::variant<Ts...>& v)
+    {
+        return detail::xgetter<T>::get(v);
+    }
+
+    template <class T, class... Ts>
+    inline constexpr decltype(auto) xget(const xtl::variant<Ts...>&& v)
+    {
+        return detail::xgetter<T>::get(std::move(v));
+    }
 }
 
 #endif
