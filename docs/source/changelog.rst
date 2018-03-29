@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.4.5
+-----
+
+- xget for variant on xclosure_wrapper
+
 0.4.4
 -----
 
