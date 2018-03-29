@@ -67,4 +67,29 @@ namespace xtl
         EXPECT_EQ(3., xtl::get<2>(vec_res[2]));
         EXPECT_EQ("hellohello", xtl::get<3>(vec_res[3]));
     }
+
+    TEST(xvariant, closure_wrapper)
+    {
+        {
+            using var_t = xtl::variant<xclosure_wrapper<int&>, xclosure_wrapper<double&>>;
+            int i = 2;
+            var_t v = closure(i);
+            int& ir = xtl::xget<int&>(v);
+            EXPECT_EQ(&ir, &i);
+            ir = 4;
+            EXPECT_EQ(i, 4);
+            int ir2 = xtl::xget<int&>(v);
+            EXPECT_EQ(ir2, i);
+        }
+
+        {
+            using var_t = xtl::variant<xclosure_wrapper<const int&>, xclosure_wrapper<const double&>>;
+            const int i = 2;
+            var_t v = closure(i);
+            const int& ir = xtl::xget<const int&>(v);
+            EXPECT_EQ(&ir, &i);
+            int ir2 = xtl::xget<const int&>(v);
+            EXPECT_EQ(ir2, i);
+        }
+    }
 }
