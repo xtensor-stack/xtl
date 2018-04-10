@@ -6,6 +6,9 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
+#include <string>
+#include <vector>
+
 #include "gtest/gtest.h"
 
 #include "xtl/xvariant.hpp"
@@ -91,5 +94,23 @@ namespace xtl
             int ir2 = xtl::xget<const int&>(v);
             EXPECT_EQ(ir2, i);
         }
+    }
+
+    TEST(xvariant, overloaded_lambdas)
+    {
+        using var_t = xtl::variant<int, double, std::string>;
+        std::vector<var_t> vec = { 1, 2.5, "hello" };
+
+        bool res = true;
+
+        for (auto& v : vec)
+        {
+            res &= xtl::visit(xtl::make_overload([](int arg) { return arg == 1; },
+                                                 [](double arg) { return arg == 2.5; },
+                                                 [](const std::string& arg) { return arg == "hello"; }),
+                              v);
+        }
+
+        EXPECT_TRUE(res);
     }
 }
