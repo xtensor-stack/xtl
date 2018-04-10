@@ -119,6 +119,37 @@ namespace xtl
     {
         return detail::xgetter<T>::get(std::move(v));
     }
+
+    /************************
+     * overload for lambdas *
+     ************************/
+
+    // This hierarchy is required since ellipsis in using declarations are not supported until C++17
+    template <class... Ts>
+    struct overloaded;
+
+    template <class T>
+    struct overloaded<T> : T
+    {
+        overloaded(T arg) : T(arg) {}
+        using T::operator();
+    };
+
+    template <class T1, class T2, class... Ts>
+    struct overloaded<T1, T2, Ts...> : T1, overloaded<T2, Ts...>
+    {
+        template <class... Us>
+        overloaded(T1 t1, T2 t2, Us... args) : T1(t1), overloaded<T2, Ts...>(t2, args...) {}
+
+        using T1::operator();
+        using overloaded<T2, Ts...>::operator();
+    };
+
+    template <class... Ts>
+    inline overloaded<Ts...> make_overload(Ts... arg)
+    {
+        return overloaded<Ts...>{arg...};
+    }
 }
 
 #endif
