@@ -20,6 +20,9 @@
 namespace xtl
 {
     template <class S>
+    S make_sequence(typename S::size_type size);
+
+    template <class S>
     S make_sequence(typename S::size_type size, typename S::value_type v);
 
     template <class R, class A>
@@ -45,6 +48,12 @@ namespace xtl
             using value_type = typename S::value_type;
             using size_type = typename S::size_type;
 
+
+            inline static S make(size_type size)
+            {
+                return S(size);
+            }
+
             inline static S make(size_type size, value_type v)
             {
                 return S(size, v);
@@ -58,6 +67,11 @@ namespace xtl
             using value_type = typename sequence_type::value_type;
             using size_type = typename sequence_type::size_type;
 
+            inline static sequence_type make(size_type /*size*/)
+            {
+                return sequence_type();
+            }
+
             inline static sequence_type make(size_type /*size*/, value_type v)
             {
                 sequence_type s;
@@ -65,6 +79,12 @@ namespace xtl
                 return s;
             }
         };
+    }
+    
+    template <class S>
+    inline S make_sequence(typename S::size_type size)
+    {
+        return detail::sequence_builder<S>::make(size);
     }
 
     template <class S>
