@@ -22,6 +22,13 @@ cmake -D CMAKE_INSTALL_PREFIX=your_install_prefix
 make install
 ```
 
+## Documentation
+
+To get started with using `xtl`, check out the full documentation
+
+http://xtl.readthedocs.io/
+
+
 ## Building the HTML documentation
 
 xtl's documentation is built with three tools
