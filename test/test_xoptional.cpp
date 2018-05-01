@@ -15,6 +15,7 @@
 
 #include "xtl/xany.hpp"
 #include "xtl/xoptional.hpp"
+#include "xtl/xjson.hpp"
 #include "xtl/xoptional_sequence.hpp"
 
 namespace xtl
@@ -113,7 +114,7 @@ namespace xtl
         EXPECT_TRUE(v1 > v2);
         EXPECT_FALSE(v2 > v1);
         EXPECT_TRUE(v1 >= v1);
-        EXPECT_FALSE(v2 >= v1);    
+        EXPECT_FALSE(v2 >= v1);
     }
 
     TEST(xoptional, io)
@@ -275,4 +276,15 @@ namespace xtl
         EXPECT_EQ(res.has_value(), o.has_value());
     }
 
+    TEST(xoptional, json)
+    {
+        xoptional<double> m1 = missing<double>();
+        nlohmann::json j1 = m1;
+        EXPECT_TRUE(j1.is_null());
+        EXPECT_EQ(j1.get<xoptional<double>>(), missing<double>());
+
+        xoptional<double> m2 = 3.0;
+        nlohmann::json j2 = m2;
+        EXPECT_EQ(j2.get<xoptional<double>>(), 3.0);
+    }
 }

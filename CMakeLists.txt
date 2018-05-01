@@ -21,10 +21,14 @@ foreach(ver ${xtl_version_defines})
         set(XTL_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
     endif()
 endforeach()
-set(${PROJECT_NAME}_VERSION 
+set(${PROJECT_NAME}_VERSION
     ${XTL_VERSION_MAJOR}.${XTL_VERSION_MINOR}.${XTL_VERSION_PATCH})
 message(STATUS "xtl v${${PROJECT_NAME}_VERSION}")
 
+# Dependencies
+# ============
+
+find_package(nlohmann_json)
 
 # Build
 # =====
@@ -40,6 +44,7 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xhash.hpp
     ${XTL_INCLUDE_DIR}/xtl/xhierarchy_generator.hpp
     ${XTL_INCLUDE_DIR}/xtl/xiterator_base.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xjson.hpp
     ${XTL_INCLUDE_DIR}/xtl/xmeta_utils.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional_sequence.hpp

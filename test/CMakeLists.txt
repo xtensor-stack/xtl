@@ -98,7 +98,7 @@ add_executable(${XTL_TARGET} ${XTL_TESTS} ${XTL_HEADERS})
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     add_dependencies(${XTL_TARGET} gtest_main)
 endif()
-target_link_libraries(${XTL_TARGET} xtl ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${XTL_TARGET} xtl nlohmann_json ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 add_custom_target(xtest COMMAND test_xtl DEPENDS ${XTL_TARGET})
 
