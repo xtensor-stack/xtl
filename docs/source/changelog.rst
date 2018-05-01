@@ -7,6 +7,22 @@
 Changelog
 =========
 
+0.4.8
+-----
+
+- support for JSON serialization of xoptionals
+
+0.4.7
+-----
+
+- support for uninitialized `make_sequence`
+
+0.4.6
+-----
+
+- remove an unused file.
+- support for overloaded lambdas
+
 0.4.5
 -----
 
