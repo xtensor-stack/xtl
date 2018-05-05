@@ -48,9 +48,11 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xmeta_utils.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional_sequence.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xparallel_foreach.hpp
     ${XTL_INCLUDE_DIR}/xtl/xproxy_wrapper.hpp
     ${XTL_INCLUDE_DIR}/xtl/xsequence.hpp
     ${XTL_INCLUDE_DIR}/xtl/xtl_config.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xthreadpool.hpp
     ${XTL_INCLUDE_DIR}/xtl/xtype_traits.hpp
     ${XTL_INCLUDE_DIR}/xtl/xvariant.hpp
     ${XTL_INCLUDE_DIR}/xtl/xvariant_impl.hpp
