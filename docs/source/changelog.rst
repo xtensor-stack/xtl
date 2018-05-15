@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.4.9
+-----
+
+- return type of `static_if` fixed
+
 0.4.8
 -----
 
