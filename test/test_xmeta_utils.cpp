@@ -165,10 +165,10 @@ namespace xtl
     int static_if_tester()
     {
         int input = 0;
-        return mpl::static_if<B == false>([&](auto self)
+        return mpl::static_if<B == false>([&](auto /*self*/)
         {
             return input;
-        }, /*else*/ [&](auto self)
+        }, /*else*/ [&](auto /*self*/)
         {
             return input + 1;
         });
@@ -181,5 +181,39 @@ namespace xtl
         EXPECT_EQ(output_0, 0);
         EXPECT_EQ(output_1, 1);
     }
-}
 
+    template <bool B>
+    struct static_if_tester2
+    {
+        int input = 0;
+
+        inline int& operator()()
+        {
+            return mpl::static_if<B == false>([&](auto /*self*/) -> int&
+            {
+                return input;
+            }, /*else*/ [&](auto /*self*/) -> int&
+            {
+                input++;
+                return input;
+            });
+        }
+    };
+
+    TEST(mpl, static_if2)
+    {
+        static_if_tester2<false> tester;
+        int& output_0 = tester();
+        EXPECT_EQ(output_0, 0);
+
+        output_0++;
+        int& output_1 = tester();
+        EXPECT_EQ(output_1, 1);
+
+        static_if_tester2<true> tester2;
+        int& output_3 = tester2();
+        EXPECT_EQ(output_3, 1);
+        tester2();
+        EXPECT_EQ(output_3, 2);
+    }
+}
