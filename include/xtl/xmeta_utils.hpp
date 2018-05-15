@@ -460,19 +460,19 @@ namespace xtl
          *************/
 
         template <class TF, class FF>
-        auto static_if(std::true_type, const TF& tf, const FF&)
+        decltype(auto) static_if(std::true_type, const TF& tf, const FF&)
         {
             return tf(identity());
         }
 
         template <class TF, class FF>
-        auto static_if(std::false_type, const TF&, const FF& ff)
+        decltype(auto) static_if(std::false_type, const TF&, const FF& ff)
         {
             return ff(identity());
         }
 
         template <bool cond, class TF, class FF>
-        auto static_if(const TF& tf, const FF& ff)
+        decltype(auto) static_if(const TF& tf, const FF& ff)
         {
             return static_if(std::integral_constant<bool, cond>(), tf, ff);
         }
