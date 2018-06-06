@@ -1,4 +1,4 @@
-# ![xtl](http://quantstack.net/assets/images/xtl.svg)
+# ![xtl](docs/source/xtl.svg)
 
 [![Travis](https://travis-ci.org/QuantStack/xtl.svg?branch=master)](https://travis-ci.org/QuantStack/xtl)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/g9bldap2wirlue9w?svg=true)](https://ci.appveyor.com/project/QuantStack/xtl)
@@ -12,7 +12,7 @@ Basic tools (containers, algorithms) used by other quantstack packages
 `xtl` is a header-only library. We provide a package for the conda package manager.
 
 ```bash
-conda install -c conda-forge xtl 
+conda install -c conda-forge xtl
 ```
 
 Or you can directly install it from the sources:
@@ -41,7 +41,7 @@ While doxygen must be installed separately, you can install breathe by typing
 
 ```bash
 pip install breathe
-``` 
+```
 
 Breathe can also be installed with `conda`
 
