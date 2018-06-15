@@ -90,9 +90,11 @@ namespace xtl
     protected:
 
         xcomplex_sequence() = default;
+        xcomplex_sequence(size_type s);
         xcomplex_sequence(size_type s, const value_type& v);
         template <class TR, class TC, bool B>
         xcomplex_sequence(size_type s, const xcomplex<TR, TC, B>& v);
+        xcomplex_sequence(std::initializer_list<value_type> init);
 
         ~xcomplex_sequence() = default;
 
@@ -116,7 +118,7 @@ namespace xtl
      * xcomplex_array *
      ******************/
 
-    template <class T, std::size_t N, bool ieee_compliant>
+    template <class T, std::size_t N, bool ieee_compliant = false>
     class xcomplex_array : public xcomplex_sequence<std::array<T, N>, ieee_compliant>
     {
     public:
@@ -126,6 +128,7 @@ namespace xtl
         using size_type = typename base_type::size_type;
 
         xcomplex_array() = default;
+        xcomplex_array(size_type s);
         xcomplex_array(size_type s, const value_type& v);
 
         template <class TR, class TI, bool B>
@@ -136,7 +139,7 @@ namespace xtl
      * xcomplex_vector *
      *******************/
 
-    template <class T, bool ieee_compliant, class A = std::allocator<T>>
+    template <class T, bool ieee_compliant = false, class A = std::allocator<T>>
     class xcomplex_vector : public xcomplex_sequence<std::vector<T, A>, ieee_compliant>
     {
     public:
@@ -146,7 +149,9 @@ namespace xtl
         using size_type = typename base_type::size_type;
 
         xcomplex_vector() = default;
+        xcomplex_vector(size_type s);
         xcomplex_vector(size_type s, const value_type& v);
+        xcomplex_vector(std::initializer_list<value_type> init);
 
         template <class TR, class TI, bool B>
         xcomplex_vector(size_type s, const xcomplex<TR, TI, B>& v);
@@ -171,13 +176,13 @@ namespace xtl
         using difference_type = typename IT::difference_type;
     };
 
-    template <class IT, bool ieee_compliant>
-    class xcomplex_iterator : public xrandom_access_iterator_base2<xcomplex_iterator_traits<IT, ieee_compliant>>
+    template <class IT, bool B>
+    class xcomplex_iterator : public xrandom_access_iterator_base2<xcomplex_iterator_traits<IT, B>>
     {
     public:
 
-        using self_type = xcomplex_iterator<IT, ieee_compliant>;
-        using base_type = xrandom_access_iterator_base2<self_type>;
+        using self_type = xcomplex_iterator<IT, B>;
+        using base_type = xrandom_access_iterator_base2<xcomplex_iterator_traits<IT, B>>;
 
         using value_type = typename base_type::value_type;
         using reference = typename base_type::reference;
@@ -211,6 +216,13 @@ namespace xtl
      ************************************/
 
     template <class C, bool B>
+    inline xcomplex_sequence<C, B>::xcomplex_sequence(size_type s)
+        : m_real(make_sequence<container_type>(s)),
+          m_imag(make_sequence<container_type>(s))
+    {
+    }
+
+    template <class C, bool B>
     inline xcomplex_sequence<C, B>::xcomplex_sequence(size_type s, const value_type& v)
         : m_real(make_sequence<container_type>(s, v.real())),
           m_imag(make_sequence<container_type>(s, v.imag()))
@@ -223,6 +235,15 @@ namespace xtl
         : m_real(make_sequence<container_type>(s, v.real())),
           m_imag(make_sequence<container_type>(s, v.imag()))
     {
+    }
+
+    template <class C, bool B>
+    inline xcomplex_sequence<C, B>::xcomplex_sequence(std::initializer_list<value_type> init)
+        : m_real(make_sequence<container_type>(init.size())),
+          m_imag(make_sequence<container_type>(init.size()))
+    {
+        std::transform(init.begin(), init.end(), m_real.begin(), [](const auto& v) { return v.real(); });
+        std::transform(init.begin(), init.end(), m_imag.begin(), [](const auto& v) { return v.imag(); });
     }
 
     template <class C, bool B>
@@ -416,6 +437,12 @@ namespace xtl
      *********************************/
 
     template <class T, std::size_t N, bool B>
+    inline xcomplex_array<T, N, B>::xcomplex_array(size_type s)
+        : base_type(s)
+    {
+    }
+    
+    template <class T, std::size_t N, bool B>
     inline xcomplex_array<T, N, B>::xcomplex_array(size_type s, const value_type& v)
         : base_type(s, v)
     {
@@ -433,6 +460,12 @@ namespace xtl
      **********************************/
 
     template <class T, bool B, class A>
+    inline xcomplex_vector<T, B, A>::xcomplex_vector(size_type s)
+        : base_type(s)
+    {
+    }
+
+    template <class T, bool B, class A>
     inline xcomplex_vector<T, B, A>::xcomplex_vector(size_type s, const value_type& v)
         : base_type(s, v)
     {
@@ -442,6 +475,12 @@ namespace xtl
     template <class TR, class TI, bool B2>
     inline xcomplex_vector<T, B, A>::xcomplex_vector(size_type s, const xcomplex<TR, TI, B2>& v)
         : base_type(s, v)
+    {
+    }
+
+    template <class T, bool B, class A>
+    inline xcomplex_vector<T, B, A>::xcomplex_vector(std::initializer_list<value_type> init)
+        : base_type(init)
     {
     }
 
@@ -508,7 +547,7 @@ namespace xtl
         m_it_imag -= n;
         return *this;
     }
-
+    
     template <class IT, bool B>
     inline auto xcomplex_iterator<IT, B>::operator-(const self_type& rhs) const -> difference_type
     {
@@ -526,7 +565,7 @@ namespace xtl
     {
         return pointer(operator*());
     }
-    
+
     template <class IT, bool B>
     inline bool xcomplex_iterator<IT, B>::operator==(const self_type& rhs) const
     {
