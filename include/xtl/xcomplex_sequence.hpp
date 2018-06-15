@@ -91,8 +91,8 @@ namespace xtl
 
         xcomplex_sequence() = default;
         xcomplex_sequence(size_type s, const value_type& v);
-        template <class TR, class TC, bool ieee_compliant>
-        xcomplex_sequence(size_type s, const xcomplex<TR, TC, ieee_compliant>& v);
+        template <class TR, class TC, bool B>
+        xcomplex_sequence(size_type s, const xcomplex<TR, TC, B>& v);
 
         ~xcomplex_sequence() = default;
 
@@ -218,8 +218,8 @@ namespace xtl
     }
 
     template <class C, bool B>
-    template <class TR, class TC, bool ieee_compliant>
-    inline xcomplex_sequence<C, B>::xcomplex_sequence(size_type s, const xcomplex<TR, TC, ieee_compliant>& v)
+    template <class TR, class TC, bool B2>
+    inline xcomplex_sequence<C, B>::xcomplex_sequence(size_type s, const xcomplex<TR, TC, B2>& v)
         : m_real(make_sequence<container_type>(s, v.real())),
           m_imag(make_sequence<container_type>(s, v.imag()))
     {
@@ -527,11 +527,11 @@ namespace xtl
         return pointer(operator*());
     }
     
-    /*template <class IT, bool B>
+    template <class IT, bool B>
     inline bool xcomplex_iterator<IT, B>::operator==(const self_type& rhs) const
     {
         return m_it_real == rhs.m_it_real && m_it_imag == rhs.m_it_imag;
-    }*/
+    }
 }
 
 #endif
