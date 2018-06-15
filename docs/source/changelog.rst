@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.4.10
+------
+
+- `xcomplex` implementation
+- `xcomplex_sequence` implementation
+
 0.4.9
 -----
 
