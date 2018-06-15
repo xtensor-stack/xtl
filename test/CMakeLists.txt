@@ -80,6 +80,7 @@ set(XTL_TESTS
     test_xbase64.cpp
     test_xbasic_fixed_string.cpp
     test_xcomplex.cpp
+    test_xcomplex_sequence.cpp
     test_xclosure.cpp
     test_xdynamic_bitset.cpp
     test_xhash.cpp
