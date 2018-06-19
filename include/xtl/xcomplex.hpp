@@ -11,6 +11,7 @@
 
 #include <complex>
 #include <cstddef>
+#include <limits>
 #include <type_traits>
 #include <utility>
 
@@ -608,7 +609,7 @@ namespace xtl
                 value_type y = std::scalbn((b*c - a*d) / denom, -ilogbw);
                 if (std::isnan(x) && std::isnan(y))
                 {
-                    if ((denom == value_type(0) && !std::isnan(a) || !std::isnan(b)))
+                    if ((denom == value_type(0)) && (!std::isnan(a) || !std::isnan(b)))
                     {
                         x = std::copysign(std::numeric_limits<value_type>::infinity(), c) * a;
                         y = std::copysign(std::numeric_limits<value_type>::infinity(), c) * b;
