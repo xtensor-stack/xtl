@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.4.11
+------
+
+- add missing `<limits>` header in xcomplex
+- fix xcomplex isnan test
+
 0.4.10
 ------
 
