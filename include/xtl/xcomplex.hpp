@@ -87,6 +87,13 @@ namespace xtl
     template <class E, class R = void>
     using enable_xcomplex = std::enable_if_t<is_gen_complex<E>::value, R>;
 
+    /*****************
+     * enable_scalar *
+     *****************/
+
+    template <class E, class R = void>
+    using enable_scalar = std::enable_if_t<std::is_arithmetic<E>::value, R>;
+
     /*******************
      * common_xcomplex *
      *******************/
@@ -139,18 +146,39 @@ namespace xtl
         using imag_rvalue_reference = std::conditional_t<std::is_reference<CTI>::value, apply_cv_t<CTI, value_type>&, value_type>;
         using imag_rvalue_const_reference = std::conditional_t<std::is_reference<CTI>::value, const value_type&, value_type>;
 
-        explicit constexpr xcomplex() noexcept
+        constexpr xcomplex() noexcept
             : m_real(), m_imag()
         {
         }
         
+        template <class OCTR, 
+            std::enable_if_t<
+                conjunction<
+                    negation<is_gen_complex<OCTR>>,
+                    std::is_constructible<CTR, OCTR&&>,
+                    std::is_convertible<OCTR&&, CTR>
+                >::value,
+                bool
+            > = true>
+        constexpr xcomplex(OCTR&& re) noexcept
+            : m_real(std::forward<OCTR>(re)), m_imag()
+        {
+        }
+
         template <class OCTR,
-            std::enable_if_t< negation<is_gen_complex<OCTR>>::value, bool> = true>
+            std::enable_if_t<
+                conjunction<
+                    negation<is_gen_complex<OCTR>>,
+                    std::is_constructible<CTR, OCTR&&>,
+                    negation<std::is_convertible<OCTR&&, CTR>>
+            >::value,
+            bool
+        > = true>
         explicit constexpr xcomplex(OCTR&& re) noexcept
             : m_real(std::forward<OCTR>(re)), m_imag()
         {
         }
-        
+
         template <class OCTR, class OCTI>
         explicit constexpr xcomplex(OCTR&& re, OCTI&& im) noexcept
             : m_real(std::forward<OCTR>(re)), m_imag(std::forward<OCTI>(im))
@@ -254,11 +282,11 @@ namespace xtl
     operator+(const xcomplex<CTR1, CTI1, B1>& lhs, const xcomplex<CTR2, CTI2, B2>& rhs) noexcept;
     
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator+(const xcomplex<CTR, CTI, B>& lhs, const T& rhs) noexcept;
 
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator+(const T& lhs, const xcomplex<CTR, CTI, B>& rhs) noexcept;
 
     template <class CTR1, class CTI1, bool B1, class CTR2, class CTI2, bool B2>
@@ -266,11 +294,11 @@ namespace xtl
     operator-(const xcomplex<CTR1, CTI1, B1>& lhs, const xcomplex<CTR2, CTI2, B2>& rhs) noexcept;
 
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator-(const xcomplex<CTR, CTI, B>& lhs, const T& rhs) noexcept;
 
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator-(const T& lhs, const xcomplex<CTR, CTI, B>& rhs) noexcept;
 
     template <class CTR1, class CTI1, bool B1, class CTR2, class CTI2, bool B2>
@@ -278,11 +306,11 @@ namespace xtl
     operator*(const xcomplex<CTR1, CTI1, B1>& lhs, const xcomplex<CTR2, CTI2, B2>& rhs) noexcept;
 
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator*(const xcomplex<CTR, CTI, B>& lhs, const T& rhs) noexcept;
 
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator*(const T& lhs, const xcomplex<CTR, CTI, B>& rhs) noexcept;
 
     template <class CTR1, class CTI1, bool B1, class CTR2, class CTI2, bool B2>
@@ -290,11 +318,11 @@ namespace xtl
     operator/(const xcomplex<CTR1, CTI1, B1>& lhs, const xcomplex<CTR2, CTI2, B2>& rhs) noexcept;
 
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator/(const xcomplex<CTR, CTI, B>& lhs, const T& rhs) noexcept;
 
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator/(const T& lhs, const xcomplex<CTR, CTI, B>& rhs) noexcept;
 
     /*****************
@@ -356,11 +384,11 @@ namespace xtl
     pow(const xcomplex<CTR1, CTI1, B1>& x, const xcomplex<CTR2, CTI2, B2>& y);
 
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     pow(const xcomplex<CTR, CTI, B>& x, const T& y);
 
     template <class CTR, class CTI, bool B, class T>
-    disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     pow(const T& x, const xcomplex<CTR, CTI, B>& y);
 
     template <class CTR, class CTI, bool B>
@@ -797,7 +825,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator+(const xcomplex<CTR, CTI, B>& lhs, const T& rhs) noexcept
     {
         temporary_xcomplex_t<CTR, CTI, B> res(lhs);
@@ -806,7 +834,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator+(const T& lhs, const xcomplex<CTR, CTI, B>& rhs) noexcept
     {
         temporary_xcomplex_t<CTR, CTI, B> res(lhs);
@@ -824,7 +852,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator-(const xcomplex<CTR, CTI, B>& lhs, const T& rhs) noexcept
     {
         temporary_xcomplex_t<CTR, CTI, B> res(lhs);
@@ -833,7 +861,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator-(const T& lhs, const xcomplex<CTR, CTI, B>& rhs) noexcept
     {
         temporary_xcomplex_t<CTR, CTI, B> res(lhs);
@@ -851,7 +879,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator*(const xcomplex<CTR, CTI, B>& lhs, const T& rhs) noexcept
     {
         temporary_xcomplex_t<CTR, CTI, B> res(lhs);
@@ -860,7 +888,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator*(const T& lhs, const xcomplex<CTR, CTI, B>& rhs) noexcept
     {
         temporary_xcomplex_t<CTR, CTI, B> res(lhs);
@@ -878,7 +906,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator/(const xcomplex<CTR, CTI, B>& lhs, const T& rhs) noexcept
     {
         temporary_xcomplex_t<CTR, CTI, B> res(lhs);
@@ -887,7 +915,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator/(const T& lhs, const xcomplex<CTR, CTI, B>& rhs) noexcept
     {
         temporary_xcomplex_t<CTR, CTI, B> res(lhs);
@@ -981,7 +1009,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     pow(const xcomplex<CTR, CTI, B>& x, const T& y)
     {
         using value_type = typename xcomplex<CTR, CTI, B>::value_type;
@@ -989,7 +1017,7 @@ namespace xtl
     }
 
     template <class CTR, class CTI, bool B, class T>
-    inline disable_xcomplex<T, temporary_xcomplex_t<CTR, CTI, B>>
+    inline enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     pow(const T& x, const xcomplex<CTR, CTI, B>& y)
     {
         using value_type = typename xcomplex<CTR, CTI, B>::value_type;
