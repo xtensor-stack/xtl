@@ -16,6 +16,10 @@
 #include <stdexcept>
 #include <string>
 
+#ifdef __CLING__
+#include <nlohmann/json.hpp>
+#endif
+
 #include "xhash.hpp"
 
 namespace xtl
@@ -2192,6 +2196,16 @@ namespace xtl
         os << str.c_str();
         return os;
     }
+
+#ifdef __CLING__
+    template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
+    nlohmann::json mime_bundle_repr(const xbasic_fixed_string<CT, N, EP, TR>& str)
+    {
+        auto bundle = nlohmann::json::object();
+        bundle["text/plain"] = str.c_str();
+        return bundle;
+    }
+#endif
 
     template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
     inline std::basic_istream<CT, TR>& operator>>(std::basic_istream<CT, TR>& is,
