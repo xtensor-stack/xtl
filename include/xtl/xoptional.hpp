@@ -782,7 +782,7 @@ namespace xtl
     template <class CT, class CB>
     void xoptional<CT, CB>::swap(xoptional& other)
     {
-        std::swap(m_value, other.m_flag);
+        std::swap(m_value, other.m_value);
         std::swap(m_flag, other.m_flag);
     }
 
