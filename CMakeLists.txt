@@ -28,7 +28,7 @@ message(STATUS "xtl v${${PROJECT_NAME}_VERSION}")
 # Dependencies
 # ============
 
-find_package(nlohmann_json)
+find_package(nlohmann_json QUIET)
 
 # Build
 # =====
