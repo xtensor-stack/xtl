@@ -11,6 +11,6 @@
 
 #define XTL_VERSION_MAJOR 0
 #define XTL_VERSION_MINOR 4
-#define XTL_VERSION_PATCH 12
+#define XTL_VERSION_PATCH 13
 
 #endif

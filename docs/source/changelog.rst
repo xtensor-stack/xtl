@@ -7,6 +7,18 @@
 Changelog
 =========
 
+0.4.13
+------
+
+- CMake call to find_package with nlohmann_json is QUIET
+- Fix typo in xoptional swap
+- Added pkgconfig support
+
+0.4.12
+------
+
+- operator overload fixes for xcomplex
+
 0.4.11
 ------
 
