@@ -72,6 +72,9 @@ namespace xtl
         ASSERT_FALSE(v[1].has_value());
         ASSERT_TRUE(v.has_value().front());
         ASSERT_FALSE(v.has_value()[1]);
+
+        v.resize(5);
+        EXPECT_EQ(v.size(), 5);
     }
 
     TEST(xoptional, vector_iteration)
