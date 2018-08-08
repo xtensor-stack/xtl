@@ -109,7 +109,7 @@ namespace xtl
 
         template <class T1, class B1, class T2>
         struct common_optional_impl<xoptional<T1, B1>, T2>
-            : common_optional_impl<T2, xoptional<T1, B1>>
+            : common_optional_impl<T1, T2>
         {
         };
 
