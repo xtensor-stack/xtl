@@ -14,6 +14,10 @@
 #include <type_traits>
 #include <utility>
 
+#ifdef __CLING__
+#include <nlohmann/json.hpp>
+#endif
+
 #include "xclosure.hpp"
 #include "xmeta_utils.hpp"
 #include "xtl_config.hpp"
@@ -833,6 +837,18 @@ namespace xtl
         }
         return out;
     }
+
+#ifdef __CLING__
+    template <class T, class B>
+    nlohmann::json mime_bundle_repr(const xoptional<T, B>& v)
+    {
+        auto bundle = nlohmann::json::object();
+        std::stringstream tmp;
+        tmp << v;
+        bundle["text/plain"] = tmp.str();
+        return bundle;
+    }
+#endif
 
     template <class T1, class B1, class T2, class B2>
     inline auto operator==(const xoptional<T1, B1>& e1, const xoptional<T2, B2>& e2) noexcept

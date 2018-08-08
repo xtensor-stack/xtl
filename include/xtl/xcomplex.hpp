@@ -14,6 +14,12 @@
 #include <limits>
 #include <type_traits>
 #include <utility>
+#include <sstream>
+#include <string>
+
+#ifdef __CLING__
+#include <nlohmann/json.hpp>
+#endif
 
 #include "xclosure.hpp"
 #include "xtl_config.hpp"
@@ -150,8 +156,8 @@ namespace xtl
             : m_real(), m_imag()
         {
         }
-        
-        template <class OCTR, 
+
+        template <class OCTR,
             std::enable_if_t<
                 conjunction<
                     negation<is_gen_complex<OCTR>>,
@@ -184,7 +190,7 @@ namespace xtl
             : m_real(std::forward<OCTR>(re)), m_imag(std::forward<OCTI>(im))
         {
         }
-        
+
         template <class OCTR, class OCTI, bool OB>
         explicit constexpr xcomplex(const xcomplex<OCTR, OCTI, OB>& rhs) noexcept
             : m_real(rhs.real()), m_imag(rhs.imag())
@@ -280,7 +286,7 @@ namespace xtl
     template <class CTR1, class CTI1, bool B1, class CTR2, class CTI2, bool B2>
     common_xcomplex_t<CTR1, CTI1, B1, CTR2, CTI2, B2>
     operator+(const xcomplex<CTR1, CTI1, B1>& lhs, const xcomplex<CTR2, CTI2, B2>& rhs) noexcept;
-    
+
     template <class CTR, class CTI, bool B, class T>
     enable_scalar<T, temporary_xcomplex_t<CTR, CTI, B>>
     operator+(const xcomplex<CTR, CTI, B>& lhs, const T& rhs) noexcept;
@@ -536,7 +542,7 @@ namespace xtl
                 return return_type((c*a + d*b) / e, (c*b - d*a) / e);
             }
         };
-        
+
         template <>
         struct xcomplex_multiplier<true>
         {
@@ -741,7 +747,7 @@ namespace xtl
     {
         return m_imag;
     }
-    
+
     template <class CTR, class CTI, bool B>
     auto xcomplex<CTR, CTI, B>::imag() && noexcept -> imag_rvalue_reference
     {
@@ -753,7 +759,7 @@ namespace xtl
     {
         return m_imag;
     }
-    
+
     template <class CTR, class CTI, bool B>
     constexpr auto xcomplex<CTR, CTI, B>::imag() const && noexcept -> imag_rvalue_const_reference
     {
@@ -800,6 +806,18 @@ namespace xtl
         out << "(" << c.real() << "," << c.imag() << ")";
         return out;
     }
+
+#ifdef __CLING__
+    template <class CTR, class CTI, bool B>
+    nlohmann::json mime_bundle_repr(const xcomplex<CTR, CTI, B>& c)
+    {
+        auto bundle = nlohmann::json::object();
+        std::stringstream tmp;
+        tmp << c;
+        bundle["text/plain"] = tmp.str();
+        return bundle;
+    }
+#endif
 
     template <class CTR, class CTI, bool B>
     inline temporary_xcomplex_t<CTR, CTI, B>
