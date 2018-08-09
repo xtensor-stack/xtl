@@ -7,6 +7,15 @@
 Changelog
 =========
 
+0.4.14
+------
+
+- Fixed typo in 'xtl.pc.in'
+- Removed -march=native from systems that do not support in CMakeLists
+- Added hash.verification result for big-endian systemss
+- Fixed common_optional_impl
+- Implemented xeus-cling mime_bundle_repr for xoptional, xcomplex and xfixed_string
+
 0.4.13
 ------
 
