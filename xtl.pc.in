@@ -3,6 +3,6 @@ libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
 includedir=${prefix}/include
 
 Name: xtl
-Description: Basic tools (containers, algorithms) used by other quantstack packagesexpressions.
+Description: Basic tools (containers, algorithms) used by other quantstack packages.
 Version: @xtl_VERSION@
 Cflags: -I${includedir}
