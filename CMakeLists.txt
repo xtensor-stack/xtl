@@ -9,6 +9,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(xtl)
 
+enable_testing()
+
 set(XTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Versionning

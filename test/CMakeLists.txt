@@ -103,23 +103,31 @@ set(XTL_TESTS
     test_xvariant.cpp
 )
 
+if(nlohmann_json_FOUND)
+    # Version up to 3.1.2 export the target `nlohmann_json`
+    if(TARGET nlohmann_json)
+      set(nlohmann_json_TARGET nlohmann_json)
+    # Newer versions export the namespaced target `nlohmann_json::nlohmann_json`
+    elseif(TARGET nlohmann_json::nlohmann_json)
+      set(nlohmann_json_TARGET nlohmann_json::nlohmann_json)
+    endif()
+endif()
+
+foreach(filename IN LISTS XTL_TESTS)
+    get_filename_component(targetname ${filename} NAME_WE)
+
+    add_executable(${targetname} ${filename})
+    target_link_libraries(${targetname} xtl ${GTEST_BOTH_LIBRARIES} Threads::Threads ${nlohmann_json_TARGET})
+
+    add_test(NAME ${targetname} COMMAND ${targetname})
+endforeach()
+
 set(XTL_TARGET test_xtl)
 
 add_executable(${XTL_TARGET} ${XTL_TESTS} ${XTL_HEADERS})
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     add_dependencies(${XTL_TARGET} gtest_main)
 endif()
-target_link_libraries(${XTL_TARGET} xtl ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-
-if(nlohmann_json_FOUND)
-  # Version up to 3.1.2 export the target `nlohmann_json`
-  if(TARGET nlohmann_json)
-    target_link_libraries(${XTL_TARGET} nlohmann_json)
-  # Newer versions export the namespaced target `nlohmann_json::nlohmann_json`
-  elseif(TARGET nlohmann_json::nlohmann_json)
-    target_link_libraries(${XTL_TARGET} nlohmann_json::nlohmann_json)
-  endif()
-endif()
+target_link_libraries(${XTL_TARGET} xtl ${GTEST_BOTH_LIBRARIES} Threads::Threads ${nlohmann_json_TARGET})
 
 add_custom_target(xtest COMMAND test_xtl DEPENDS ${XTL_TARGET})
-
