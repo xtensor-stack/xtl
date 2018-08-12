@@ -92,14 +92,13 @@ set(XTL_TESTS
     test_xhierarchy_generator.cpp
     test_xiterator_base.cpp
     test_xmeta_utils.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/test_xoptional.cpp
     test_xtype_traits.cpp
     test_xproxy_wrapper.cpp
     test_xvariant.cpp
 )
 
-if(nlohmann_json_FOUND)
-  list(APPEND XTL_TESTS test_xoptional.cpp)
-endif()
+configure_file(test_xoptional.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/test_xoptional.cpp)
 
 set(XTL_TARGET test_xtl)
 
