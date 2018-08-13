@@ -23,6 +23,10 @@ include(CheckCXXCompilerFlag)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 
+if(nlohmann_json_FOUND)
+  add_definitions(-DHAVE_NLOHMANN_JSON)
+endif()
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder -Wconversion -Wsign-conversion")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder -Wconversion")
@@ -92,13 +96,11 @@ set(XTL_TESTS
     test_xhierarchy_generator.cpp
     test_xiterator_base.cpp
     test_xmeta_utils.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/test_xoptional.cpp
+    test_xoptional.cpp
     test_xtype_traits.cpp
     test_xproxy_wrapper.cpp
     test_xvariant.cpp
 )
-
-configure_file(test_xoptional.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/test_xoptional.cpp)
 
 set(XTL_TARGET test_xtl)
 

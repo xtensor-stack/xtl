@@ -16,8 +16,7 @@
 #include "xtl/xany.hpp"
 #include "xtl/xoptional.hpp"
 
-#cmakedefine nlohmann_json_FOUND
-#ifdef nlohmann_json_FOUND
+#ifdef HAVE_NLOHMANN_JSON
 #include "xtl/xjson.hpp"
 #endif
 
@@ -281,7 +280,7 @@ namespace xtl
         EXPECT_EQ(res.has_value(), o.has_value());
     }
 
-#ifdef nlohmann_json_FOUND
+#ifdef HAVE_NLOHMANN_JSON
     TEST(xoptional, json)
     {
         xoptional<double> m1 = missing<double>();
