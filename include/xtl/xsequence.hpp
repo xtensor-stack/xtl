@@ -25,7 +25,7 @@ namespace xtl
     template <class S>
     S make_sequence(typename S::size_type size, typename S::value_type v);
 
-    template <class R, class A>
+    template <class R, class I = void, class A>
     decltype(auto) forward_sequence(A&& s);
 
     // equivalent to std::size(c) in c++17
@@ -141,14 +141,15 @@ namespace xtl
         };
     }
 
-    template <class R, class A>
+    template <class R, class I, class A>
     inline decltype(auto) forward_sequence(A&& s)
     {
         using forwarder = detail::sequence_forwarder<
             std::decay_t<R>,
             std::remove_cv_t<std::remove_reference_t<A>>
         >;
-        return forwarder::template forward<A>(s);
+        using forward_type = std::conditional_t<std::is_same<I, void>::value, A, I>;
+        return forwarder::template forward<forward_type>(s);
     }
 
     /********************************
