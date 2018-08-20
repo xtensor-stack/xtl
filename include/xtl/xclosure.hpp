@@ -38,9 +38,9 @@ namespace xtl
     template <class S>
     struct const_closure_type
     {
-        using underlying_type = const std::decay_t<S>;
+        using underlying_type = std::decay_t<S>;
         using type = typename std::conditional<std::is_lvalue_reference<S>::value,
-                                               underlying_type&,
+                                               std::add_const_t<underlying_type>&,
                                                underlying_type>::type;
     };
 
