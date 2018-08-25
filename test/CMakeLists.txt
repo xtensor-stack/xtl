@@ -12,6 +12,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     project(xtl-test)
 
     find_package(xtl REQUIRED CONFIG)
+    find_package(nlohmann_json QUIET CONFIG)
     set(XTL_INCLUDE_DIR ${xtl_INCLUDE_DIRS})
 endif ()
 
@@ -22,6 +23,10 @@ include(CheckCXXCompilerFlag)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 
+if(nlohmann_json_FOUND)
+  add_definitions(-DHAVE_NLOHMANN_JSON)
+endif()
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder -Wconversion -Wsign-conversion")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder -Wconversion")
@@ -29,13 +34,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU"
     CHECK_CXX_COMPILER_FLAG("-march=native" HAS_MARCH_NATIVE)
     if (HAS_MARCH_NATIVE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-    endif()
-
-    CHECK_CXX_COMPILER_FLAG("-std=c++14" HAS_CPP14_FLAG)
-    if (HAS_CPP14_FLAG)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-    else()
-        message(FATAL_ERROR "Unsupported compiler -- xtl requires C++14 support!")
     endif()
 endif()
 
@@ -111,7 +109,17 @@ add_executable(${XTL_TARGET} ${XTL_TESTS} ${XTL_HEADERS})
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     add_dependencies(${XTL_TARGET} gtest_main)
 endif()
-target_link_libraries(${XTL_TARGET} xtl nlohmann_json ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${XTL_TARGET} xtl ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
+if(nlohmann_json_FOUND)
+  # Version up to 3.1.2 export the target `nlohmann_json`
+  if(TARGET nlohmann_json)
+    target_link_libraries(${XTL_TARGET} nlohmann_json)
+  # Newer versions export the namespaced target `nlohmann_json::nlohmann_json`
+  elseif(TARGET nlohmann_json::nlohmann_json)
+    target_link_libraries(${XTL_TARGET} nlohmann_json::nlohmann_json)
+  endif()
+endif()
 
 add_custom_target(xtest COMMAND test_xtl DEPENDS ${XTL_TARGET})
 

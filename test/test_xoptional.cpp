@@ -15,7 +15,11 @@
 
 #include "xtl/xany.hpp"
 #include "xtl/xoptional.hpp"
+
+#ifdef HAVE_NLOHMANN_JSON
 #include "xtl/xjson.hpp"
+#endif
+
 #include "xtl/xoptional_sequence.hpp"
 
 namespace xtl
@@ -276,6 +280,7 @@ namespace xtl
         EXPECT_EQ(res.has_value(), o.has_value());
     }
 
+#ifdef HAVE_NLOHMANN_JSON
     TEST(xoptional, json)
     {
         xoptional<double> m1 = missing<double>();
@@ -287,4 +292,5 @@ namespace xtl
         nlohmann::json j2 = m2;
         EXPECT_EQ(j2.get<xoptional<double>>(), 3.0);
     }
+#endif
 }
