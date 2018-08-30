@@ -11,6 +11,8 @@ cmake_minimum_required(VERSION 3.1)
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     project(xtl-test)
 
+    enable_testing()
+
     find_package(xtl REQUIRED CONFIG)
     find_package(nlohmann_json QUIET CONFIG)
     set(XTL_INCLUDE_DIR ${xtl_INCLUDE_DIRS})
