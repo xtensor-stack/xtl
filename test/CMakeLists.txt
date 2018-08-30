@@ -11,6 +11,8 @@ cmake_minimum_required(VERSION 3.1)
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     project(xtl-test)
 
+    enable_testing()
+
     find_package(xtl REQUIRED CONFIG)
     find_package(nlohmann_json QUIET CONFIG)
     set(XTL_INCLUDE_DIR ${xtl_INCLUDE_DIRS})
@@ -27,18 +29,17 @@ if(nlohmann_json_FOUND)
   add_definitions(-DHAVE_NLOHMANN_JSON)
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder -Wconversion -Wsign-conversion")
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter -Wextra -Wreorder -Wconversion")
+if(CMAKE_CXX_COMPILER_ID MATCHES Clang OR CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Intel)
+    add_compile_options(-Wunused-parameter -Wextra -Wreorder -Wconversion -Wsign-conversion)
 
-    CHECK_CXX_COMPILER_FLAG("-march=native" HAS_MARCH_NATIVE)
+    CHECK_CXX_COMPILER_FLAG(-march=native HAS_MARCH_NATIVE)
     if (HAS_MARCH_NATIVE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+        add_compile_options(-march=native)
     endif()
 endif()
 
-if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /MP /bigobj")
+if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    add_compile_options(/EHsc /MP /bigobj)
     set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
 endif()
 
@@ -85,7 +86,6 @@ endif(BIG_ENDIAN)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 set(XTL_TESTS
-    main.cpp
     test_xbase64.cpp
     test_xbasic_fixed_string.cpp
     test_xcomplex.cpp
@@ -103,23 +103,31 @@ set(XTL_TESTS
     test_xvariant.cpp
 )
 
+if(nlohmann_json_FOUND)
+    # Version up to 3.1.2 export the target `nlohmann_json`
+    if(TARGET nlohmann_json)
+      set(nlohmann_json_TARGET nlohmann_json)
+    # Newer versions export the namespaced target `nlohmann_json::nlohmann_json`
+    elseif(TARGET nlohmann_json::nlohmann_json)
+      set(nlohmann_json_TARGET nlohmann_json::nlohmann_json)
+    endif()
+endif()
+
+foreach(filename IN LISTS XTL_TESTS)
+    get_filename_component(targetname ${filename} NAME_WE)
+
+    add_executable(${targetname} ${filename})
+    target_link_libraries(${targetname} xtl ${GTEST_BOTH_LIBRARIES} Threads::Threads ${nlohmann_json_TARGET})
+
+    add_test(NAME ${targetname} COMMAND ${targetname})
+endforeach()
+
 set(XTL_TARGET test_xtl)
 
 add_executable(${XTL_TARGET} ${XTL_TESTS} ${XTL_HEADERS})
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     add_dependencies(${XTL_TARGET} gtest_main)
 endif()
-target_link_libraries(${XTL_TARGET} xtl ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-
-if(nlohmann_json_FOUND)
-  # Version up to 3.1.2 export the target `nlohmann_json`
-  if(TARGET nlohmann_json)
-    target_link_libraries(${XTL_TARGET} nlohmann_json)
-  # Newer versions export the namespaced target `nlohmann_json::nlohmann_json`
-  elseif(TARGET nlohmann_json::nlohmann_json)
-    target_link_libraries(${XTL_TARGET} nlohmann_json::nlohmann_json)
-  endif()
-endif()
+target_link_libraries(${XTL_TARGET} xtl ${GTEST_BOTH_LIBRARIES} Threads::Threads ${nlohmann_json_TARGET})
 
 add_custom_target(xtest COMMAND test_xtl DEPENDS ${XTL_TARGET})
-
