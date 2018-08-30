@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.4.15
+------
+
+- Value types in const closures are not const qualified anymore, to allow move
+- Added third template parameter to forward_sequence that allows for true
+  forwarding of sequences
+
 0.4.14
 ------
 
