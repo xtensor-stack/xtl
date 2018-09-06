@@ -455,6 +455,36 @@ namespace xtl
         template <class S1, class S2>
         using merge_set_t = typename merge_set<S1, S2>::type;
 
+        /***********
+         * find_if *
+         ***********/
+
+        template <template <class> class Test, class L>
+        struct find_if;
+
+        namespace detail
+        {
+            template <template <class> class Test, std::size_t I, class... T>
+            struct find_if_impl;
+
+            template <template <class> class Test, std::size_t I>
+            struct find_if_impl<Test, I> : size_t_<I>
+            {
+            };
+
+            template <template <class> class Test, std::size_t I, class T0, class... T>
+            struct find_if_impl<Test, I, T0, T...> : std::conditional_t<Test<T0>::value,
+                                                                        size_t_<I>,
+                                                                        find_if_impl<Test, I + 1, T...>>
+            {
+            };
+        }
+
+        template <template <class> class Test, template <class...> class L, class... T>
+        struct find_if<Test, L<T...>> : detail::find_if_impl<Test, 0, T...>
+        {
+        };
+
         /*************
          * static_if *
          *************/
