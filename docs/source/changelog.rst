@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.4.16
+------
+
+- meta find_if implementation
+- Enable CTest and CMake cleanup
+- Make nlohmann_json optional in the tests, exported C++14 requirements
+
 0.4.15
 ------
 
