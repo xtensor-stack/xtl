@@ -360,44 +360,6 @@ namespace xtl
         template <class L>
         using pop_front_t = typename pop_front<L>::type;
 
-        /************
-         * pop_back *
-         ************/
-
-        namespace detail
-        {
-            template <class L>
-            struct pop_back_impl;
-
-            template <template <class...> class L, class T>
-            struct pop_back_impl<L<T>>
-            {
-                using type = L<>;
-            };
-
-            template <template <class...> class L, class T1, class T2>
-            struct pop_back_impl<L<T1, T2>>
-            {
-                using head = T1;
-                using type = L<head>;
-            };
-
-            template <template <class...> class L, class T, class... U>
-            struct pop_back_impl<L<T, U...>>
-            {
-                using head = T;
-                using type = L<head, typename pop_back_impl<L<U...>>::head>;
-            };
-        }
-
-        template <class L>
-        struct pop_back : detail::pop_back_impl<L>
-        {
-        };
-
-        template <class L>
-        using pop_back_t = typename pop_back<L>::type;
-
         /*************
          * transform *
          *************/

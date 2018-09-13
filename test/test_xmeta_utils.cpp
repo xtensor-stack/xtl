@@ -126,14 +126,6 @@ namespace xtl
         EXPECT_TRUE(res);
     }
 
-    TEST(mpl, pop_back)
-    {
-        using type = mpl::pop_back_t<vector_t>;
-        using res_type = mpl::vector<int, double>;
-        bool res = std::is_same<type, res_type>::value;
-        EXPECT_TRUE(res);
-    }
-
     TEST(mpl, transform)
     {
         using type = mpl::transform_t<std::add_pointer_t, vector_t>;
