@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "xtl_config.hpp"
+#include "xmeta_utils.hpp"
 
 namespace xtl
 {
@@ -99,13 +100,34 @@ namespace xtl
 
     namespace detail
     {
+        template <class E, class = void>
+        struct has_resize : std::false_type
+        {
+        };
+
+        template <class E>
+        struct has_resize<E, void_t<decltype(std::declval<E>().resize(std::size_t()))>>
+            : std::true_type
+        {
+        };
+
         template <class R, class A, class E = void>
         struct sequence_forwarder
         {
             template <class T>
-            static inline R forward(const T& r)
+            static inline auto forward(const T& r)
+                -> std::enable_if_t<has_resize<T>::value, R>
             {
                 return R(std::begin(r), std::end(r));
+            }
+
+            template <class T>
+            static inline auto forward(const T& r)
+                -> std::enable_if_t<!has_resize<T>::value, R>
+            {
+                R res;
+                std::copy(std::begin(r), std::end(r), std::begin(res));
+                return res;
             }
         };
 

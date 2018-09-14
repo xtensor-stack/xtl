@@ -16,6 +16,19 @@
 
 namespace xtl
 {
+    // TODO move to a xutils if we have one
+
+    // gcc 4.9 is affected by C++14 defect CGW 1558
+    // see http://open-std.org/JTC1/SC22/WG21/docs/cwg_defects.html#1558
+    template <class... T>
+    struct make_void
+    {
+        using type = void;
+    };
+
+    template <class... T>
+    using void_t = typename make_void<T...>::type;
+
     namespace mpl
     {
         /*************
