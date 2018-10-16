@@ -17,6 +17,20 @@
 
 namespace xtl
 {
+
+#ifdef __cpp_lib_as_const
+    using std::as_const;
+#else
+    template <class T>
+    constexpr std::add_const_t<T>& as_const(T& t) noexcept
+    {
+        return t;
+    }
+
+    template <class T>
+    constexpr std::add_const_t<T&&>& as_const(T&& t) noexcept = delete;
+#endif
+
     /****************
      * closure_type *
      ****************/

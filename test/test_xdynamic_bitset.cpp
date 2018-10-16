@@ -10,6 +10,7 @@
 
 #include "xtl/xdynamic_bitset.hpp"
 
+
 namespace xtl
 {
     using bitset = xdynamic_bitset<uint64_t>;
@@ -174,7 +175,7 @@ namespace xtl
         EXPECT_FALSE(b.back());
     }
 
-    TEST(xdynamic_bitset, pop_back)
+    TEST(xdynamic_bitset, p_back)
     {
         bitset b(80u, false);
         b.push_back(true);
@@ -480,13 +481,5 @@ namespace xtl
         EXPECT_FALSE(b1 == b2);
         EXPECT_TRUE(b1 != b2);
         EXPECT_FALSE(b1 != b1);
-        EXPECT_TRUE(b2 <= b1);
-        EXPECT_FALSE(b1 <= b2);
-        EXPECT_TRUE(b2 < b1);
-        EXPECT_FALSE(b1 < b2);
-        EXPECT_TRUE(b1 >= b2);
-        EXPECT_FALSE(b2 >= b1);
-        EXPECT_TRUE(b1 > b2);
-        EXPECT_FALSE(b2 > b1);
     }
 }
