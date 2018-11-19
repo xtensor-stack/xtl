@@ -34,12 +34,19 @@ namespace xtl
         struct throwing_error;
     }
 
-
     /***********************
      * xbasic_fixed_string *
      ***********************/
 
-    template <class CT, std::size_t N = 55, int ST = true, template <std::size_t> class EP = string_policy::silent_error, class TR = std::char_traits<CT>>
+    enum storage_options
+    {
+        buffer = 1 << 0,
+        pointer = 1 << 1,
+        store_size = 1 << 2,
+        is_const = 1 << 3
+    };
+
+    template <class CT, std::size_t N = 55, int ST = buffer | store_size, template <std::size_t> class EP = string_policy::silent_error, class TR = std::char_traits<CT>>
     class xbasic_fixed_string;
 
     template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
@@ -49,14 +56,6 @@ namespace xtl
     template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
     std::basic_istream<CT, TR>& operator>>(std::basic_istream<CT, TR>& is,
                                            xbasic_fixed_string<CT, N, ST, EP, TR>& str);
-
-    enum storage_options
-    {
-        buffer = 1 << 0,
-        pointer = 1 << 1,
-        store_size = 1 << 2,
-        is_const = 1 << 3
-    };
 
     template <class CT>
     using xbasic_string_view = xbasic_fixed_string<const CT, 0, pointer | store_size | is_const>;
@@ -69,6 +68,8 @@ namespace xtl
         template <class T, std::size_t N>
         struct fixed_string_storage_impl
         {
+            fixed_string_storage_impl() = default;
+
             fixed_string_storage_impl(T ptr, std::size_t size)
                 : m_buffer(ptr), m_size(size)
             {
@@ -92,13 +93,13 @@ namespace xtl
             void set_size(std::size_t sz)
             {
                 m_size = sz;
-                m_buffer[sz + 1] = '\0';
+                m_buffer[sz] = '\0';
             }
 
             void adjust_size(std::ptrdiff_t val)
             {
                 m_size += val;
-                m_buffer[m_size + 1] = '\0';
+                m_buffer[m_size] = '\0';
             }
 
             T m_buffer;
@@ -120,12 +121,12 @@ namespace xtl
 
             void set_size(std::size_t sz)
             {
-                m_buffer[sz + 1] = '\0';
+                m_buffer[sz] = '\0';
             }
 
             void adjust_size(std::ptrdiff_t val)
             {
-                m_buffer[size() + val + 1] = '\0';
+                m_buffer[size() + val] = '\0';
             }
 
             std::size_t size() const
@@ -209,15 +210,15 @@ namespace xtl
         {
         }
 
-        xbasic_fixed_string(size_type count, value_type ch);
-        xbasic_fixed_string(const self_type& other,
+        explicit xbasic_fixed_string(size_type count, value_type ch);
+        explicit xbasic_fixed_string(const self_type& other,
                             size_type pos,
                             size_type count = npos);
-        xbasic_fixed_string(const string_type& other);
-        xbasic_fixed_string(const string_type& other,
-                            size_type pos,
-                            size_type count = npos);
-        // xbasic_fixed_string(const_pointer s, size_type count);
+        explicit xbasic_fixed_string(const string_type& other);
+        explicit xbasic_fixed_string(const string_type& other,
+                                     size_type pos,
+                                     size_type count = npos);
+        xbasic_fixed_string(const_pointer s, size_type count);
         xbasic_fixed_string(const_pointer s);
         xbasic_fixed_string(initializer_type ilist);
 
@@ -747,12 +748,12 @@ namespace xtl
         assign(other, pos, count);
     }
 
-    // template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
-    // inline xbasic_fixed_string<CT, N, ST, EP, TR>::xbasic_fixed_string(const_pointer s, size_type count)
-    //     : m_size(0)
-    // {
-    //     assign(s, count);
-    // }
+    template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
+    inline xbasic_fixed_string<CT, N, ST, EP, TR>::xbasic_fixed_string(const_pointer s, size_type count)
+        : m_storage()
+    {
+        assign(s, count);
+    }
 
     template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
     inline xbasic_fixed_string<CT, N, ST, EP, TR>::xbasic_fixed_string(const_pointer s)
@@ -2313,7 +2314,7 @@ namespace xtl
     }
 #endif
 
-    template <class CT, std::size_t N, bool INTERNAL, template <std::size_t> class EP, class TR>
+    template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
     inline std::basic_istream<CT, TR>& operator>>(std::basic_istream<CT, TR>& is,
                                                   xbasic_fixed_string<CT, N, ST, EP, TR>& str)
     {
