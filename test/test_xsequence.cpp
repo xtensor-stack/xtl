@@ -15,12 +15,18 @@
 
 namespace xtl
 {
-    bool result(const std::array<int, 2>& lval)
+    template <class T, std::size_t N>
+    struct aligned_array
+        : std::array<T, N>
+    {
+    };
+
+    bool result(const std::array<int, 2>& /*lval*/)
     {
         return false;
     }
 
-    bool result(std::array<int, 2>&& lval)
+    bool result(std::array<int, 2>&& /*lval*/)
     {
         return true;
     }
@@ -52,6 +58,21 @@ namespace xtl
         EXPECT_FALSE(test_wrong(a));
         EXPECT_TRUE(test_wrong(c));
         EXPECT_TRUE(test_wrong(std::move(c)));
+    }
+
+    template <class R, class T>
+    R test_different_array(T& array)
+    {
+        return xtl::forward_sequence<R, T>(array);
+    }
+
+    TEST(xsequence, different_arrays)
+    {
+        std::array<int, 3> x, y;
+        aligned_array<int, 3> aa, ab;
+
+        auto res1 = test_different_array<aligned_array<int, 3>>(x);
+        auto res2 = test_different_array<aligned_array<int, 3>>(aa);
     }
 }
 
