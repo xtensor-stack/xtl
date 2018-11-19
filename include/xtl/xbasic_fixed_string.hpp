@@ -75,12 +75,12 @@ namespace xtl
             {
             }
 
-            constexpr auto buffer()
+            T& buffer()
             {
                 return m_buffer;
             }
 
-            constexpr auto buffer() const
+            const T& buffer() const
             {
                 return m_buffer;
             }
@@ -109,12 +109,12 @@ namespace xtl
         template <class T, std::size_t N>
         struct fixed_string_external_storage_impl
         {
-            constexpr auto buffer()
+            T& buffer()
             {
                 return m_buffer;
             }
 
-            constexpr auto buffer() const
+            const T& buffer() const
             {
                 return m_buffer;
             }
