@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "xclosure.hpp"
+#include "xspan.hpp"
 #include "xiterator_base.hpp"
 
 namespace xtl
@@ -38,13 +39,16 @@ namespace xtl
     struct xdynamic_bitset_traits;
 
     template <class X>
-    struct container_internals
+    struct container_internals;
+
+    template <class X>
+    struct container_internals<xtl::span<X>>
     {
-        using value_type = std::decay_t<std::remove_pointer_t<X>>;
+        using value_type = typename xtl::span<X>::value_type;
         static_assert(std::is_scalar<value_type>::value, "");
         using allocator_type = std::allocator<value_type>;
         using size_type = std::size_t;
-        using difference_type = std::ptrdiff_t;
+        using difference_type = typename xtl::span<X>::difference_type;
     };
 
     template <class X, class A>
@@ -63,11 +67,10 @@ namespace xtl
     public:
 
         using self_type = xdynamic_bitset_base<B>;
-
         using derived_class = B;
 
-        using storage_type = std::decay_t<typename xdynamic_bitset_traits<B>::storage_type>;
-        using block_type = typename container_internals<storage_type>::value_type;
+        using storage_type = typename xdynamic_bitset_traits<B>::storage_type;
+        using block_type = typename storage_type::value_type;
         using temporary_type = xdynamic_bitset<block_type, std::allocator<block_type>>;
 
         using allocator_type = typename container_internals<storage_type>::allocator_type;
@@ -78,16 +81,13 @@ namespace xtl
         using pointer = typename reference::pointer;
         using const_pointer = typename const_reference::pointer;
         using size_type = typename container_internals<storage_type>::size_type;
-        using difference_type = typename container_internals<storage_type>::difference_type;
+        using difference_type = typename storage_type::difference_type;
         using iterator = xbitset_iterator<derived_class, false>;
         using const_iterator = xbitset_iterator<derived_class, true>;
         using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-        explicit xdynamic_bitset_base(const storage_type& buffer, std::size_t size)
-            : m_size(size), m_buffer(buffer)
-        {
-        }
+        using const_block_iterator = typename storage_type::const_iterator;
 
         bool empty() const noexcept;
         size_type size() const noexcept;
@@ -124,14 +124,8 @@ namespace xtl
         const_reverse_iterator crbegin() const noexcept;
         const_reverse_iterator crend() const noexcept;
 
-        auto block_begin() const noexcept
-        {
-            return &(m_buffer[0]);
-        }
-        auto block_end() const noexcept
-        {
-            return &(m_buffer[block_count() + 1]);
-        }
+        const_block_iterator block_begin() const noexcept;
+        const_block_iterator block_end() const noexcept;
 
         template <class R>
         self_type& operator&=(const xdynamic_bitset_base<R>& rhs);
@@ -163,20 +157,23 @@ namespace xtl
         block_type* data() noexcept;
         const block_type* data() const noexcept;
 
-        bool operator==(const self_type& rhs) const noexcept;
-        bool operator!=(const self_type& rhs) const noexcept;
+        template <class Y>
+        bool operator==(const xdynamic_bitset_base<Y>& rhs) const noexcept;
+        template <class Y>
+        bool operator!=(const xdynamic_bitset_base<Y>& rhs) const noexcept;
 
-        derived_class& derived_cast()
-        {
-            return *(reinterpret_cast<derived_class*>(this));
-        }
-
-        const derived_class& derived_cast() const
-        {
-            return *(reinterpret_cast<const derived_class*>(this));
-        }
+        derived_class& derived_cast();
+        const derived_class& derived_cast() const;
 
     protected:
+
+        xdynamic_bitset_base(const storage_type& buffer, std::size_t size);
+
+        ~xdynamic_bitset_base() = default;
+        xdynamic_bitset_base(const xdynamic_bitset_base& rhs) = default;
+        xdynamic_bitset_base(xdynamic_bitset_base&& rhs) = default;
+        xdynamic_bitset_base& operator=(const xdynamic_bitset_base& rhs) = default;
+        xdynamic_bitset_base& operator=(xdynamic_bitset_base&& rhs) = default;
 
         size_type m_size;
         storage_type m_buffer;
@@ -203,26 +200,49 @@ namespace xtl
     public:
 
         using base_class = xdynamic_bitset_base<xdynamic_bitset_view<X>>;
-        using storage_type = X;
+        using storage_type = typename base_class::storage_type;
+        using block_type = typename base_class::block_type;
 
-        xdynamic_bitset_view(X ptr, std::size_t size)
-            : base_class(ptr, size)
-        {
-        }
+        xdynamic_bitset_view(block_type* ptr, std::size_t size);
 
-        void resize(std::size_t sz)
-        {
-            if (sz != this->m_size) {
-                throw std::runtime_error("cannot resize bitset_view");
-            }
-        }
+        xdynamic_bitset_view() = default;
+        ~xdynamic_bitset_view() = default;
+        xdynamic_bitset_view(const xdynamic_bitset_view& rhs) = default;
+        xdynamic_bitset_view(xdynamic_bitset_view&& rhs) = default;
+        xdynamic_bitset_view& operator=(const xdynamic_bitset_view& rhs) = default;
+        xdynamic_bitset_view& operator=(xdynamic_bitset_view&& rhs) = default;
+
+        void resize(std::size_t sz);
     };
+
+    namespace detail_bitset
+    {
+        template <class T>
+        constexpr T integer_ceil(T n, T div)
+        {
+            return (n + div - T(1)) / div;
+        }
+    }
+
+    template <class X>
+    inline xdynamic_bitset_view<X>::xdynamic_bitset_view(block_type* ptr, std::size_t size)
+        : base_class(storage_type(ptr, detail_bitset::integer_ceil(size, base_class::s_bits_per_block)), size)
+    {
+    }
+
+    template <class X>
+    inline void xdynamic_bitset_view<X>::resize(std::size_t sz)
+    {
+        if (sz != this->m_size) {
+            throw std::runtime_error("cannot resize bitset_view");
+        }
+    }
 
     template <class X>
     struct xdynamic_bitset_traits<xdynamic_bitset_view<X>>
     {
-        using storage_type = X;
-        using block_type = std::decay_t<std::remove_pointer_t<X>>;
+        using storage_type = xtl::span<X>;
+        using block_type = typename storage_type::value_type;
     };
 
     template <class B, class A = std::allocator<B>>
@@ -392,23 +412,27 @@ namespace xtl
         using base_type::rend;
         using base_type::size;
 
+        xdynamic_bitset();
+
         explicit xdynamic_bitset(const allocator_type& allocator);
 
         xdynamic_bitset(size_type count, bool b, const allocator_type& alloc = allocator_type());
-
         explicit xdynamic_bitset(size_type count, const allocator_type& alloc = allocator_type());
+        xdynamic_bitset(std::initializer_list<bool> init, const allocator_type& alloc = allocator_type());
+
         template <class BlockInputIt>
         xdynamic_bitset(BlockInputIt first, BlockInputIt last, const allocator_type& alloc = allocator_type());
 
-        xdynamic_bitset(std::initializer_list<bool> init, const allocator_type& alloc = allocator_type());
+        xdynamic_bitset(const xdynamic_bitset& rhs);
 
+        // Allow creation from views for e.g. temporary creation
         template <class Y>
-        xdynamic_bitset(const xdynamic_bitset_base<Y>& rhs)
-            : base_type(storage_type(rhs.block_begin(), rhs.block_end()), rhs.size())
-        {
-        }
+        xdynamic_bitset(const xdynamic_bitset_base<Y>& rhs);
 
-        xdynamic_bitset();
+        ~xdynamic_bitset() = default;
+        xdynamic_bitset(xdynamic_bitset&& rhs) = default;
+        xdynamic_bitset& operator=(const xdynamic_bitset& rhs) = default;
+        xdynamic_bitset& operator=(xdynamic_bitset&& rhs) = default;
 
         void assign(size_type count, bool b);
         template <class BlockInputIt>
@@ -433,13 +457,13 @@ namespace xtl
 
     template <class B, class A>
     inline xdynamic_bitset<B, A>::xdynamic_bitset()
-        : base_type(storage_type(0, allocator_type()), 0)
+        : base_type(storage_type(), size_type(0))
     {
     }
 
     template <class B, class A>
     inline xdynamic_bitset<B, A>::xdynamic_bitset(const allocator_type& allocator)
-        : base_type(storage_type(0, allocator), 0)
+        : base_type(storage_type(allocator), size_type(0))
     {
     }
 
@@ -461,7 +485,6 @@ namespace xtl
     inline xdynamic_bitset<B, A>::xdynamic_bitset(BlockInputIt first, BlockInputIt last, const allocator_type& alloc)
         : base_type(storage_type(first, last, alloc), std::distance(first, last) * base_type::s_bits_per_block)
     {
-        // m_size = m_buffer.size() * s_bits_per_block;
     }
 
     template <class B, class A>
@@ -469,6 +492,19 @@ namespace xtl
         : xdynamic_bitset(init.size(), alloc)
     {
         std::copy(init.begin(), init.end(), begin());
+    }
+
+    template <class B, class A>
+    inline xdynamic_bitset<B, A>::xdynamic_bitset(const xdynamic_bitset& rhs)
+        : base_type(storage_type(rhs.block_begin(), rhs.block_end()), rhs.size())
+    {
+    }
+
+    template <class B, class A>
+    template <class Y>
+    inline xdynamic_bitset<B, A>::xdynamic_bitset(const xdynamic_bitset_base<Y>& rhs)
+        : base_type(storage_type(rhs.block_begin(), rhs.block_end()), rhs.size())
+    {
     }
 
     template <class B, class A>
@@ -595,12 +631,14 @@ namespace xtl
     template <class B>
     inline auto xdynamic_bitset_base<B>::at(size_type i) -> reference
     {
+        // TODO add real check, remove m_buffer.at ...
         return reference(m_buffer.at(block_index(i)), bit_index(i));
     }
 
     template <class B>
     inline auto xdynamic_bitset_base<B>::at(size_type i) const -> const_reference
     {
+        // TODO add real check, remove m_buffer.at ...
         return const_reference(m_buffer.at(block_index(i)), bit_index(i));
     }
 
@@ -710,6 +748,18 @@ namespace xtl
     inline auto xdynamic_bitset_base<B>::crend() const noexcept -> const_reverse_iterator
     {
         return const_reverse_iterator(cbegin());
+    }
+
+    template <class B>
+    inline auto xdynamic_bitset_base<B>::block_begin() const noexcept -> const_block_iterator
+    {
+        return m_buffer.begin();
+    }
+
+    template <class B>
+    inline auto xdynamic_bitset_base<B>::block_end() const noexcept -> const_block_iterator
+    {
+        return m_buffer.end();
     }
 
     template <class B>
@@ -966,34 +1016,88 @@ namespace xtl
     template <class B>
     inline auto xdynamic_bitset_base<B>::block_count() const noexcept -> size_type
     {
-        return (m_size + s_bits_per_block - 1) / s_bits_per_block;
-        // Note: use static if to use the function below if available!
-        // return m_buffer.size();
+        return m_buffer.size();
     }
 
     template <class B>
     inline auto xdynamic_bitset_base<B>::data() noexcept -> block_type*
     {
-        return &(m_buffer[0]);
+        return m_buffer.data();
     }
 
     template <class B>
     inline auto xdynamic_bitset_base<B>::data() const noexcept -> const block_type*
     {
-        // for std::vector it would be better to call return m_buffer.data();
-        return &(m_buffer[0]);
+        return m_buffer.data();
     }
 
     template <class B>
-    inline bool xdynamic_bitset_base<B>::operator==(const self_type& rhs) const noexcept
+    template <class Y>
+    inline bool xdynamic_bitset_base<B>::operator==(const xdynamic_bitset_base<Y>& rhs) const noexcept
     {
-        return m_size == rhs.m_size && m_buffer == rhs.m_buffer;
+        bool is_equal = m_size == rhs.m_size;
+        if (!is_equal) { return false; }
+        // we know that block type of lhs & rhs is the same
+        auto block1 = block_begin();
+        auto block2 = rhs.block_begin();
+
+        auto n_blocks = block_count();
+        auto n_leftover = m_size % s_bits_per_block;
+
+        if (n_leftover == 0)
+        {
+            for (std::size_t i = 0; i < n_blocks; ++i)
+            {
+                if (m_buffer[i] != rhs.m_buffer[i])
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            for (std::size_t i = 0; i < n_blocks - 1; ++i)
+            {
+                if (m_buffer[i] != rhs.m_buffer[i])
+                {
+                    return false;
+                }
+            }
+
+            constexpr block_type all_ones = ~block_type(0);
+            block_type mask = all_ones >> (s_bits_per_block - (n_leftover));
+
+            if ((m_buffer[n_blocks - 1] & mask) != (rhs.m_buffer[n_blocks - 1] & mask))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     template <class B>
-    inline bool xdynamic_bitset_base<B>::operator!=(const self_type& rhs) const noexcept
+    template <class Y>
+    inline bool xdynamic_bitset_base<B>::operator!=(const xdynamic_bitset_base<Y>& rhs) const noexcept
     {
         return !(*this == rhs);
+    }
+
+    template <class B>
+    inline auto xdynamic_bitset_base<B>::derived_cast() -> derived_class&
+    {
+        return *(reinterpret_cast<derived_class*>(this));
+    }
+
+    template <class B>
+    inline auto xdynamic_bitset_base<B>::derived_cast() const -> const derived_class& 
+    {
+        return *(reinterpret_cast<const derived_class*>(this));
+    }
+
+    template <class B>
+    inline xdynamic_bitset_base<B>::xdynamic_bitset_base(const storage_type& buffer, std::size_t size)
+        : m_size(size), m_buffer(buffer)
+    {
     }
 
     template <class B>

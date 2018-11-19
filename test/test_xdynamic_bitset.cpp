@@ -10,7 +10,6 @@
 
 #include "xtl/xdynamic_bitset.hpp"
 
-
 namespace xtl
 {
     using bitset = xdynamic_bitset<uint64_t>;
@@ -175,7 +174,7 @@ namespace xtl
         EXPECT_FALSE(b.back());
     }
 
-    TEST(xdynamic_bitset, p_back)
+    TEST(xdynamic_bitset, pop_back)
     {
         bitset b(80u, false);
         b.push_back(true);
@@ -481,5 +480,32 @@ namespace xtl
         EXPECT_FALSE(b1 == b2);
         EXPECT_TRUE(b1 != b2);
         EXPECT_FALSE(b1 != b1);
+
+        auto b11 = b1;
+        b11[79] = false;
+        EXPECT_FALSE(b11 == b2);
+        EXPECT_FALSE(b11 == b1);
+    }
+
+
+    TEST(xdynamic_bitset, view)
+    {
+        using bitset_view = xdynamic_bitset_view<std::size_t>;
+        std::size_t i = 0b00001100;
+        auto bv = bitset_view(&i, 8);
+
+        EXPECT_EQ(bv[0], false);
+        EXPECT_EQ(bv[1], false);
+        EXPECT_EQ(bv[2], true);
+        EXPECT_EQ(bv[3], true);
+
+        auto be = bitset({false, false, true, true, false, false, false, false});
+
+        std::size_t j = 0b11110011;
+        auto jbv = bitset_view(&j, 8);
+        EXPECT_EQ(jbv, ~bv);
+        bv.flip();
+        EXPECT_EQ(jbv, bv);
+        EXPECT_EQ(i, j);
     }
 }
