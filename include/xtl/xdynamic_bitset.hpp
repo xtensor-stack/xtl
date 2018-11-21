@@ -36,7 +36,24 @@ namespace xtl
     class xdynamic_bitset;
 
     template <class X>
+    class xdynamic_bitset_view;
+
+    template <class X>
     struct xdynamic_bitset_traits;
+
+    template <class B, class A>
+    struct xdynamic_bitset_traits<xdynamic_bitset<B, A>>
+    {
+        using storage_type = std::vector<B, A>;
+        using block_type = typename storage_type::value_type;
+    };
+
+    template <class X>
+    struct xdynamic_bitset_traits<xdynamic_bitset_view<X>>
+    {
+        using storage_type = xtl::span<X>;
+        using block_type = typename storage_type::value_type;
+    };
 
     template <class X>
     struct container_internals;
@@ -70,7 +87,7 @@ namespace xtl
         using derived_class = B;
 
         using storage_type = typename xdynamic_bitset_traits<B>::storage_type;
-        using block_type = typename storage_type::value_type;
+        using block_type = typename xdynamic_bitset_traits<B>::block_type;
         using temporary_type = xdynamic_bitset<block_type, std::allocator<block_type>>;
 
         using allocator_type = typename container_internals<storage_type>::allocator_type;
@@ -193,6 +210,7 @@ namespace xtl
         friend class xdynamic_bitset_base;
     };
 
+    // NOTE this view ZEROS out remaining bits!
     template <class X>
     class xdynamic_bitset_view
         : public xdynamic_bitset_base<xdynamic_bitset_view<X>>
@@ -228,6 +246,7 @@ namespace xtl
     inline xdynamic_bitset_view<X>::xdynamic_bitset_view(block_type* ptr, std::size_t size)
         : base_class(storage_type(ptr, detail_bitset::integer_ceil(size, base_class::s_bits_per_block)), size)
     {
+        base_class::zero_unused_bits();
     }
 
     template <class X>
@@ -237,13 +256,6 @@ namespace xtl
             throw std::runtime_error("cannot resize bitset_view");
         }
     }
-
-    template <class X>
-    struct xdynamic_bitset_traits<xdynamic_bitset_view<X>>
-    {
-        using storage_type = xtl::span<X>;
-        using block_type = typename storage_type::value_type;
-    };
 
     template <class B, class A = std::allocator<B>>
     class xdynamic_bitset;
@@ -369,13 +381,6 @@ namespace xtl
 
         container_pointer p_container;
         size_type m_index;
-    };
-
-    template <class B, class A>
-    struct xdynamic_bitset_traits<xdynamic_bitset<B, A>>
-    {
-        using storage_type = std::vector<B, A>;
-        using block_type = B;
     };
 
     template <class B, class Allocator>
@@ -1037,41 +1042,18 @@ namespace xtl
     {
         bool is_equal = m_size == rhs.m_size;
         if (!is_equal) { return false; }
+
         // we know that block type of lhs & rhs is the same
-        auto block1 = block_begin();
-        auto block2 = rhs.block_begin();
-
         auto n_blocks = block_count();
-        auto n_leftover = m_size % s_bits_per_block;
 
-        if (n_leftover == 0)
+        for (std::size_t i = 0; i < n_blocks; ++i)
         {
-            for (std::size_t i = 0; i < n_blocks; ++i)
-            {
-                if (m_buffer[i] != rhs.m_buffer[i])
-                {
-                    return false;
-                }
-            }
-        }
-        else
-        {
-            for (std::size_t i = 0; i < n_blocks - 1; ++i)
-            {
-                if (m_buffer[i] != rhs.m_buffer[i])
-                {
-                    return false;
-                }
-            }
-
-            constexpr block_type all_ones = ~block_type(0);
-            block_type mask = all_ones >> (s_bits_per_block - (n_leftover));
-
-            if ((m_buffer[n_blocks - 1] & mask) != (rhs.m_buffer[n_blocks - 1] & mask))
+            if (m_buffer[i] != rhs.m_buffer[i])
             {
                 return false;
             }
         }
+
         return true;
     }
 

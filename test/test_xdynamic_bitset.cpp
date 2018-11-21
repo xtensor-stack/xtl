@@ -13,6 +13,7 @@
 namespace xtl
 {
     using bitset = xdynamic_bitset<uint64_t>;
+    using bitset_view = xdynamic_bitset_view<uint64_t>;
 
     TEST(xdynamic_bitset, constructors)
     {
@@ -208,9 +209,9 @@ namespace xtl
         EXPECT_TRUE(b[79u]);
     }
 
-    TEST(xdynamic_bitset, iterator)
+    template <class B>
+    void test_bitset_iterator(B& b)
     {
-        bitset b(80u, false);
         b[17] = true;
         auto it = b.begin();
         auto cit = b.cbegin();
@@ -230,9 +231,22 @@ namespace xtl
         EXPECT_EQ(cit, b.cend());
     }
 
-    TEST(xdynamic_bitset, reverse_iterator)
+    TEST(xdynamic_bitset, iterator)
     {
         bitset b(80u, false);
+        test_bitset_iterator(b);
+    }
+
+    TEST(xdynamic_bitset_view, iterator)
+    {
+        std::array<uint64_t, 2> bs = {0, 0};
+        bitset_view b(bs.data(), 80);
+        test_bitset_iterator(b);
+    }
+
+    template <class B>
+    void test_bitset_reverse_iterator(B& b)
+    {
         b[62] = true;
         auto it = b.rbegin();
         auto cit = b.crbegin();
@@ -252,9 +266,29 @@ namespace xtl
         EXPECT_EQ(cit, b.crend());
     }
 
-    TEST(xdynamic_bitset, set)
+    TEST(xdynamic_bitset, reverse_iterator)
     {
         bitset b(80u, false);
+        test_bitset_reverse_iterator(b);
+    }
+
+    TEST(xdynamic_bitset_view, reverse_iterator)
+    {
+        std::array<uint64_t, 2> bs = {0, 0};
+        bitset_view b(bs.data(), 80);
+        test_bitset_reverse_iterator(b);
+    }
+
+    template <class C>
+    void print(C& c)
+    {
+        for (auto el : c) std::cout << el << ", ";
+        std::cout << std::endl;
+    }
+
+    template <class B>
+    void test_set(B& b)
+    {
         b.set(47u, true);
         bool res = true;
         for (size_t i = 0; i < 80u; ++i)
@@ -271,9 +305,22 @@ namespace xtl
         EXPECT_TRUE(res);
     }
 
-    TEST(xdynamic_bitset, reset)
+    TEST(xdynamic_bitset, set)
     {
-        bitset b(80u, true);
+        bitset b(80u, false);
+        test_set(b);
+    }
+
+    TEST(xdynamic_bitset_view, set)
+    {
+        std::array<uint64_t, 2> bs = {0, 0};
+        bitset_view b(bs.data(), 80);
+        test_set(b);
+    }
+
+    template <class B>
+    void test_reset(B& b)
+    {
         b.reset(47u);
         bool res = true;
         for (size_t i = 0; i < 80u; ++i)
@@ -290,9 +337,22 @@ namespace xtl
         EXPECT_TRUE(res);
     }
 
-    TEST(xdynamic_bitset, flip)
+    TEST(xdynamic_bitset, reset)
     {
-        bitset b(80u, false);
+        bitset b(80u, true);
+        test_reset(b);
+    }
+
+    TEST(xdynamic_bitset_view, reset)
+    {
+        bitset bs(80u, true);
+        bitset_view b(bs.data(), 80);
+        test_reset(b);
+    }
+
+    template <class B>
+    void test_flip(B& b)
+    {
         b.flip(47u);
         bool res = true;
         for (size_t i = 0; i < 80u; ++i)
@@ -315,9 +375,22 @@ namespace xtl
         EXPECT_TRUE(res);
     }
 
-    TEST(xdynamic_bitset, all)
+    TEST(xdynamic_bitset, flip)
     {
         bitset b(80u, false);
+        test_flip(b);
+    }
+
+    TEST(xdynamic_bitset_view, flip)
+    {
+        std::array<uint64_t, 2> bs = {0, 0};
+        bitset_view b(bs.data(), 80);
+        test_flip(b);
+    }
+
+    template <class B>
+    void test_all(B& b)
+    {
         EXPECT_FALSE(b.all());
         b.flip(47u);
         EXPECT_FALSE(b.all());
@@ -327,25 +400,64 @@ namespace xtl
         EXPECT_TRUE(b.all());
     }
 
-    TEST(xdynamic_bitset, any)
+    TEST(xdynamic_bitset, all)
     {
         bitset b(80u, false);
+        test_all(b);
+    }
+
+    TEST(xdynamic_bitset_view, all)
+    {
+        bitset bs(80u, false);
+        bitset_view b(bs.data(), 80);
+        test_all(b);
+    }
+
+    template <class B>
+    void test_any(B& b)
+    {
         EXPECT_FALSE(b.any());
         b.flip(47u);
         EXPECT_TRUE(b.any());
     }
 
-    TEST(xdynamic_bitset, none)
+    TEST(xdynamic_bitset, any)
     {
         bitset b(80u, false);
+        test_any(b);
+    }
+
+    TEST(xdynamic_bitset_view, any)
+    {
+        bitset bs(80u, false);
+        bitset_view b(bs.data(), 80);
+        test_any(b);
+    }
+
+    template <class B>
+    void test_none(B& b)
+    {
         EXPECT_TRUE(b.none());
         b.flip(47u);
         EXPECT_FALSE(b.none());
     }
 
-    TEST(xdynamic_bitset, count)
+    TEST(xdynamic_bitset, none)
     {
         bitset b(80u, false);
+        test_none(b);
+    }
+
+    TEST(xdynamic_bitset_view, none)
+    {
+        bitset bs(80u, false);
+        bitset_view b(bs.data(), 80);
+        test_none(b);
+    }
+
+    template <class B>
+    void test_count(B& b)
+    {
         b[0] = true;
         b[17] = true;
         b[45] = true;
@@ -354,17 +466,43 @@ namespace xtl
         EXPECT_EQ(5u, b.count());
     }
 
-    TEST(xdynamic_bitset, bitwise_not)
+    TEST(xdynamic_bitset, count)
     {
-        bitset b1(80u, false);
+        bitset b(80u, false);
+        test_count(b);
+    }
+
+    TEST(xdynamic_bitset_view, count)
+    {
+        std::array<uint64_t, 2> bs = {0, 0};
+        bitset_view b(bs.data(), 80);
+        test_count(b);
+    }
+
+    template <class B>
+    void test_bitwise_not(B& b1)
+    {
         bitset b2 = ~b1;
         bitset res(80u, true);
         EXPECT_TRUE(res == b2);
     }
 
-    TEST(xdynamic_bitset, bitwise_and)
+    TEST(xdynamic_bitset, bitwise_not)
     {
         bitset b1(80u, false);
+        test_bitwise_not(b1);
+    }
+
+    TEST(xdynamic_bitset_view, bitwise_not)
+    {
+        std::array<uint64_t, 2> bs = {0, 0};
+        bitset_view b(bs.data(), 80);
+        test_bitwise_not(b);
+    }
+
+    template <class B>
+    void test_bitwise_and(B& b1)
+    {
         bitset b2(80u, false);
         bitset bres(80u, false);
         bres.flip(2);
@@ -384,9 +522,22 @@ namespace xtl
         EXPECT_TRUE(bres == b3);
     }
 
-    TEST(xdynamic_bitset, bitwise_or)
+    TEST(xdynamic_bitset, bitwise_and)
     {
         bitset b1(80u, false);
+        test_bitwise_and(b1);
+    }
+
+    TEST(xdynamic_bitset_view, bitwise_and)
+    {
+        std::array<uint64_t, 2> bs = {0, 0};
+        bitset_view b(bs.data(), 80);
+        test_bitwise_and(b);
+    }
+
+    template <class B>
+    void test_bitwise_or(B& b1)
+    {
         bitset b2(80u, false);
         bitset bres(80u, false);
         bres.flip(2);
@@ -408,10 +559,22 @@ namespace xtl
         EXPECT_TRUE(bres == b3);
     }
 
-    TEST(xdynamic_bitset, bitwise_xor)
+    TEST(xdynamic_bitset, bitwise_or)
     {
         bitset b1(80u, false);
-        bitset b2(80u, false);
+        test_bitwise_or(b1);
+    }
+
+    TEST(xdynamic_bitset_view, bitwise_or)
+    {
+        std::array<uint64_t, 2> bs = {0, 0};
+        bitset_view b(bs.data(), 80);
+        test_bitwise_or(b);
+    }
+
+    template <class B>
+    void test_bitwise_xor(B& b1, B& b2)
+    {
         bitset bres(80u, false);
         bres.flip(5);
         bres.flip(7);
@@ -431,9 +594,25 @@ namespace xtl
         EXPECT_TRUE(bres == b3);
     }
 
-    TEST(xdynamic_bitset, shift_left)
+    TEST(xdynamic_bitset, bitwise_xor)
     {
         bitset b1(80u, false);
+        bitset b2(80u, false);
+        test_bitwise_xor(b1, b2);
+    }
+
+    TEST(xdynamic_bitset_view, bitwise_xor)
+    {
+        std::array<uint64_t, 2> bs1 = {0, 0};
+        std::array<uint64_t, 2> bs2 = {0, 0};
+        bitset_view b1(bs1.data(), 80);
+        bitset_view b2(bs2.data(), 80);
+        test_bitwise_xor(b1, b2);
+    }
+
+    template <class B>
+    void test_shift_left(B& b1)
+    {
         b1[2] = true;
         b1[7] = true;
         b1[15] = true;
@@ -451,9 +630,22 @@ namespace xtl
         EXPECT_TRUE(b2 == bres);
     }
 
-    TEST(xdynamic_bitset, shift_right)
+    TEST(xdynamic_bitset, shift_left)
     {
         bitset b1(80u, false);
+        test_shift_left(b1);
+    }
+
+    TEST(xdynamic_bitset_view, shift_left)
+    {
+        bitset bs(80u, false);
+        bitset_view b1(bs.data(), 80u);
+        test_shift_left(b1);
+    }
+
+    template <class B>
+    void test_shift_right(B& b1)
+    {
         b1[2] = true;
         b1[7] = true;
         b1[15] = true;
@@ -471,9 +663,22 @@ namespace xtl
         EXPECT_TRUE(b2 == bres);
     }
 
-    TEST(xdynamic_bitset, comparison)
+    TEST(xdynamic_bitset, shift_right)
     {
-        bitset b1(80u, true);
+        bitset b1(80u, false);
+        test_shift_right(b1);
+    }
+
+    TEST(xdynamic_bitset_view, shift_right)
+    {
+        bitset bs(80u, false);
+        bitset_view b1(bs.data(), 80u);
+        test_shift_right(b1);
+    }
+
+    template <class B>
+    void test_comparison(B& b1)
+    {
         bitset b2(80u, false);
 
         EXPECT_TRUE(b1 == b1);
@@ -481,17 +686,28 @@ namespace xtl
         EXPECT_TRUE(b1 != b2);
         EXPECT_FALSE(b1 != b1);
 
-        auto b11 = b1;
+        bitset b11 = b1;
         b11[79] = false;
         EXPECT_FALSE(b11 == b2);
         EXPECT_FALSE(b11 == b1);
     }
 
+    TEST(xdynamic_bitset, comparison)
+    {
+        bitset b1(80u, true);
+        test_comparison(b1);
+    }
+
+    TEST(xdynamic_bitset_view, comparison)
+    {
+        bitset bs(80u, true);
+        bitset_view b1(bs.data(), 80u);
+        test_comparison(b1);
+    }
 
     TEST(xdynamic_bitset, view)
     {
-        using bitset_view = xdynamic_bitset_view<std::size_t>;
-        std::size_t i = 0b00001100;
+        uint64_t i = 0b00001100;
         auto bv = bitset_view(&i, 8);
 
         EXPECT_EQ(bv[0], false);
@@ -501,7 +717,7 @@ namespace xtl
 
         auto be = bitset({false, false, true, true, false, false, false, false});
 
-        std::size_t j = 0b11110011;
+        uint64_t j = 0b11110011;
         auto jbv = bitset_view(&j, 8);
         EXPECT_EQ(jbv, ~bv);
         bv.flip();

@@ -393,7 +393,7 @@ public:
 
     ~span() noexcept = default;
 
-    TCB_SPAN_CONSTEXPR14 span& operator=(const span& other) noexcept = default;
+    span& operator=(const span& other) noexcept = default;
 
     // [span.sub], span subviews
     template <std::ptrdiff_t Count>
