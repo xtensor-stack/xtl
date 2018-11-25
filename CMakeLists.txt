@@ -42,6 +42,8 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xclosure.hpp
     ${XTL_INCLUDE_DIR}/xtl/xcomplex.hpp
     ${XTL_INCLUDE_DIR}/xtl/xcomplex_sequence.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xspan.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xspan_impl.hpp
     ${XTL_INCLUDE_DIR}/xtl/xdynamic_bitset.hpp
     ${XTL_INCLUDE_DIR}/xtl/xfunctional.hpp
     ${XTL_INCLUDE_DIR}/xtl/xhash.hpp
