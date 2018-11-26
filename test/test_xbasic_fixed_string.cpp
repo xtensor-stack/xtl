@@ -11,7 +11,7 @@
 
 namespace xtl
 {
-    using string_type = xbasic_fixed_string<char, 16, string_policy::throwing_error>;
+    using string_type = xbasic_fixed_string<char, 16, buffer | store_size, string_policy::throwing_error>;
     using size_type = string_type::size_type;
 
     TEST(xfixed_string, constructors)
