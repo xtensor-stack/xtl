@@ -109,6 +109,13 @@ namespace xtl
         template <class T, std::size_t N>
         struct fixed_string_external_storage_impl
         {
+            fixed_string_external_storage_impl() = default;
+
+            fixed_string_external_storage_impl(T ptr, std::ptrdiff_t size)
+            {
+                m_buffer = ptr;
+            }
+
             T& buffer()
             {
                 return m_buffer;
@@ -145,24 +152,10 @@ namespace xtl
         };
 
         template <>
-        struct select_storage<pointer | store_size | is_const>
-        {
-            template <class T, std::size_t N>
-            using type = fixed_string_storage_impl<const T*, N>;
-        };
-
-        template <>
         struct select_storage<buffer>
         {
             template <class T, std::size_t N>
             using type = fixed_string_external_storage_impl<T[N + 1], N>;
-        };
-
-        template <>
-        struct select_storage<pointer>
-        {
-            template <class T, std::size_t N>
-            using type = fixed_string_external_storage_impl<T*, N>;
         };
     }
 
@@ -179,6 +172,9 @@ namespace xtl
         using value_type = CT;
         using size_type = std::size_t;
         using difference_type = std::ptrdiff_t;
+
+        using storage_type = typename detail::select_storage<ST>::template type<CT, N>;
+
         using reference = value_type&;
         using const_reference = const value_type&;
         using pointer = value_type*;
@@ -188,7 +184,6 @@ namespace xtl
         using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-        using storage_type = typename detail::select_storage<ST>::template type<CT, N>;
 
         static const size_type npos;
 
@@ -199,16 +194,6 @@ namespace xtl
         using error_policy = EP<N>;
 
         xbasic_fixed_string();
-
-        xbasic_fixed_string(value_type* ptr, std::ptrdiff_t size = -1)
-            : m_storage(ptr, size)
-        {
-        }
-
-        xbasic_fixed_string(detail::fixed_string_external_storage_impl<CT, N>& storage, std::ptrdiff_t size = -1)
-            : m_storage(storage, size)
-        {
-        }
 
         explicit xbasic_fixed_string(size_type count, value_type ch);
         explicit xbasic_fixed_string(const self_type& other,
@@ -270,6 +255,7 @@ namespace xtl
         pointer data() noexcept;
         const_pointer data() const noexcept;
 
+        // TODO enable if only if null termination guaranteed.
         const_pointer c_str() const noexcept;
 
         iterator begin() noexcept;
@@ -2296,11 +2282,64 @@ namespace xtl
      * Input / output *
      ******************/
 
+    // Adapted from https://github.com/martinmoene/string-view-lite
+    // License: BSL-1.0
+
+    namespace detail
+    {
+
+        template <class OS>
+        void write_padding(OS& os, std::streamsize n)
+        {
+            for (std::streamsize i = 0; i < n; ++i)
+            {
+                os.rdbuf()->sputc( os.fill() );
+            }
+        }
+
+        template <class OS, class S>
+        OS& write_to_stream(OS& os, const S& sv)
+        {
+            typename OS::sentry sentry(os);
+
+            if (!os)
+            {
+                return os;
+            }
+
+            const std::streamsize length = static_cast<std::streamsize>(sv.length());
+
+            // Whether, and how, to pad:
+            const bool pad = length < os.width();
+            const bool left_pad = pad && (os.flags() & std::ios_base::adjustfield) == std::ios_base::right;
+
+            if (left_pad)
+            {
+                write_padding(os, os.width() - length);
+            }
+
+            // Write span characters:
+            os.rdbuf()->sputn(sv.begin(), length);
+
+            if (pad && !left_pad)
+            {
+                write_padding(os, os.width() - length);
+            }
+
+            // Reset output stream width:
+            os.width(0);
+
+            return os;
+        }
+
+    } // namespace detail
+
+
     template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
     inline std::basic_ostream<CT, TR>& operator<<(std::basic_ostream<CT, TR>& os,
                                                   const xbasic_fixed_string<CT, N, ST, EP, TR>& str)
     {
-        os << str.c_str();
+        detail::write_to_stream(os, str);
         return os;
     }
 

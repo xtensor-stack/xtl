@@ -12,6 +12,7 @@
 namespace xtl
 {
     using string_type = xbasic_fixed_string<char, 16, buffer | store_size, string_policy::throwing_error>;
+    using numpy_string = xbasic_fixed_string<char, 16, buffer, string_policy::throwing_error>;
     using size_type = string_type::size_type;
 
     TEST(xfixed_string, constructors)
@@ -1085,5 +1086,100 @@ namespace xtl
         std::size_t res = h("test");
         EXPECT_TRUE(res != std::size_t(0));
     }
-} // xtl
 
+    TEST(numpy_string, constructor)
+    {
+        std::string s = "thisisatest";
+        char buf[16];
+        strcpy(buf, s.c_str());
+        numpy_string* x = reinterpret_cast<numpy_string*>(buf);
+
+        EXPECT_EQ(*x, s);
+        (*x)[4] = '!';
+        EXPECT_EQ(buf[4], '!');
+        EXPECT_EQ(buf, *x);
+    }
+
+    TEST(numpy_string, element_access)
+    {
+        char buf[16] = "element_access";
+        numpy_string& s = *reinterpret_cast<numpy_string*>(buf);
+        s[2] = 'E';
+        EXPECT_EQ(s[2], 'E');
+        EXPECT_STREQ(s.c_str(), "elEment_access");
+
+        s.at(3) = 'M';
+        EXPECT_EQ(s.at(3), 'M');
+        EXPECT_STREQ(s.c_str(), "elEMent_access");
+
+        s.front() = 'E';
+        EXPECT_EQ(s.front(), 'E');
+        EXPECT_STREQ(s.c_str(), "ElEMent_access");
+
+        s.back() = 'S';
+        EXPECT_EQ(s.back(), 'S');
+        EXPECT_STREQ(s.c_str(), "ElEMent_accesS");
+
+        EXPECT_THROW(s.at(15), std::out_of_range);
+
+        EXPECT_STREQ(s.data(), s.c_str());
+        EXPECT_STREQ(s.data(), buf);
+    }
+
+    TEST(numpy_string, iterator)
+    {
+        numpy_string s("iterator");
+        *(s.begin()) = 'I';
+        EXPECT_EQ(*(s.begin()), 'I');
+        EXPECT_EQ(*(s.cbegin()), 'I');
+
+        auto iter = s.begin();
+        auto citer = s.cbegin();
+        for (size_type count = 0; count < s.size(); ++iter, ++citer, ++count) {}
+        EXPECT_EQ(iter, s.end());
+        EXPECT_EQ(citer, s.cend());
+
+        *(s.rbegin()) = 'R';
+        EXPECT_EQ(*(s.rbegin()), 'R');
+        EXPECT_EQ(*(s.crbegin()), 'R');
+
+        auto riter = s.rbegin();
+        auto criter = s.crbegin();
+        for (size_type count = 0; count < s.size(); ++riter, ++criter, ++count) {}
+        EXPECT_EQ(riter, s.rend());
+        EXPECT_EQ(criter, s.crend());
+    }
+
+    TEST(numpy_string, find)
+    {
+        numpy_string ref("operationftionf");
+        numpy_string sub("tionf");
+
+        size_type r1 = ref.find(sub, 2);
+        EXPECT_EQ(r1, size_type(5));
+        size_type r2 = ref.find(sub, 11);
+        EXPECT_EQ(r2, string_type::npos);
+
+        size_type r3 = ref.find(sub.c_str(), 2, 3);
+        EXPECT_EQ(r3, size_type(5));
+        size_type r4 = ref.find(sub.c_str(), 11, 3);
+        EXPECT_EQ(r4, string_type::npos);
+
+        size_type r5 = ref.find(sub.c_str(), 2);
+        EXPECT_EQ(r5, size_type(5));
+        size_type r6 = ref.find(sub.c_str(), 11);
+        EXPECT_EQ(r6, string_type::npos);
+
+        size_type r7 = ref.find('a', 2);
+        EXPECT_EQ(r7, size_type(4));
+        size_type r8 = ref.find('a', 8);
+        EXPECT_EQ(r8, string_type::npos);
+
+        std::string ssub(sub.cbegin(), sub.cend());
+        size_type r9 = ref.find(ssub, 2);
+        EXPECT_EQ(r9, size_type(5));
+        size_type r10 = ref.find(ssub, 11);
+        EXPECT_EQ(r10, string_type::npos);
+    }
+
+} // xtl
