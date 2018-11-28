@@ -488,7 +488,7 @@ namespace xtl
     template <class B, class A>
     template <class BlockInputIt>
     inline xdynamic_bitset<B, A>::xdynamic_bitset(BlockInputIt first, BlockInputIt last, const allocator_type& alloc)
-        : base_type(storage_type(first, last, alloc), std::distance(first, last) * base_type::s_bits_per_block)
+        : base_type(storage_type(first, last, alloc), size_type(std::distance(first, last)) * base_type::s_bits_per_block)
     {
     }
 
@@ -523,7 +523,7 @@ namespace xtl
     template <class BlockInputIt>
     inline void xdynamic_bitset<B, A>::assign(BlockInputIt first, BlockInputIt last)
     {
-        resize(std::distance(first, last) * base_type::s_bits_per_block);
+        resize(size_type(std::distance(first, last)) * base_type::s_bits_per_block);
         std::copy(first, last, this->m_buffer.begin());
     }
 
@@ -890,7 +890,7 @@ namespace xtl
                 }
             }
 
-            std::fill_n(m_buffer.begin() + (block_count() - div), div, block_type(0));
+            std::fill_n(m_buffer.begin() + static_cast<std::ptrdiff_t>(block_count() - div), div, block_type(0));
         }
         return *this;
     }

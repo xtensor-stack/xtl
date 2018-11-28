@@ -98,7 +98,7 @@ namespace xtl
 
             void adjust_size(std::ptrdiff_t val)
             {
-                m_size += val;
+                m_size += std::size_t(val);
                 m_buffer[m_size] = '\0';
             }
 
@@ -1233,7 +1233,7 @@ namespace xtl
         size_type erase_count = std::min(count, size() - index);
         // cannot use traits_type::copy because of overlapping
         std::copy(data() + index + erase_count, data() + size(), data() + index);
-        m_storage.adjust_size(-erase_count);
+        m_storage.adjust_size(-static_cast<std::ptrdiff_t>(erase_count));
         return *this;
     }
 
@@ -1252,7 +1252,7 @@ namespace xtl
             size_type erase_count = static_cast<size_type>(adapted_last - first);
             // cannot use traits_type::copy because of overlapping
             std::copy(adapted_last, cend(), iterator(first));
-            m_storage.adjust_size(-erase_count);
+            m_storage.adjust_size(-static_cast<std::ptrdiff_t>(erase_count));
             return const_cast<iterator>(first);
         }
         return end();
@@ -1637,11 +1637,11 @@ namespace xtl
             const_pointer uptr, vptr;
             for (nm -= count - 1, vptr = data() + pos;
                  (uptr = traits_type::find(vptr, nm, *s)) != 0;
-                 nm -= uptr - vptr + 1, vptr = uptr + 1)
+                 nm -= size_type(uptr - vptr) + 1ul, vptr = uptr + 1ul)
             {
                 if (traits_type::compare(uptr, s, count) == 0)
                 {
-                    return (uptr - data());
+                    return size_type(uptr - data());
                 }
             }
         }
@@ -1691,7 +1691,7 @@ namespace xtl
             {
                 if (traits_type::eq(*uptr, *s) && traits_type::compare(uptr, s, count) == 0)
                 {
-                    return uptr - data();
+                    return size_type(uptr - data());
                 }
                 else if (uptr == data())
                 {
@@ -1740,7 +1740,7 @@ namespace xtl
             {
                 if (traits_type::find(s, count, *uptr) != 0)
                 {
-                    return uptr - data();
+                    return size_type(uptr - data());
                 }
             }
         }
@@ -1785,7 +1785,7 @@ namespace xtl
             {
                 if (traits_type::find(s, count, *uptr) == 0)
                 {
-                    return uptr - data();
+                    return size_type(uptr - data());
                 }
             }
         }
@@ -1830,7 +1830,7 @@ namespace xtl
             {
                 if (traits_type::find(s, count, *uptr) != 0)
                 {
-                    return uptr - data();
+                    return size_type(uptr - data());
                 }
                 else if (uptr == data())
                 {
@@ -1879,7 +1879,7 @@ namespace xtl
             {
                 if (traits_type::find(s, count, *uptr) == 0)
                 {
-                    return uptr - data();
+                    return size_type(uptr - data());
                 }
                 else if (uptr == data())
                 {

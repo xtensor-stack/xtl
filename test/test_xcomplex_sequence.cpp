@@ -33,10 +33,10 @@ namespace xtl
     {
         complex_vector v1(2);
         v1.resize(4);
-        EXPECT_EQ(v1.size(), 4);
+        EXPECT_EQ(v1.size(), 4u);
 
         v1.resize(8, xcomplex<double>(1., 1.));
-        EXPECT_EQ(v1.size(), 8);
+        EXPECT_EQ(v1.size(), 8u);
     }
 
     TEST(xcomplex_sequence, access)

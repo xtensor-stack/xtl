@@ -159,12 +159,12 @@ template <typename E>
 struct span_storage<E, dynamic_extent> {
     constexpr span_storage() noexcept = default;
 
-    constexpr span_storage(E* ptr, std::ptrdiff_t size) noexcept
+    constexpr span_storage(E* ptr, std::size_t size) noexcept
         : ptr(ptr), size(size)
     {}
 
     E* ptr = nullptr;
-    std::ptrdiff_t size = 0;
+    std::size_t size = 0;
 };
 
 // Reimplementation of C++17 std::size() and std::data()
@@ -289,7 +289,7 @@ public:
     // constants and types
     using element_type = ElementType;
     using value_type = typename std::remove_cv<ElementType>::type;
-    using index_type = std::ptrdiff_t;
+    using index_type = std::size_t;
     using difference_type = std::ptrdiff_t;
     using pointer = ElementType*;
     using reference = ElementType&;
@@ -573,24 +573,28 @@ make_span(span<ElementType, Extent> s) noexcept
     return s;
 }
 
+#define AS_SIGNED(N) static_cast<std::ptrdiff_t>(N)
+
 template <typename T, std::size_t N>
-constexpr span<T, N> make_span(T (&arr)[N]) noexcept
+constexpr span<T, AS_SIGNED(N)> make_span(T (&arr)[N]) noexcept
 {
     return {arr};
 }
 
 template <typename T, std::size_t N>
-TCB_SPAN_ARRAY_CONSTEXPR span<T, N> make_span(std::array<T, N>& arr) noexcept
+TCB_SPAN_ARRAY_CONSTEXPR span<T, AS_SIGNED(N)> make_span(std::array<T, N>& arr) noexcept
 {
     return {arr};
 }
 
 template <typename T, std::size_t N>
-TCB_SPAN_ARRAY_CONSTEXPR span<const T, N>
+TCB_SPAN_ARRAY_CONSTEXPR span<const T, AS_SIGNED(N)>
 make_span(const std::array<T, N>& arr) noexcept
 {
     return {arr};
 }
+
+#undef AS_SIGNED
 
 template <typename Container>
 constexpr span<typename Container::value_type> make_span(Container& cont)
@@ -756,7 +760,7 @@ constexpr auto get(span<E, S> s) -> decltype(s[N])
 namespace std {
 
 template <typename E, ptrdiff_t S>
-class tuple_size<tcb::span<E, S>> : public integral_constant<size_t, S> {};
+class tuple_size<tcb::span<E, S>> : public integral_constant<size_t, static_cast<size_t>(S)> {};
 
 template <typename E>
 class tuple_size<tcb::span<E, tcb::dynamic_extent>>; // not defined
