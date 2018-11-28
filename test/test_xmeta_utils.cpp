@@ -157,15 +157,15 @@ namespace xtl
     {
         using arg1 = mpl::vector<double, int, float, int>;
         constexpr size_t res1 = mpl::find_if<std::is_integral, arg1>::value;
-        EXPECT_EQ(res1, 1);
+        EXPECT_EQ(res1, 1ul);
 
         using arg2 = mpl::vector<double, float, double>;
         constexpr size_t res2 = mpl::find_if<std::is_integral, arg2>::value;
-        EXPECT_EQ(res2, 3);
+        EXPECT_EQ(res2, 3ul);
 
         using arg3 = mpl::vector<>;
         constexpr size_t res3 = mpl::find_if<std::is_integral, arg3>::value;
-        EXPECT_EQ(res3, 0);
+        EXPECT_EQ(res3, 0ul);
     }
 
     template <bool B>

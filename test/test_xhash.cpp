@@ -26,23 +26,23 @@ namespace xtl
         uint8_t* res = new uint8_t[hashbytes];
 
         std::memset(key, 0, 256);
-        std::memset(hashes, 0, hashbytes * 256);
-        std::memset(res, 0, hashbytes);
+        std::memset(hashes, 0, std::size_t(hashbytes * 256));
+        std::memset(res, 0, std::size_t(hashbytes));
 
         // Hash keys of the form {0}, {0,1}, {0,1,2}... up to N=255,using 256-N as
         // the seed
         for(std::size_t i = 0; i < 256; i++)
         {
             key[i] = (uint8_t)i;
-            *reinterpret_cast<std::size_t*>(hashes + i * hashbytes) = f(key,i,256-i);
+            *reinterpret_cast<std::size_t*>(hashes + int(i) * hashbytes) = f(key,i,256-i);
         }
 
         // Then hash the result array
-        *reinterpret_cast<std::size_t*>(res) = f(hashes,hashbytes*256,0);
+        *reinterpret_cast<std::size_t*>(res) = f(hashes,std::size_t(hashbytes)*256,0);
 
         // The first four bytes of that hash, interpreted as a little-endian integer, is our
         // verification value
-        uint32_t verification = (res[0] << 0) | (res[1] << 8) | (res[2] << 16) | (res[3] << 24);
+        uint32_t verification = uint32_t((res[0] << 0) | (res[1] << 8) | (res[2] << 16) | (res[3] << 24));
 
         delete [] key;
         delete [] hashes;
@@ -57,7 +57,7 @@ namespace xtl
 
         while(bytes >= 4)
         {
-            blocks[0] = std::rand();
+            blocks[0] = static_cast<uint32_t>(std::rand());
             blocks++;
             bytes -= 4;
         }
@@ -72,11 +72,11 @@ namespace xtl
     void flipbit(void * block, int len, uint32_t bit)
     {
         uint8_t * b = (uint8_t*)block;
-        int byte = bit >> 3;
+        int byte = int(bit >> 3);
         bit = bit & 0x7;
         if(byte < len)
         {
-            b[byte] ^= (1 << bit);
+            b[byte] ^= static_cast<uint8_t>(1 << bit);
         }
     }
 
@@ -109,25 +109,25 @@ namespace xtl
                     rand_p(buffer1,buflen);
                     rand_p(buffer2,buflen);
 
-                    std::memcpy(key2,key1,len);
+                    std::memcpy(key2,key1,std::size_t(len));
 
-                    *reinterpret_cast<std::size_t*>(hash1) = f(key1,len,0);
+                    *reinterpret_cast<std::size_t*>(hash1) = f(key1,std::size_t(len),0);
 
                     for(int bit = 0; bit < (len * 8); bit++)
                     {
                         // Flip a bit, hash the key -> we should get a different result.
-                        flipbit(key2,len,bit);
-                        *reinterpret_cast<std::size_t*>(hash2) = f(key2,len,0);
+                        flipbit(key2,len,uint32_t(bit));
+                        *reinterpret_cast<std::size_t*>(hash2) = f(key2,std::size_t(len),0);
 
-                        if(std::memcmp(hash1,hash2,hashbytes) == 0)
+                        if(std::memcmp(hash1,hash2,std::size_t(hashbytes)) == 0)
                         {
                             result = false;
                         }
 
-                        flipbit(key2,len,bit);
-                        *reinterpret_cast<std::size_t*>(hash2) = f(key2,len,0);
+                        flipbit(key2,len,uint32_t(bit));
+                        *reinterpret_cast<std::size_t*>(hash2) = f(key2,std::size_t(len),0);
 
-                        if(std::memcmp(hash1,hash2,hashbytes) != 0)
+                        if(std::memcmp(hash1,hash2,std::size_t(hashbytes)) != 0)
                         {
                             result = false;
                         }
