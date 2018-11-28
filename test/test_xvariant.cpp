@@ -71,6 +71,14 @@ namespace xtl
         EXPECT_EQ("hellohello", xtl::get<3>(vec_res[3]));
     }
 
+    using variant_ref = xtl::variant<xclosure_wrapper<int&>, xclosure_wrapper<double&>>;
+
+    variant_ref build_test_variant(int& ref)
+    {
+        variant_ref res(closure(ref));
+        return res;
+    }
+
     TEST(xvariant, closure_wrapper)
     {
         {
@@ -93,6 +101,14 @@ namespace xtl
             EXPECT_EQ(&ir, &i);
             int ir2 = xtl::xget<const int&>(v);
             EXPECT_EQ(ir2, i);
+        }
+
+        {
+            int i = 2;
+            int& ir = xtl::xget<int&>(build_test_variant(i));
+            EXPECT_EQ(&ir, &i);
+            ir = 4;
+            EXPECT_EQ(i, 4);
         }
     }
 

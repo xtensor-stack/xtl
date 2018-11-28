@@ -77,7 +77,7 @@ namespace xtl
             }
 
             template <class... Ts>
-            static inline constexpr T&& get(xtl::variant<Ts...>&& v)
+            static inline constexpr T& get(xtl::variant<Ts...>&& v)
             {
                 return xtl::get<xtl::xclosure_wrapper<T&>>(std::move(v)).get();
             }
@@ -89,7 +89,7 @@ namespace xtl
             }
 
             template <class... Ts>
-            static inline constexpr const T&& get(const xtl::variant<Ts...>&& v)
+            static inline constexpr const T& get(const xtl::variant<Ts...>&& v)
             {
                 return xtl::get<xtl::xclosure_wrapper<T&>>(std::move(v)).get();
             }
