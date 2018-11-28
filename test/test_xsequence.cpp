@@ -45,7 +45,7 @@ namespace xtl
         return result(xtl::forward_sequence<shape_type>(arg));
     }
 
-    TEST(xsequence, forward)
+    TEST(xsequence, forward_type)
     {
         std::array<int, 2> a, b;
         std::vector<int> c;
@@ -73,6 +73,18 @@ namespace xtl
 
         auto res1 = test_different_array<aligned_array<int, 3>>(x);
         auto res2 = test_different_array<aligned_array<int, 3>>(aa);
+    }
+
+    TEST(xsequence, forward)
+    {
+        std::array<int, 2> a = { 1, 2 };
+        std::vector<int> b = { 1, 2 };
+
+        std::vector<int> resa = xtl::forward_sequence<std::vector<int>>(a);
+        EXPECT_EQ(resa, b);
+
+        std::array<int, 2> resb = xtl::forward_sequence<std::array<int, 2>>(b);
+        EXPECT_EQ(resb, a);
     }
 }
 
