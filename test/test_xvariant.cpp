@@ -79,28 +79,38 @@ namespace xtl
         return res;
     }
 
+    const variant_ref build_test_cvariant(int& ref)
+    {
+        variant_ref res(closure(ref));
+        return res;
+    }
+
     TEST(xvariant, closure_wrapper)
     {
         {
-            using var_t = xtl::variant<xclosure_wrapper<int&>, xclosure_wrapper<double&>>;
             int i = 2;
-            var_t v = closure(i);
+            variant_ref v = closure(i);
             int& ir = xtl::xget<int&>(v);
             EXPECT_EQ(&ir, &i);
             ir = 4;
             EXPECT_EQ(i, 4);
             int ir2 = xtl::xget<int&>(v);
             EXPECT_EQ(ir2, i);
+
+            const int& cir = xtl::xget<const int&>(v);
+            EXPECT_EQ(&cir, &i);
         }
 
         {
-            using var_t = xtl::variant<xclosure_wrapper<const int&>, xclosure_wrapper<const double&>>;
-            const int i = 2;
-            var_t v = closure(i);
-            const int& ir = xtl::xget<const int&>(v);
+            int i = 2;
+            const variant_ref v = closure(i);
+            const int& ir = xtl::xget<int&>(v);
             EXPECT_EQ(&ir, &i);
-            int ir2 = xtl::xget<const int&>(v);
+            int ir2 = xtl::xget<int&>(v);
             EXPECT_EQ(ir2, i);
+
+            const int& cir = xtl::xget<const int&>(v);
+            EXPECT_EQ(&cir, &i);
         }
 
         {
@@ -109,6 +119,64 @@ namespace xtl
             EXPECT_EQ(&ir, &i);
             ir = 4;
             EXPECT_EQ(i, 4);
+
+            const int& cir = xtl::xget<const int&>(build_test_variant(i));
+            EXPECT_EQ(&cir,&i); 
+        }
+
+        {
+            int i = 2;
+            const int& ir = xtl::xget<int&>(build_test_cvariant(i));
+            EXPECT_EQ(&ir, &i);
+            i = 4;
+            EXPECT_EQ(ir, i);
+
+            const int& cir = xtl::xget<const int&>(build_test_cvariant(i));
+            EXPECT_EQ(&cir,&i); 
+        }
+    }
+
+    using variant_cref = xtl::variant<xclosure_wrapper<const int&>, xclosure_wrapper<const double&>>;
+
+    variant_cref build_test_variant(const int& ref)
+    {
+        variant_cref res(closure(ref));
+        return res;
+    }
+
+    const variant_cref build_test_cvariant(const int& ref)
+    {
+        variant_cref res(closure(ref));
+        return res;
+    }
+
+
+    TEST(xvariant, const_closure_wrapper)
+    {
+        {
+            const int i = 2;
+            variant_cref v = closure(i);
+            const int& cir = xtl::xget<const int&>(v);
+            EXPECT_EQ(&cir, &i);
+        }
+
+        {
+            const int i = 2;
+            const variant_cref v = closure(i);
+            const int& cir = xtl::xget<const int&>(v);
+            EXPECT_EQ(&cir, &i);
+        }
+
+        {
+            const int i = 2;
+            const int& cir = xtl::xget<const int&>(build_test_variant(i));
+            EXPECT_EQ(&cir, &i);
+        }
+
+        {
+            const int i = 2;
+            const int& cir = xtl::xget<const int&>(build_test_cvariant(i));
+            EXPECT_EQ(&cir, &i);
         }
     }
 
