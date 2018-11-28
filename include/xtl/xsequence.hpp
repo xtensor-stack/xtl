@@ -100,43 +100,9 @@ namespace xtl
 
     namespace detail
     {
-        template <class E, class = void>
-        struct has_resize : std::false_type
-        {
-        };
-
-        template <class E>
-        struct has_resize<E, void_t<decltype(std::declval<E>().resize(std::size_t()))>>
-            : std::true_type
-        {
-        };
-
         template <class R, class A, class E = void>
-        struct sequence_forwarder
+        struct sequence_forwarder_impl
         {
-            template <class T>
-            static inline auto forward(const T& r)
-                -> std::enable_if_t<has_resize<T>::value, R>
-            {
-                return R(std::begin(r), std::end(r));
-            }
-
-            template <class T>
-            static inline auto forward(const T& r)
-                -> std::enable_if_t<!has_resize<T>::value, R>
-            {
-                R res;
-                std::copy(std::begin(r), std::end(r), std::begin(res));
-                return res;
-            }
-        };
-
-        template <class I, std::size_t L, class A>
-        struct sequence_forwarder<std::array<I, L>, A,
-                                  std::enable_if_t<!std::is_same<std::array<I, L>, A>::value>>
-        {
-            using R = std::array<I, L>;
-
             template <class T>
             static inline R forward(const T& r)
             {
@@ -144,6 +110,22 @@ namespace xtl
                 std::copy(std::begin(r), std::end(r), std::begin(ret));
                 return ret;
             }
+        };
+        
+        template <class R, class A>
+        struct sequence_forwarder_impl<R, A, void_t<decltype(std::declval<R>().resize(std::size_t()))>>
+        {
+            template <class T>
+            static inline auto forward(const T& r)
+            {
+                return R(std::begin(r), std::end(r));
+            }
+        };
+
+        template <class R, class A>
+        struct sequence_forwarder
+            : sequence_forwarder_impl<R, A>
+        {
         };
 
         template <class R>
