@@ -49,22 +49,7 @@ namespace xtl
         {
             return !(lhs == rhs);
         }
-
-        inline friend bool operator<=(const derived_type& lhs, const derived_type& rhs)
-        {
-            return !(rhs < lhs);
-        }
-
-        inline friend bool operator>=(const derived_type& lhs, const derived_type& rhs)
-        {
-            return !(lhs < rhs);
-        }
-
-        inline friend bool operator>(const derived_type& lhs, const derived_type& rhs)
-        {
-            return rhs < lhs;
-        }
-    };
+   };
 
     template <class T>
     using xbidirectional_iterator_base2 = xbidirectional_iterator_base<typename T::iterator_type,
@@ -111,6 +96,22 @@ namespace xtl
             derived_type tmp(it);
             return tmp -= n;
         }
+
+        inline friend bool operator<=(const derived_type& lhs, const derived_type& rhs)
+        {
+            return !(rhs < lhs);
+        }
+
+        inline friend bool operator>=(const derived_type& lhs, const derived_type& rhs)
+        {
+            return !(lhs < rhs);
+        }
+
+        inline friend bool operator>(const derived_type& lhs, const derived_type& rhs)
+        {
+            return rhs < lhs;
+        }
+ 
     };
 
     template <class T>
@@ -168,11 +169,6 @@ namespace xtl
         inline bool operator==(const self_type& rhs) const
         {
             return m_it == rhs.m_it;
-        }
-
-        inline bool operator<(const self_type& rhs) const
-        {
-            return m_it < rhs.m_it;
         }
 
     private:
