@@ -7,7 +7,9 @@
 ****************************************************************************/
 
 #include "gtest/gtest.h"
+
 #include "xtl/xbasic_fixed_string.hpp"
+#include "xtl/xjson.hpp"
 
 namespace xtl
 {
@@ -64,7 +66,7 @@ namespace xtl
             EXPECT_EQ(s.size(), size_type(5));
             EXPECT_STREQ(s.c_str(), "const");
         }
-        
+
         // From iterators pair
         {
             std::string s1 = "constructor";
@@ -900,6 +902,7 @@ namespace xtl
         size_type r12 = ref.find_first_not_of(ssub, 4);
         EXPECT_EQ(r12, size_type(5));
     }
+
     TEST(xfixed_string, find_last_of)
     {
         string_type ref = "path/to/file";
@@ -925,7 +928,7 @@ namespace xtl
         EXPECT_EQ(r8, size_type(4));
         size_type r9 = ref.find_last_of(sub.c_str(), 3, 2);
         EXPECT_EQ(r9, string_type::npos);
-        
+
         size_type r10 = ref.find_last_of('/', 11);
         EXPECT_EQ(r10, size_type(7));
         size_type r11 = ref.find_last_of('/', 6);
@@ -990,7 +993,7 @@ namespace xtl
         EXPECT_STREQ(res4.c_str(), ref.c_str());
         string_type res5 = 'v' + s1;
         EXPECT_STREQ(res5.c_str(), "vopera");
-        
+
         string_type s1bu = s1;
         string_type res6 = std::move(s1bu) + s2;
         EXPECT_STREQ(res6.c_str(), ref.c_str());
@@ -1181,5 +1184,15 @@ namespace xtl
         size_type r10 = ref.find(ssub, 11);
         EXPECT_EQ(r10, string_type::npos);
     }
+
+#ifdef HAVE_NLOHMANN_JSON
+    TEST(xfixed_string, json)
+    {
+        string_type s1 = "hello";
+        nlohmann::json j1 = s1;
+        EXPECT_FALSE(j1.is_null());
+        EXPECT_EQ(j1.get<std::string>(), "hello");
+    }
+#endif
 
 } // xtl
