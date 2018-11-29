@@ -7,6 +7,22 @@
 Changelog
 =========
 
+0.5.0
+-----
+
+- Serialization and deserialization of fixed strings
+- Inequality comparisons removed from bidirectional iterator base
+- Simplified forward sequence
+- Fixed forward sequence
+- Removed warnings
+- const reference getter for variant holding non const references
+- xget on rvalue fixed
+- Added storage option to fixed string
+- Added missing entries of header files in CMakeLists.txt
+- Refactored xdynamic_bitset
+- Fixed forwrad sequence for non resizable types
+- Removed meta pop-back
+
 0.4.16
 ------
 
