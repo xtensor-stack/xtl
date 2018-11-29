@@ -38,13 +38,6 @@ namespace xtl
         return result(xtl::forward_sequence<shape_type, T>(arg));
     }
 
-    template <class T>
-    bool test_wrong(T&& arg)
-    {
-        using shape_type = std::array<int, 2>;
-        return result(xtl::forward_sequence<shape_type>(arg));
-    }
-
     TEST(xsequence, forward_type)
     {
         std::array<int, 2> a, b;
@@ -53,11 +46,6 @@ namespace xtl
         EXPECT_FALSE(test(a));
         EXPECT_TRUE(test(c));
         EXPECT_TRUE(test(std::move(c)));
-
-        EXPECT_FALSE(test_wrong(std::move(a)));
-        EXPECT_FALSE(test_wrong(a));
-        EXPECT_TRUE(test_wrong(c));
-        EXPECT_TRUE(test_wrong(std::move(c)));
     }
 
     template <class R, class T>
@@ -80,10 +68,10 @@ namespace xtl
         std::array<int, 2> a = { 1, 2 };
         std::vector<int> b = { 1, 2 };
 
-        std::vector<int> resa = xtl::forward_sequence<std::vector<int>>(a);
+        std::vector<int> resa = xtl::forward_sequence<std::vector<int>, decltype(a)>(a);
         EXPECT_EQ(resa, b);
 
-        std::array<int, 2> resb = xtl::forward_sequence<std::array<int, 2>>(b);
+        std::array<int, 2> resb = xtl::forward_sequence<std::array<int, 2>, decltype(b)>(b);
         EXPECT_EQ(resb, a);
     }
 }
