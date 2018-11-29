@@ -6,17 +6,22 @@
 
 #include "nlohmann/json.hpp"
 
-#include "xoptional.hpp"
-#include "xbasic_fixed_string.hpp"
-
 namespace xtl
 {
     /***********************************************************
      * to_json and from_json specialization for xtl::xoptional *
      ***********************************************************/
 
-    template <class D>
-    void to_json(nlohmann::json& j, const xoptional<D>& o)
+    // xoptional forward declaration.
+    template <class D, class B>
+    class xoptional;
+
+    template <class T>
+    auto missing() noexcept;
+
+    // to_json and from_json ADL overload
+    template <class D, class B>
+    void to_json(nlohmann::json& j, const xoptional<D, B>& o)
     {
         if (!o.has_value())
         {
@@ -28,8 +33,8 @@ namespace xtl
         }
     }
 
-    template <class D>
-    void from_json(const nlohmann::json& j, xoptional<D>& o)
+    template <class D, class B>
+    void from_json(const nlohmann::json& j, xoptional<D, B>& o)
     {
         if (j.is_null())
         {
@@ -41,6 +46,15 @@ namespace xtl
         }
     }
 
+    /********************************************************************
+     * to_json and from_json specialization for xtl::basic_fixed_string *
+     ********************************************************************/
+
+    // xbasic_fixed_string forward declaration.
+    template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
+    class xbasic_fixed_string;
+
+    // to_json and from_json ADL overload
     template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
     void to_json(::nlohmann::json& j, const xbasic_fixed_string<CT, N, ST, EP, TR>& str)
     {
