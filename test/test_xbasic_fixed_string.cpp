@@ -9,7 +9,10 @@
 #include "gtest/gtest.h"
 
 #include "xtl/xbasic_fixed_string.hpp"
+
+#ifdef HAVE_NLOHMANN_JSON
 #include "xtl/xjson.hpp"
+#endif
 
 namespace xtl
 {

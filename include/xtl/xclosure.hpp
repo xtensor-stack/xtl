@@ -118,6 +118,12 @@ namespace xtl
         xclosure_wrapper(value_type&& e);
         xclosure_wrapper(reference e);
 
+        xclosure_wrapper(const self_type& rhs) = default;
+        xclosure_wrapper(self_type&& rhs) = default;
+
+        self_type& operator=(const self_type& rhs);
+        self_type& operator=(self_type&& rhs);
+        
         template <class T>
         self_type& operator=(T&&);
 
@@ -131,6 +137,7 @@ namespace xtl
         pointer operator&() noexcept;
 
         bool equal(const self_type& rhs) const;
+        void swap(self_type& rhs);
 
     private:
 
@@ -221,9 +228,22 @@ namespace xtl
     }
 
     template <class CT>
+    inline auto xclosure_wrapper<CT>::operator=(const self_type& rhs) -> self_type&
+    {
+        deref(m_wrappee) = deref(rhs.m_wrappee);
+        return *this;
+    }
+
+    template <class CT>
+    inline auto xclosure_wrapper<CT>::operator=(self_type&& rhs) -> self_type&
+    {
+        swap(rhs);
+        return *this;
+    }
+
+    template <class CT>
     template <class T>
-    inline auto xclosure_wrapper<CT>::operator=(T&& t)
-        -> self_type&
+    inline auto xclosure_wrapper<CT>::operator=(T&& t) -> self_type&
     {
         deref(m_wrappee) = std::forward<T>(t);
         return *this;
@@ -320,6 +340,13 @@ namespace xtl
     }
 
     template <class CT>
+    inline void xclosure_wrapper<CT>::swap(self_type& rhs)
+    {
+        using std::swap;
+        swap(deref(m_wrappee), deref(rhs.m_wrappee));
+    }
+
+    template <class CT>
     inline bool operator==(const xclosure_wrapper<CT>& lhs, const xclosure_wrapper<CT>& rhs)
     {
         return lhs.equal(rhs);
@@ -329,6 +356,12 @@ namespace xtl
     inline bool operator!=(const xclosure_wrapper<CT>& lhs, const xclosure_wrapper<CT>& rhs)
     {
         return !(lhs == rhs);
+    }
+
+    template <class CT>
+    inline void swap(xclosure_wrapper<CT>& lhs, xclosure_wrapper<CT>& rhs)
+    {
+        lhs.swap(rhs);
     }
 
     /***********************************
