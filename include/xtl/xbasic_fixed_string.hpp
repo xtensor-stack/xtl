@@ -2290,8 +2290,8 @@ namespace xtl
     }
 
 #ifdef __CLING__
-    template <class CT, std::size_t N, template <std::size_t> class EP, class TR>
-    nlohmann::json mime_bundle_repr(const xbasic_fixed_string<CT, N, EP, TR>& str)
+    template <class CT, std::size_t N, int ST, template <std::size_t> class EP, class TR>
+    nlohmann::json mime_bundle_repr(const xbasic_fixed_string<CT, N, ST, EP, TR>& str)
     {
         auto bundle = nlohmann::json::object();
         bundle["text/plain"] = str.c_str();
