@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.5.1
+-----
+
+- reverse order of initialization of optional
+- fixup mime type rendering of fixed string
+- closure wrapper assignment fixed
+
 0.5.0
 -----
 
