@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.5.2
+-----
+
+- fixed C++11 compatibility in xjson.hpp
+
 0.5.1
 -----
 

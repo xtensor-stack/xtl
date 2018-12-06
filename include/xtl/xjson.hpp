@@ -1,6 +1,11 @@
 #ifndef XTL_JSON_HPP
 #define XTL_JSON_HPP
 
+// WARNING:
+// All the code in this file and in the
+// files it includes must be C++11 compliant,
+// otherwise it breaks xeus-cling C++11 kernel
+
 #include <cstddef>
 #include <string>
 
