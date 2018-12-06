@@ -32,9 +32,6 @@ namespace xtl
     template <class T, class B>
     auto optional(T&& t, B&& b) noexcept;
 
-    template <class T>
-    auto missing() noexcept;
-
     /*************************
      * xoptional declaration *
      *************************/
@@ -499,7 +496,7 @@ namespace xtl
      * @brief Returns an \ref xoptional for a missig value
      */
     template <class T>
-    auto missing() noexcept
+    xoptional<T, bool> missing() noexcept
     {
         return xoptional<T, bool>(T(), false);
     }
