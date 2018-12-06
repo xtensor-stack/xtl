@@ -17,7 +17,7 @@ namespace xtl
     class xoptional;
 
     template <class T>
-    auto missing() noexcept;
+    xoptional<T, bool> missing() noexcept;
 
     // to_json and from_json ADL overload
     template <class D, class B>
