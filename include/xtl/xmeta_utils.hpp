@@ -460,6 +460,43 @@ namespace xtl
         {
         };
 
+        /*********
+         * split *
+         *********/
+
+        namespace detail
+        {
+            template <std::size_t N, class L1, class L2>
+            struct transfer
+            {
+                using new_l1 = push_back_t<L1, front_t<L2>>;
+                using new_l2 = pop_front_t<L2>;
+                using new_transfer = transfer<N - 1, new_l1, new_l2>;
+                using first_type = typename new_transfer::first_type;
+                using second_type = typename new_transfer::second_type;
+            };
+
+            template <class L1, class L2>
+            struct transfer<0, L1, L2>
+            {
+                using first_type = L1;
+                using second_type = L2;
+            };
+
+            template <std::size_t N, class L>
+            struct split_impl
+            {
+                using tr_type = transfer<N, vector<>, L>;
+                using first_type = typename tr_type::first_type;
+                using second_type = typename tr_type::second_type;
+            };
+        }
+
+        template <std::size_t N, class L>
+        struct split : detail::split_impl<N, L>
+        {
+        };
+
         /*************
          * static_if *
          *************/

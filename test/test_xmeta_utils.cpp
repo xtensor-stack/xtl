@@ -168,6 +168,62 @@ namespace xtl
         EXPECT_EQ(res3, 0ul);
     }
 
+    template <class T>
+    void debug(T&&)
+    {
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
+    }
+
+    TEST(mpl, split)
+    {
+        using arg = mpl::vector<double, int, float, short>;
+        {
+            using sp = mpl::split<0u, arg>;
+            using first_res_type = typename sp::first_type;
+            using second_res_type = typename sp::second_type;
+            bool first_res = std::is_same<first_res_type, mpl::vector<>>::value;
+            bool second_res = std::is_same<second_res_type, arg>::value;
+            EXPECT_TRUE(first_res);
+            EXPECT_TRUE(second_res);
+        }
+        {
+            using sp = mpl::split<1u, arg>;
+            using first_res_type = typename sp::first_type;
+            using second_res_type = typename sp::second_type;
+            bool first_res = std::is_same<first_res_type, mpl::vector<double>>::value;
+            bool second_res = std::is_same<second_res_type, mpl::vector<int, float, short>>::value;
+            EXPECT_TRUE(first_res);
+            EXPECT_TRUE(second_res);
+        }
+        {
+            using sp = mpl::split<2u, arg>;
+            using first_res_type = typename sp::first_type;
+            using second_res_type = typename sp::second_type;
+            bool first_res = std::is_same<first_res_type, mpl::vector<double, int>>::value;
+            bool second_res = std::is_same<second_res_type, mpl::vector<float, short>>::value;
+            EXPECT_TRUE(first_res);
+            EXPECT_TRUE(second_res);
+        }
+        {
+            using sp = mpl::split<3u, arg>;
+            using first_res_type = typename sp::first_type;
+            using second_res_type = typename sp::second_type;
+            bool first_res = std::is_same<first_res_type, mpl::vector<double, int, float>>::value;
+            bool second_res = std::is_same<second_res_type, mpl::vector<short>>::value;
+            EXPECT_TRUE(first_res);
+            EXPECT_TRUE(second_res);
+        }
+        {
+            using sp = mpl::split<4u, arg>;
+            using first_res_type = typename sp::first_type;
+            using second_res_type = typename sp::second_type;
+            bool first_res = std::is_same<first_res_type, arg>::value;
+            bool second_res = std::is_same<second_res_type, mpl::vector<>>::value;
+            EXPECT_TRUE(first_res);
+            EXPECT_TRUE(second_res);
+        }
+    }
+
     template <bool B>
     int static_if_tester()
     {
