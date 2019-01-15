@@ -129,13 +129,23 @@ namespace xtl
     };
 
     /******************
-     * negation - and *
+     * negation - not *
      ******************/
 
     template <class Arg>
     struct negation : std::integral_constant<bool, !Arg::value>
     {
     };
+
+    /************
+     * concepts *
+     ************/
+
+    template <class... C>
+    using check_concept = std::enable_if_t<conjunction<C...>::value, int>;
+
+#define XTL_REQUIRES(...) check_concept<__VA_ARGS__> = 0
+
 }
 
 #endif
