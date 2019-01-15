@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.5.3
+-----
+
+- upgraded to mpark/variant 1.4.0
+- implemented concepts
+- implemented split of type lists
+
 0.5.2
 -----
 
