@@ -54,5 +54,33 @@ namespace xtl
         res = disjunction<false_type, false_type, false_type>::value;
         EXPECT_EQ(res, false);
     }
+
+    template <class T, XTL_REQUIRES(std::is_integral<T>, std::is_signed<T>)>
+    int test_concept(T)
+    {
+        return 0;
+    }
+
+    template <class T, XTL_REQUIRES(std::is_integral<T>, xtl::negation<std::is_signed<T>>)>
+    int test_concept(T)
+    {
+        return 1;
+    }
+
+    template <class T, XTL_REQUIRES(xtl::negation<std::is_integral<T>>)>
+    int test_concept(T)
+    {
+        return 2;
+    }
+
+    TEST(xtype_traits, concepts)
+    {
+        int i = 0;
+        unsigned int ui = 1u;
+        double d = 1.;
+        EXPECT_EQ(test_concept(i), 0);
+        EXPECT_EQ(test_concept(ui), 1);
+        EXPECT_EQ(test_concept(d), 2);
+    }
 }
 
