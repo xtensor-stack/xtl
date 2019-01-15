@@ -144,7 +144,7 @@ namespace xtl
     template <class... C>
     using check_concept = std::enable_if_t<conjunction<C...>::value, int>;
 
-#define XTL_REQUIRES(...) check_concept<__VA_ARGS__> = 0
+#define XTL_REQUIRES(...) xtl::check_concept<__VA_ARGS__> = 0
 
 }
 
