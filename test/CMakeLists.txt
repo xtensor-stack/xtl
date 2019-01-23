@@ -67,7 +67,7 @@ if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     # Add googletest directly to our build. This defines
     # the gtest and gtest_main targets.
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
-                     ${CMAKE_CURRENT_BINARY_DIR}/googletest-build)
+                     ${CMAKE_CURRENT_BINARY_DIR}/googletest-build EXCLUDE_FROM_ALL)
 
     set(GTEST_INCLUDE_DIRS "${gtest_SOURCE_DIR}/include")
     set(GTEST_BOTH_LIBRARIES  gtest_main gtest)
@@ -122,12 +122,10 @@ foreach(filename IN LISTS XTL_TESTS)
     add_test(NAME ${targetname} COMMAND ${targetname})
 endforeach()
 
-set(XTL_TARGET test_xtl)
-
-add_executable(${XTL_TARGET} ${XTL_TESTS} ${XTL_HEADERS})
+add_executable(test_xtl ${XTL_TESTS} ${XTL_HEADERS})
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
-    add_dependencies(${XTL_TARGET} gtest_main)
+    add_dependencies(test_xtl gtest_main)
 endif()
-target_link_libraries(${XTL_TARGET} xtl ${GTEST_BOTH_LIBRARIES} Threads::Threads ${nlohmann_json_TARGET})
+target_link_libraries(test_xtl xtl ${GTEST_BOTH_LIBRARIES} Threads::Threads ${nlohmann_json_TARGET})
 
-add_custom_target(xtest COMMAND test_xtl DEPENDS ${XTL_TARGET})
+add_custom_target(xtest COMMAND test_xtl DEPENDS test_xtl)
