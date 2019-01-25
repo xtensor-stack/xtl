@@ -279,4 +279,18 @@ namespace xtl
         tester2();
         EXPECT_EQ(output_3, 2);
     }
+
+    TEST(mpl, unique)
+    {
+        using input1 = mpl::vector<double, int, double, int, int>;
+        using input2 = mpl::vector<double, int>;
+        using res_type1 = mpl::unique_t<input1>;
+        using res_type2 = mpl::unique_t<input2>;
+
+        constexpr bool res1 = std::is_same<res_type1, input2>::value;
+        constexpr bool res2 = std::is_same<res_type2, input2>::value;
+
+        EXPECT_TRUE(res1);
+        EXPECT_TRUE(res2);
+    }
 }

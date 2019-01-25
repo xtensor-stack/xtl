@@ -497,6 +497,30 @@ namespace xtl
         {
         };
 
+        /**********
+         * unique *
+         **********/
+
+        namespace detail
+        {
+            template <class L>
+            struct unique_impl;
+
+            template <template <class...> class L, class... T>
+            struct unique_impl<L<T...>>
+            {
+                using type = merge_set_t<L<>, L<T...>>;
+            };
+        }
+
+        template <class L>
+        struct unique : detail::unique_impl<L>
+        {
+        };
+
+        template <class L>
+        using unique_t = typename unique<L>::type;
+
         /*************
          * static_if *
          *************/
