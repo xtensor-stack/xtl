@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.5.4
+-----
+
+- Implementation of mpl::unique
+- Prevent installation of gtest artifact
+
 0.5.3
 -----
 
