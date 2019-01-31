@@ -116,13 +116,15 @@ endif()
 foreach(filename IN LISTS XTL_TESTS)
     get_filename_component(targetname ${filename} NAME_WE)
 
-    add_executable(${targetname} ${filename})
+    add_executable(${targetname} ${filename} ${XTL_HEADERS})
+    target_include_directories(${targetname} PRIVATE ${XTL_INCLUDE_DIR})
     target_link_libraries(${targetname} xtl ${GTEST_BOTH_LIBRARIES} Threads::Threads ${nlohmann_json_TARGET})
 
     add_test(NAME ${targetname} COMMAND ${targetname})
 endforeach()
 
 add_executable(test_xtl ${XTL_TESTS} ${XTL_HEADERS})
+target_include_directories(test_xtl PRIVATE ${XTL_INCLUDE_DIR})
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     add_dependencies(test_xtl gtest_main)
 endif()
