@@ -292,6 +292,15 @@ namespace xtl
 
 #define XTL_REQUIRES(...) xtl::check_concept<__VA_ARGS__> = 0
 
+    /**************
+     * all_scalar *
+     **************/
+
+    template <class... Args>
+    struct all_scalar : conjunction<std::is_scalar<Args>...>
+    {
+    };
+
 }
 
 #endif

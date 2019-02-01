@@ -119,6 +119,11 @@ namespace xtl
     using disable_xoptional = std::enable_if_t<!is_xoptional<E>::value, R>;
 
     template <class... Args>
+    struct at_least_one_xoptional : disjunction<is_xoptional<Args>...>
+    {
+    };
+
+    template <class... Args>
     struct common_optional : detail::common_optional_impl<Args...>
     {
     };
