@@ -50,7 +50,10 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xhierarchy_generator.hpp
     ${XTL_INCLUDE_DIR}/xtl/xiterator_base.hpp
     ${XTL_INCLUDE_DIR}/xtl/xjson.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xmasked_value_meta.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xmasked_value.hpp
     ${XTL_INCLUDE_DIR}/xtl/xmeta_utils.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xoptional_meta.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional_sequence.hpp
     ${XTL_INCLUDE_DIR}/xtl/xproxy_wrapper.hpp
