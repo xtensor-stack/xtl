@@ -9,8 +9,8 @@
 
 #include "gtest/gtest.h"
 
-#include "xtl/xmasked_value.hpp"
 #include "xtl/xoptional.hpp"
+#include "xtl/xmasked_value.hpp"
 
 namespace xtl
 {

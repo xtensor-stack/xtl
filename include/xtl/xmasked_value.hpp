@@ -273,7 +273,9 @@ namespace xtl
     template <class T, class B>
     inline auto operator!(const xmasked_value<T, B>& e) noexcept
     {
-        return e.visible() ? masked_value(!e.value()) : masked<decltype(!e.value())>();
+        using return_type = xmasked_value<decltype(!e.value())>;
+        using value_type = typename return_type::value_type;
+        return e.visible() ? return_type(!e.value()) : masked<value_type>();
     }
 
     template <class T, class B, class OC, class OT>
