@@ -271,7 +271,7 @@ namespace xtl
     }
 
     template <class T, class B>
-    inline auto operator!(const xmasked_value<T, B>& e) noexcept
+    inline auto operator!(const xmasked_value<T, B>& e) noexcept -> xmasked_value<decltype(!e.value())>
     {
         using return_type = xmasked_value<decltype(!e.value())>;
         using value_type = typename return_type::value_type;
