@@ -95,6 +95,7 @@ set(XTL_TESTS
     test_xhash.cpp
     test_xhierarchy_generator.cpp
     test_xiterator_base.cpp
+    test_xmasked_value.cpp
     test_xmeta_utils.cpp
     test_xoptional.cpp
     test_xsequence.cpp
