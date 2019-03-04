@@ -26,6 +26,9 @@ namespace xtl
     template <class S>
     S make_sequence(typename S::size_type size, typename S::value_type v);
 
+    template <class S>
+    S make_sequence(std::initializer_list<typename S::value_type> init);
+
     template <class R, class A>
     decltype(auto) forward_sequence(A&& s);
 
@@ -49,7 +52,6 @@ namespace xtl
             using value_type = typename S::value_type;
             using size_type = typename S::size_type;
 
-
             inline static S make(size_type size)
             {
                 return S(size);
@@ -58,6 +60,11 @@ namespace xtl
             inline static S make(size_type size, value_type v)
             {
                 return S(size, v);
+            }
+
+            inline static S make(std::initializer_list<value_type> init)
+            {
+                return S(init);
             }
         };
 
@@ -79,6 +86,13 @@ namespace xtl
                 s.fill(v);
                 return s;
             }
+
+            inline static sequence_type make(std::initializer_list<value_type> init)
+            {
+                sequence_type s;
+                std::copy(init.begin(), init.end(), s.begin());
+                return s;
+            }
         };
     }
     
@@ -92,6 +106,12 @@ namespace xtl
     inline S make_sequence(typename S::size_type size, typename S::value_type v)
     {
         return detail::sequence_builder<S>::make(size, v);
+    }
+
+    template <class S>
+    inline S make_sequence(std::initializer_list<typename S::value_type> init)
+    {
+        return detail::sequence_builder<S>::make(init);
     }
 
     /***********************************
