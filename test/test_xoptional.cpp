@@ -293,4 +293,17 @@ namespace xtl
         EXPECT_EQ(j2.get<xoptional<double>>(), 3.0);
     }
 #endif
+
+    TEST(xoptional, select)
+    {
+        using opt_type = xoptional<double, bool>;
+        using bool_opt_type = xoptional<bool, bool>;
+        auto missing_val = missing<double>();
+
+        EXPECT_EQ(select(true, missing_val, 3.), missing_val);
+        EXPECT_EQ(select(false, missing_val, 3.).value(), 3.);
+        EXPECT_TRUE(select(false, missing_val, 3.).has_value());
+        EXPECT_EQ(select(bool_opt_type(true), 2., 3.).value(), 2.);
+        EXPECT_EQ(select(bool_opt_type(false), 2., 3.).value(), 3.);
+    }
 }
