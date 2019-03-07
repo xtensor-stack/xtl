@@ -7,6 +7,16 @@
 Changelog
 =========
 
+0.6.0
+-----
+
+- Standalone build of xtl tests
+- Moved ``xmasked_value`` from `xtensor`
+- Moved ``promote_type`` from `xtensor`
+- Disabled ``xoptional`` methods for ``xmasked_value``
+- Implemented ``select``
+- ``make_sequence`̀  from ``initializer_list``
+
 0.5.4
 -----
 
