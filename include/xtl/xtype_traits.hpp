@@ -291,6 +291,7 @@ namespace xtl
     using check_concept = std::enable_if_t<conjunction<C...>::value, int>;
 
 #define XTL_REQUIRES(...) xtl::check_concept<__VA_ARGS__> = 0
+#define XTL_REQUIRES_IMPL(...) xtl::check_concept<__VA_ARGS__>
 
     /**************
      * all_scalar *
