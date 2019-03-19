@@ -56,6 +56,9 @@ namespace xtl
     }
 
     template <class T, XTL_REQUIRES(std::is_integral<T>, std::is_signed<T>)>
+    int test_concept(T);
+
+    template <class T, XTL_REQUIRES_IMPL(std::is_integral<T>, std::is_signed<T>)>
     int test_concept(T)
     {
         return 0;
