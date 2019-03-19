@@ -1,6 +1,8 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
+INKSCAPE      = inkscape
+SED           = sed
 PAPER         =
 BUILDDIR      = build
 
@@ -94,24 +96,27 @@ epub:
 	@echo
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
-latex:
+tex-generation:
 	doxygen
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
-	@echo
+	${SED} -i.old -e 's/{\([^}]*\)}.svg/\1-svg.pdf/' $(BUILDDIR)/latex/xtl.tex
+	(cd $(BUILDDIR)/latex/;\
+	for i in *.svg; do\
+		name=`basename $$i .svg`;\
+		${INKSCAPE} -D -z --file=$$i --export-pdf=$$name-svg.pdf --export-latex; \
+	done)
+
+latex: tex-generation
 	@echo "Build finished; the LaTeX files are in $(BUILDDIR)/latex."
 	@echo "Run \`make' in that directory to run these through (pdf)latex" \
 	      "(use \`make latexpdf' here to do that automatically)."
 
-latexpdf:
-	doxygen
-	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
+latexpdf: tex-generation
 	@echo "Running LaTeX files through pdflatex..."
 	$(MAKE) -C $(BUILDDIR)/latex all-pdf
 	@echo "pdflatex finished; the PDF files are in $(BUILDDIR)/latex."
 
-latexpdfja:
-	doxygen
-	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
+latexpdfja: tex-generation
 	@echo "Running LaTeX files through platex and dvipdfmx..."
 	$(MAKE) -C $(BUILDDIR)/latex all-pdf-ja
 	@echo "pdflatex finished; the PDF files are in $(BUILDDIR)/latex."
