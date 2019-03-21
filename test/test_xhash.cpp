@@ -19,26 +19,26 @@ namespace xtl
 
     // Adaptation of tests provided by Austin Appleby in https://github.com/aappleby/smhasher
     template <class F>
-    uint32_t verification_test(F f, int hashbytes)
+    uint32_t verification_test(F f, std::size_t hashbytes)
     {
         uint8_t* key = new uint8_t[256];
         uint8_t* hashes = new uint8_t[hashbytes * 256];
         uint8_t* res = new uint8_t[hashbytes];
 
         std::memset(key, 0, 256);
-        std::memset(hashes, 0, std::size_t(hashbytes * 256));
-        std::memset(res, 0, std::size_t(hashbytes));
+        std::memset(hashes, 0, hashbytes * 256);
+        std::memset(res, 0, hashbytes);
 
         // Hash keys of the form {0}, {0,1}, {0,1,2}... up to N=255,using 256-N as
         // the seed
         for(std::size_t i = 0; i < 256; i++)
         {
             key[i] = (uint8_t)i;
-            *reinterpret_cast<std::size_t*>(hashes + int(i) * hashbytes) = f(key,i,256-i);
+            *reinterpret_cast<std::size_t*>(hashes + i * hashbytes) = f(key,i,256-i);
         }
 
         // Then hash the result array
-        *reinterpret_cast<std::size_t*>(res) = f(hashes,std::size_t(hashbytes)*256,0);
+        *reinterpret_cast<std::size_t*>(res) = f(hashes,hashbytes*256,0);
 
         // The first four bytes of that hash, interpreted as a little-endian integer, is our
         // verification value
@@ -81,7 +81,7 @@ namespace xtl
     }
 
     template <class F>
-    bool sanity_test(F f, int hashbytes)
+    bool sanity_test(F f, std::size_t hashbytes)
     {
         std::srand(883741);
         bool result = true;
@@ -91,8 +91,8 @@ namespace xtl
         int pad = 16;
         int buflen = keymax + pad*3;
   
-        uint8_t * buffer1 = new uint8_t[buflen];
-        uint8_t * buffer2 = new uint8_t[buflen];
+        uint8_t * buffer1 = new uint8_t[std::size_t(buflen)];
+        uint8_t * buffer2 = new uint8_t[std::size_t(buflen)];
 
         uint8_t * hash1 = new uint8_t[hashbytes];
         uint8_t * hash2 = new uint8_t[hashbytes];
@@ -119,7 +119,7 @@ namespace xtl
                         flipbit(key2,len,uint32_t(bit));
                         *reinterpret_cast<std::size_t*>(hash2) = f(key2,std::size_t(len),0);
 
-                        if(std::memcmp(hash1,hash2,std::size_t(hashbytes)) == 0)
+                        if(std::memcmp(hash1,hash2,hashbytes) == 0)
                         {
                             result = false;
                         }
@@ -127,7 +127,7 @@ namespace xtl
                         flipbit(key2,len,uint32_t(bit));
                         *reinterpret_cast<std::size_t*>(hash2) = f(key2,std::size_t(len),0);
 
-                        if(std::memcmp(hash1,hash2,std::size_t(hashbytes)) != 0)
+                        if(std::memcmp(hash1,hash2,hashbytes) != 0)
                         {
                             result = false;
                         }

@@ -199,12 +199,6 @@ namespace xtl
         auto res4 = o1 / o2;
         EXPECT_EQ(res4, optional(d1 / d2, true));
 
-        auto res5 = o1 || o2;
-        EXPECT_EQ(res5, optional(d1 || d2, true));
-
-        auto res6 = o1 && o2;
-        EXPECT_EQ(res6, optional(d1 && d2, true));
-
         xoptional<bool> res7 = o1 < o2;
         EXPECT_TRUE(res7.value());
 
@@ -237,6 +231,12 @@ namespace xtl
 
         auto res13 = ~oi1;
         EXPECT_EQ(res13, optional(~i1, true));
+        
+        auto res5 = oi1 || oi2;
+        EXPECT_EQ(res5, optional(i1 || i2, true));
+
+        auto res6 = oi1 && oi2;
+        EXPECT_EQ(res6, optional(i1 && i2, true));
     }
 
     TEST(xoptional, free_functions)
