@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.6.1
+-----
+
+- Latex does not know how to include svg
+- Added ``XTL_REQUIRES_IMPL`` macro
+- Removed warnings
+
 0.6.0
 -----
 
