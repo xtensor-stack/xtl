@@ -34,7 +34,7 @@ namespace xtl
             const char* data = static_cast<const char*>(buffer);
             for (; length != 0; --length)
             {
-                hash = (hash * 131) + *data++;
+                hash = (hash * 131) + static_cast<std::size_t>(*data++);
             }
             return hash;
         }

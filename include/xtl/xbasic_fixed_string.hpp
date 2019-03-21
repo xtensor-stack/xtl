@@ -111,7 +111,7 @@ namespace xtl
         {
             fixed_string_external_storage_impl() = default;
 
-            fixed_string_external_storage_impl(T ptr, std::ptrdiff_t size)
+            fixed_string_external_storage_impl(T ptr, std::ptrdiff_t/*size*/)
             {
                 m_buffer = ptr;
             }

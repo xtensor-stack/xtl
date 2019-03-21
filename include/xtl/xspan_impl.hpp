@@ -298,7 +298,7 @@ public:
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    static constexpr index_type extent = Extent;
+    static constexpr index_type extent = static_cast<index_type>(Extent);
 
     // [span.cons], span constructors, copy, assignment, and destructor
     template <std::ptrdiff_t E = Extent,
@@ -445,7 +445,7 @@ public:
     }
 
     TCB_SPAN_CONSTEXPR11 span<element_type, dynamic_extent>
-    subspan(index_type offset, index_type count = dynamic_extent) const
+    subspan(index_type offset, index_type count = static_cast<index_type>(dynamic_extent)) const
     {
         TCB_SPAN_EXPECT((offset >= 0 && offset <= size()) &&
                         (count == dynamic_extent ||

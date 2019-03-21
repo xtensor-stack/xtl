@@ -16,24 +16,24 @@ namespace xtl
 {
     TEST(xbase64, encode)
     {
-       base64encode("") == "";
-       base64encode("f") == "Zg==";
-       base64encode("fo") == "Zm8=";
-       base64encode("foo") == "Zm9v";
-       base64encode("foob") == "Zm9vYg==";
-       base64encode("fooba") == "Zm9vYmE=";
-       base64encode("foobar") == "Zm9vYmFy";
+       EXPECT_EQ(base64encode(""), "");
+       EXPECT_EQ(base64encode("f"), "Zg==");
+       EXPECT_EQ(base64encode("fo"), "Zm8=");
+       EXPECT_EQ(base64encode("foo"), "Zm9v");
+       EXPECT_EQ(base64encode("foob"), "Zm9vYg==");
+       EXPECT_EQ(base64encode("fooba"), "Zm9vYmE=");
+       EXPECT_EQ(base64encode("foobar"), "Zm9vYmFy");
     }
 
     TEST(xbase64, decode)
     {
-       base64decode("") == "";
-       base64decode("f") == "Zg==";
-       base64decode("Zm8=") == "fo";
-       base64decode("Zm9v") == "foo";
-       base64decode("Zm9vYg==") == "foob";
-       base64decode("Zm9vYmE=") == "fooba";
-       base64decode("Zm9vYmFy") == "foobar";
+       EXPECT_EQ(base64decode(""), "");
+       EXPECT_EQ(base64decode("Zg=="), "f");
+       EXPECT_EQ(base64decode("Zm8="), "fo");
+       EXPECT_EQ(base64decode("Zm9v"), "foo");
+       EXPECT_EQ(base64decode("Zm9vYg=="), "foob");
+       EXPECT_EQ(base64decode("Zm9vYmE="), "fooba");
+       EXPECT_EQ(base64decode("Zm9vYmFy"), "foobar");
     }
 }
 
