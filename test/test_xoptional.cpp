@@ -6,7 +6,8 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#include "gtest/gtest.h"
+#include "xtl/xoptional.hpp"
+#include "xtl/xoptional_sequence.hpp"
 
 #include <algorithm>
 #include <sstream>
@@ -14,13 +15,12 @@
 #include <vector>
 
 #include "xtl/xany.hpp"
-#include "xtl/xoptional.hpp"
+#include "gtest/gtest.h"
 
 #ifdef HAVE_NLOHMANN_JSON
 #include "xtl/xjson.hpp"
 #endif
 
-#include "xtl/xoptional_sequence.hpp"
 
 namespace xtl
 {

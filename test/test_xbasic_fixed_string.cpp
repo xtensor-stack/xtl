@@ -6,13 +6,15 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#include "gtest/gtest.h"
 
 #include "xtl/xbasic_fixed_string.hpp"
 
 #ifdef HAVE_NLOHMANN_JSON
 #include "xtl/xjson.hpp"
 #endif
+
+#include "gtest/gtest.h"
+#include "xtl/xtl_config.hpp"
 
 namespace xtl
 {
@@ -170,7 +172,11 @@ namespace xtl
             s.assign(size_type(4), 'a');
             EXPECT_EQ(s.size(), size_type(4));
             EXPECT_STREQ(s.c_str(), "aaaa");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.assign(size_type(17), 'a'), "");
+#else
             EXPECT_THROW(s.assign(size_type(17), 'a'), std::length_error);
+#endif
         }
 
         // From substring
@@ -190,7 +196,11 @@ namespace xtl
             EXPECT_EQ(s.size(), size_type(12));
             EXPECT_STREQ(s.c_str(), "construc");
             const char* ctothrow = "abcdefghij\0klmnopq";
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.assign(ctothrow, size_type(18)), "");
+#else
             EXPECT_THROW(s.assign(ctothrow, size_type(18)), std::length_error);
+#endif
         }
 
         // From const char*
@@ -201,7 +211,11 @@ namespace xtl
             EXPECT_EQ(s.size(), size_type(11));
             EXPECT_STREQ(s.c_str(), cstr);
             const char* ctothrow = "abcdefghijklmnopq";
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.assign(ctothrow, size_type(17)), "");
+#else
             EXPECT_THROW(s.assign(ctothrow, size_type(17)), std::length_error);
+#endif
         }
 
         // From initializer_list
@@ -210,7 +224,11 @@ namespace xtl
             s.assign({ 'c', 'o', 'n', 's', 't' });
             EXPECT_EQ(s.size(), size_type(5));
             EXPECT_STREQ(s.c_str(), "const");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.assign({ 'a','b','c','a','b','c','a','b','c','a','b','c','a','b','c','a','b','c' }), "");
+#else
             EXPECT_THROW(s.assign({ 'a','b','c','a','b','c','a','b','c','a','b','c','a','b','c','a','b','c' }), std::length_error);
+#endif
         }
 
         // From iterators pair
@@ -221,7 +239,11 @@ namespace xtl
             EXPECT_EQ(s.size(), size_type(11));
             EXPECT_STREQ(s.c_str(), s1.c_str());
             std::string ctothrow = "abcdefghijklmnopq";
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.assign(ctothrow.cbegin(), ctothrow.cend()), "");
+#else
             EXPECT_THROW(s.assign(ctothrow.cbegin(), ctothrow.cend()), std::length_error);
+#endif
         }
 
         // From lvalue reference
@@ -275,7 +297,11 @@ namespace xtl
         EXPECT_EQ(s.back(), 'S');
         EXPECT_STREQ(s.c_str(), "ElEMent_accesS");
 
+#if defined(XTL_NO_EXCEPTIONS)
+        EXPECT_DEATH_IF_SUPPORTED(s.at(15), "");
+#else
         EXPECT_THROW(s.at(15), std::out_of_range);
+#endif
 
         EXPECT_STREQ(s.data(), s.c_str());
     }
@@ -343,7 +369,11 @@ namespace xtl
         EXPECT_STREQ(s1.c_str(), "erati");
         string_type s2 = ref.substr(2, 45);
         EXPECT_STREQ(s2.c_str(), "eration");
+#if defined(XTL_NO_EXCEPTIONS)
+        EXPECT_DEATH_IF_SUPPORTED(ref.substr(15, 4), "");
+#else
         EXPECT_THROW(ref.substr(15, 4), std::out_of_range);
+#endif
     }
 
     TEST(xfixed_string, copy)
@@ -360,7 +390,11 @@ namespace xtl
         EXPECT_EQ(cp2, size_type(6));
         EXPECT_STREQ(dst2.c_str(), "ration");
 
+#if defined(XTL_NO_EXCEPTIONS)
+        EXPECT_DEATH_IF_SUPPORTED(ref.copy(dst2.data(), 4, 15), "");
+#else
         EXPECT_THROW(ref.copy(dst2.data(), 4, 15), std::out_of_range);
+#endif
     }
 
     TEST(xfixed_string, resize)
@@ -397,14 +431,22 @@ namespace xtl
             string_type s = ref;
             s.insert(3, 2, 'a');
             EXPECT_STREQ(s.c_str(), "opeaaration");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.insert(45, 2, 'b'), "");
+#else
             EXPECT_THROW(s.insert(45, 2, 'b'), std::out_of_range);
+#endif
         }
 
         {
             string_type s = ref;
             s.insert(3, "bb");
             EXPECT_STREQ(s.c_str(), "opebbration");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.insert(45, "bb"), "");
+#else
             EXPECT_THROW(s.insert(45, "bb"), std::out_of_range);
+#endif
         }
 
         {
@@ -412,7 +454,11 @@ namespace xtl
             s.insert(3, "b\0b", 3);
             EXPECT_EQ(s.size(), size_type(12));
             EXPECT_STREQ(s.c_str(), "opeb");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.insert(45, "b\0b", 3), "");
+#else
             EXPECT_THROW(s.insert(45, "b\0b", 3), std::out_of_range);
+#endif
         }
 
         {
@@ -420,7 +466,11 @@ namespace xtl
             string_type ins = "aa";
             s.insert(3, ins);
             EXPECT_STREQ(s.c_str(), "opeaaration");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.insert(45, ins), "");
+#else
             EXPECT_THROW(s.insert(45, ins), std::out_of_range);
+#endif
         }
 
         {
@@ -430,7 +480,11 @@ namespace xtl
             EXPECT_STREQ(s.c_str(), "opecdration");
             s.insert(3, ins, 5, 15);
             EXPECT_STREQ(s.c_str(), "opefghcdration");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.insert(45, ins, 2, 2), "");
+#else
             EXPECT_THROW(s.insert(45, ins, 2, 2), std::out_of_range);
+#endif
         }
 
         {
@@ -438,7 +492,11 @@ namespace xtl
             std::string ins = "aa";
             s.insert(3, ins);
             EXPECT_STREQ(s.c_str(), "opeaaration");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.insert(45, ins), "");
+#else
             EXPECT_THROW(s.insert(45, ins), std::out_of_range);
+#endif
         }
 
         {
@@ -448,7 +506,11 @@ namespace xtl
             EXPECT_STREQ(s.c_str(), "opecdration");
             s.insert(3, ins, 5, 15);
             EXPECT_STREQ(s.c_str(), "opefghcdration");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.insert(45, ins, 2, 2), "");
+#else
             EXPECT_THROW(s.insert(45, ins, 2, 2), std::out_of_range);
+#endif
         }
 
         {
@@ -510,7 +572,11 @@ namespace xtl
             string_type s = ref;
             s.append(2, 'a');
             EXPECT_STREQ(s.c_str(), "operationaa");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.append(15, 'a'), "");
+#else
             EXPECT_THROW(s.append(15, 'a'), std::length_error);
+#endif
         }
 
         {
@@ -518,7 +584,11 @@ namespace xtl
             string_type ap = "abc";
             s.append(ap);
             EXPECT_STREQ(s.c_str(), "operationabc");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.append(string_type("operation")), "");
+#else
             EXPECT_THROW(s.append(string_type("operation")), std::length_error);
+#endif
         }
 
         {
@@ -535,7 +605,11 @@ namespace xtl
             std::string ap = "abc";
             s.append(ap);
             EXPECT_STREQ(s.c_str(), "operationabc");
+#if defined(XTL_NO_EXCEPTIONS)
+            EXPECT_DEATH_IF_SUPPORTED(s.append(string_type("operation")), "");
+#else
             EXPECT_THROW(s.append(string_type("operation")), std::length_error);
+#endif
         }
 
         {
@@ -1126,7 +1200,11 @@ namespace xtl
         EXPECT_EQ(s.back(), 'S');
         EXPECT_STREQ(s.c_str(), "ElEMent_accesS");
 
+#if defined(XTL_NO_EXCEPTIONS)
+        EXPECT_DEATH_IF_SUPPORTED(s.at(15), "");
+#else
         EXPECT_THROW(s.at(15), std::out_of_range);
+#endif
 
         EXPECT_STREQ(s.data(), s.c_str());
         EXPECT_STREQ(s.data(), buf);

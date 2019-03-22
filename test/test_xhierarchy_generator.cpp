@@ -6,11 +6,12 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#include "gtest/gtest.h"
+#include "xtl/xhierarchy_generator.hpp"
 
 #include <type_traits>
 
-#include "xtl/xhierarchy_generator.hpp"
+#include "gtest/gtest.h"
+
 
 namespace xtl
 {

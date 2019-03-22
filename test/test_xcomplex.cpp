@@ -6,11 +6,11 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#include "gtest/gtest.h"
+#include "xtl/xcomplex.hpp"
 
 #include <complex>
 
-#include "xtl/xcomplex.hpp"
+#include "gtest/gtest.h"
 #include "xtl/xclosure.hpp"
 
 namespace xtl

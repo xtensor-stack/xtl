@@ -7,10 +7,10 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#include "gtest/gtest.h"
-
-#include "xtl/xoptional.hpp"
 #include "xtl/xmasked_value.hpp"
+
+#include "gtest/gtest.h"
+#include "xtl/xoptional.hpp"
 
 namespace xtl
 {

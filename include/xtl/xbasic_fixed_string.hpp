@@ -21,6 +21,7 @@
 #endif
 
 #include "xhash.hpp"
+#include "xtl_config.hpp"
 
 namespace xtl
 {
