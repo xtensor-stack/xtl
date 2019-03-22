@@ -10,6 +10,8 @@
 #ifndef XTL_XMASKED_VALUE_META_HPP
 #define XTL_XMASKED_VALUE_META_HPP
 
+#include <type_traits>
+
 namespace xtl
 {
     template <class T, class B = bool>

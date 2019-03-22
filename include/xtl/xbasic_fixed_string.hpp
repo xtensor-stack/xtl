@@ -675,7 +675,12 @@ namespace xtl
                 {
                     std::ostringstream oss;
                     oss << "Invalid size (" << size << ") for xbasic_fixed_string - maximal size: " << N;
+#if defined(XTL_NO_EXCEPTIONS)
+                    std::fprintf(stderr, "%s\n", oss.str().c_str());
+                    std::terminate();
+#else
                     throw std::length_error(oss.str());
+#endif
                 }
                 return size;
             }
@@ -1933,7 +1938,12 @@ namespace xtl
     {
         if (pos >= size)
         {
+#if defined(XTL_NO_EXCEPTIONS)
+            std::fprintf(stderr, "%s\n", what);
+            std::terminate();
+#else
             throw std::out_of_range(what);
+#endif
         }
     }
 

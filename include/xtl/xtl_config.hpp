@@ -13,4 +13,11 @@
 #define XTL_VERSION_MINOR 6
 #define XTL_VERSION_PATCH 1
 
+// Attempt to discover whether we're being compiled with exception support
+#ifndef XTL_NO_EXCEPTIONS
+#if !(defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND))
+#define XTL_NO_EXCEPTIONS
+#endif
+#endif
+
 #endif
