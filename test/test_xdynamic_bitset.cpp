@@ -6,9 +6,9 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#include "gtest/gtest.h"
-
 #include "xtl/xdynamic_bitset.hpp"
+
+#include "gtest/gtest.h"
 
 namespace xtl
 {

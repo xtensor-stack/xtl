@@ -13,6 +13,7 @@
 #include <type_traits>
 
 #include "xfunctional.hpp"
+#include "xtl_config.hpp"
 
 namespace xtl
 {

@@ -6,6 +6,8 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
+#include "xtl/xiterator_base.hpp"
+
 #include <list>
 #include <map>
 #include <string>
@@ -13,7 +15,6 @@
 
 #include "gtest/gtest.h"
 
-#include "xtl/xiterator_base.hpp"
 
 namespace adl
 {

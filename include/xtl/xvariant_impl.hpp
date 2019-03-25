@@ -267,8 +267,10 @@ namespace std {
 #define MPARK_CPP14_CONSTEXPR
 #endif
 
-#if __has_feature(cxx_exceptions) || defined(__cpp_exceptions) || \
-    (defined(_MSC_VER) && defined(_CPPUNWIND))
+#if !defined(MPARK_NO_EXCEPTIONS) && \
+    (__has_feature(cxx_exceptions) || defined(__cpp_exceptions) || \
+    defined(__EXCEPTIONS) || (defined(_MSC_VER) && defined(_CPPUNWIND)))
+// Exceptions are enabled.
 #define MPARK_EXCEPTIONS
 #endif
 

@@ -6,12 +6,13 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
+#include "xtl/xvariant.hpp"
+
 #include <string>
 #include <vector>
 
 #include "gtest/gtest.h"
-
-#include "xtl/xvariant.hpp"
+#include "xtl/xtl_config.hpp"
 
 using namespace std::literals;
 
@@ -36,7 +37,11 @@ namespace xtl
     {
         xtl::variant<int, float> v;
         v = 12;
+#if defined(XTL_NO_EXCEPTIONS)
+        EXPECT_DEATH_IF_SUPPORTED(xtl::get<float>(v), "");
+#else
         EXPECT_THROW(xtl::get<float>(v), xtl::bad_variant_access);
+#endif
     }
 
     TEST(xvariant, converting_constructor)

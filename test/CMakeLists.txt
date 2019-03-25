@@ -36,11 +36,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang OR CMAKE_CXX_COMPILER_ID MATCHES GNU OR C
     if (HAS_MARCH_NATIVE)
         add_compile_options(-march=native)
     endif()
+    if (XTL_DISABLE_EXCEPTIONS)
+        add_compile_options(-fno-exceptions)
+    endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     add_compile_options(/EHsc /MP /bigobj)
     set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
+    if (XTL_DISABLE_EXCEPTIONS)
+        add_compile_options(/EHs-c-)
+    endif()
 endif()
 
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)

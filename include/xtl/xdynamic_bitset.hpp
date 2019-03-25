@@ -253,7 +253,12 @@ namespace xtl
     inline void xdynamic_bitset_view<X>::resize(std::size_t sz)
     {
         if (sz != this->m_size) {
+#if defined(XTL_NO_EXCEPTIONS)
+            std::fprintf(stderr, "cannot resize bitset_view\n");
+            std::terminate();        
+#else
             throw std::runtime_error("cannot resize bitset_view");
+#endif
         }
     }
 

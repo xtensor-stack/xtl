@@ -6,13 +6,13 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
+#include "xtl/xhash.hpp"
+
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
 #include "gtest/gtest.h"
-
-#include "xtl/xhash.hpp"
 
 namespace xtl
 {
