@@ -271,9 +271,7 @@ namespace std {
     (__has_feature(cxx_exceptions) || defined(__cpp_exceptions) || \
     defined(__EXCEPTIONS) || (defined(_MSC_VER) && defined(_CPPUNWIND)))
 // Exceptions are enabled.
-#else
-// Exceptions are disabled.
-#define MPARK_NO_EXCEPTIONS
+#define MPARK_EXCEPTIONS
 #endif
 
 #if defined(__cpp_generic_lambdas) || defined(_MSC_VER)
@@ -914,7 +912,7 @@ namespace mpark {
   };
 
   [[noreturn]] inline void throw_bad_variant_access() {
-#if !defined(MPARK_NO_EXCEPTIONS)
+#ifdef MPARK_EXCEPTIONS
     throw bad_variant_access{};
 #else
     std::terminate();
@@ -2131,7 +2129,7 @@ namespace mpark {
             std::swap(lhs, rhs);
           }
           impl tmp(lib::move(*rhs));
-#if !defined(MPARK_NO_EXCEPTIONS)
+#ifdef MPARK_EXCEPTIONS
           // EXTENSION: When the move construction of `lhs` into `rhs` throws
           // and `tmp` is nothrow move constructible then we move `tmp` back
           // into `rhs` and provide the strong exception safety guarantee.
