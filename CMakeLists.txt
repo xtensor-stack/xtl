@@ -13,7 +13,7 @@ enable_testing()
 
 set(XTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Versionning
+# Versioning
 # ===========
 
 file(STRINGS "${XTL_INCLUDE_DIR}/xtl/xtl_config.hpp" xtl_version_defines
@@ -72,8 +72,9 @@ target_include_directories(xtl INTERFACE $<BUILD_INTERFACE:${XTL_INCLUDE_DIR}>
 target_compile_features(xtl INTERFACE cxx_std_14)
 
 
-OPTION(BUILD_TESTS "xtl test suite" OFF)
-OPTION(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
+option(BUILD_TESTS "xtl test suite" OFF)
+option(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
+option(XTL_DISABLE_EXCEPTIONS "Disable C++ exceptions" OFF)
 
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     set(BUILD_TESTS ON)

@@ -15,6 +15,7 @@ Build
 - ``BUILD_TESTS``: enables the ``xtest`` target (see below).
 - ``DOWNLOAD_GTEST``: downloads ``gtest`` and builds it locally instead of using a binary installation.
 - ``GTEST_SRC_DIR``: indicates where to find the ``gtest`` sources instead of downloading them.
+- ``XTL_DISABLE_EXCEPTIONS``: indicates that tests should be run with exceptions disabled.
 
 All these options are disabled by default. Enabling ``DOWNLOAD_GTEST`` or setting ``GTEST_SRC_DIR``
 enables ``BUILD_TESTS``.
