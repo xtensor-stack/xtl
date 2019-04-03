@@ -86,5 +86,26 @@ namespace xtl
         EXPECT_EQ(test_concept(ui), 1);
         EXPECT_EQ(test_concept(d), 2);
     }
+
+    TEST(xtype_traits, constify)
+    {
+        bool res = std::is_same<constify_t<int&>, const int&>::value;
+        EXPECT_TRUE(res);
+
+        res = std::is_same<constify_t<const int&>, const int&>::value;
+        EXPECT_TRUE(res);
+
+        res = std::is_same<constify_t<int*>, const int*>::value;
+        EXPECT_TRUE(res);
+
+        res = std::is_same<constify_t<const int*>, const int*>::value;
+        EXPECT_TRUE(res);
+
+        res = std::is_same<constify_t<int>, const int>::value;
+        EXPECT_TRUE(res);
+
+        res = std::is_same<constify_t<const int>, const int>::value;
+        EXPECT_TRUE(res);
+    }
 }
 
