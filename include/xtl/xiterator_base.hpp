@@ -121,6 +121,45 @@ namespace xtl
                                                                        typename T::pointer,
                                                                        typename T::reference>;
 
+    /*******************************
+     * xrandom_access_iterator_ext *
+     *******************************/
+
+    // Extension for random access iterators defining operator[] and operator+ overloads
+    // accepting size_t arguments.
+    template <class I, class R>
+    class xrandom_access_iterator_ext
+    {
+    public:
+
+        using derived_type = I;
+        using reference = R;
+        using size_type = std::size_t;
+
+        inline reference operator[](size_type n) const
+        {
+            return *(*static_cast<const derived_type*>(this) + n);
+        }
+
+        inline friend derived_type operator+(const derived_type& it, size_type n)
+        {
+            derived_type tmp(it);
+            return tmp += n;
+        }
+
+        inline friend derived_type operator+(size_type n, const derived_type& it)
+        {
+            derived_type tmp(it);
+            return tmp += n;
+        }
+
+        inline friend derived_type operator-(const derived_type& it, size_type n)
+        {
+            derived_type tmp(it);
+            return tmp -= n;
+        }
+    };
+
     /*****************
      * xkey_iterator *
      *****************/
