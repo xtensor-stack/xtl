@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.6.2
+-----
+
+- Allows xtl to build with -fno-exceptions
+- Added ``constify`` and ``constify_t``
+- Added ``size_t`` overloads for random access iterators
+
 0.6.1
 -----
 
