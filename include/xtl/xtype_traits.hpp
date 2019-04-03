@@ -302,6 +302,33 @@ namespace xtl
     {
     };
 
+    /************
+     * constify *
+     ************/
+
+    // Adds const to the underlying type of a reference or pointer, or to the type itself
+    // if it's not a reference nor a pointer
+
+    template <class T>
+    struct constify
+    {
+        using type = std::add_const_t<T>;
+    };
+
+    template <class T>
+    struct constify<T*>
+    {
+        using type = std::add_const_t<T>*;
+    };
+
+    template <class T>
+    struct constify<T&>
+    {
+        using type = std::add_const_t<T>&;
+    };
+
+    template <class T>
+    using constify_t = typename constify<T>::type;
 }
 
 #endif
