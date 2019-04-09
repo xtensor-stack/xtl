@@ -37,7 +37,7 @@ namespace xtl
     };
 
     namespace detail {
-        inline static void check_any_cast(void* p) {
+        inline static void check_any_cast(const void* p) {
             if (p == nullptr) {
 #if defined(XTL_NO_EXCEPTIONS)
                 std::fprintf(stderr, "bad_any_cast\n");
