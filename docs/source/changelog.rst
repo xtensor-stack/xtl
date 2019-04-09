@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.6.3
+-----
+
+- Fix constness issue in xtl's implementation of std::any.
+
 0.6.2
 -----
 
