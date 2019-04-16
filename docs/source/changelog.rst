@@ -34,7 +34,7 @@ Changelog
 - Moved ``promote_type`` from `xtensor`
 - Disabled ``xoptional`` methods for ``xmasked_value``
 - Implemented ``select``
-- ``make_sequence`̀  from ``initializer_list``
+- ``make_sequence``  from ``initializer_list``
 
 0.5.4
 -----
