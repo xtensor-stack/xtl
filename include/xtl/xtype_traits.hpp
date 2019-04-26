@@ -287,11 +287,63 @@ namespace xtl
      * concepts *
      ************/
 
-    template <class... C>
-    using check_concept = std::enable_if_t<conjunction<C...>::value, int>;
+#if !defined(__GNUC__) || (defined(__GNUC__) && (__GNUC__ >= 5))
 
-#define XTL_REQUIRES(...) xtl::check_concept<__VA_ARGS__> = 0
-#define XTL_REQUIRES_IMPL(...) xtl::check_concept<__VA_ARGS__>
+    template <class... C>
+    constexpr bool requires = conjunction<C...>::value;
+
+    template <class... C>
+    constexpr bool either = disjunction<C...>::value;
+
+    template <class... C>
+    constexpr bool disallow = xtl::negation<xtl::conjunction<C...>>::value;
+
+    template <class... C>
+    constexpr bool disallow_one = xtl::negation<xtl::disjunction<C...>>::value;
+
+    template <class... C>
+    using check_requires = std::enable_if_t<requires<C...>, int>;
+
+    template <class... C>
+    using check_either = std::enable_if_t<either<C...>, int>;
+
+    template <class... C>
+    using check_disallow = std::enable_if_t<disallow<C...>, int>;
+
+    template <class... C>
+    using check_disallow_one = std::enable_if_t<disallow_one<C...>, int>;
+
+#else
+
+    template <class... C>
+    using check_requires = std::enable_if_t<conjunction<C...>::value, int>;
+
+    template <class... C>
+    using check_either = std::enable_if_t<disjunction<C...>::value, int>;
+
+    template <class... C>
+    using check_disallow = std::enable_if_t<xtl::negation<xtl::conjunction<C...>>::value, int>;
+
+    template <class... C>
+    using check_disallow_one = std::enable_if_t<xtl::negation<xtl::disjunction<C...>>::value, int>;
+
+#endif
+
+#define XTL_REQUIRES_IMPL(...) xtl::check_requires<__VA_ARGS__>
+#define XTL_REQUIRES(...) XTL_REQUIRES_IMPL(__VA_ARGS__) = 0
+
+#define XTL_EITHER_IMPL(...) xtl::check_either<__VA_ARGS__>
+#define XTL_EITHER(...) XTL_EITHER_IMPL(__VA_ARGS__) = 0
+
+#define XTL_DISALLOW_IMPL(...) xtl::check_disallow<__VA_ARGS__>
+#define XTL_DISALLOW(...) XTL_DISALLOW_IMPL(__VA_ARGS__) = 0
+
+#define XTL_DISALLOW_ONE_IMPL(...) xtl::check_disallow_one<__VA_ARGS__>
+#define XTL_DISALLOW_ONE(...) XTL_DISALLOW_ONE_IMPL(__VA_ARGS__) = 0
+
+    // For backward compatibility
+    template <class... C>
+    using check_concept = check_requires<C...>;
 
     /**************
      * all_scalar *

@@ -509,7 +509,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    template <class T, check_concept<is_not_xoptional_nor_xmasked_value<T>>>
+    template <class T, check_requires<is_not_xoptional_nor_xmasked_value<T>>>
     auto xoptional<CT, CB>::operator+=(const T& rhs) -> xoptional&
     {
         if (m_flag)
@@ -520,7 +520,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    template <class T, check_concept<is_not_xoptional_nor_xmasked_value<T>>>
+    template <class T, check_requires<is_not_xoptional_nor_xmasked_value<T>>>
     auto xoptional<CT, CB>::operator-=(const T& rhs) -> xoptional&
     {
         if (m_flag)
@@ -531,7 +531,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    template <class T, check_concept<is_not_xoptional_nor_xmasked_value<T>>>
+    template <class T, check_requires<is_not_xoptional_nor_xmasked_value<T>>>
     auto xoptional<CT, CB>::operator*=(const T& rhs) -> xoptional&
     {
         if (m_flag)
@@ -542,7 +542,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    template <class T, check_concept<is_not_xoptional_nor_xmasked_value<T>>>
+    template <class T, check_requires<is_not_xoptional_nor_xmasked_value<T>>>
     auto xoptional<CT, CB>::operator/=(const T& rhs) -> xoptional&
     {
         if (m_flag)
@@ -553,7 +553,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    template <class T, check_concept<is_not_xoptional_nor_xmasked_value<T>>>
+    template <class T, check_requires<is_not_xoptional_nor_xmasked_value<T>>>
     auto xoptional<CT, CB>::operator%=(const T& rhs) -> xoptional&
     {
         if (m_flag)
@@ -564,7 +564,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    template <class T, check_concept<is_not_xoptional_nor_xmasked_value<T>>>
+    template <class T, check_requires<is_not_xoptional_nor_xmasked_value<T>>>
     auto xoptional<CT, CB>::operator&=(const T& rhs) -> xoptional&
     {
         if (m_flag)
@@ -575,7 +575,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    template <class T, check_concept<is_not_xoptional_nor_xmasked_value<T>>>
+    template <class T, check_requires<is_not_xoptional_nor_xmasked_value<T>>>
     auto xoptional<CT, CB>::operator|=(const T& rhs) -> xoptional&
     {
         if (m_flag)
@@ -586,7 +586,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    template <class T, check_concept<is_not_xoptional_nor_xmasked_value<T>>>
+    template <class T, check_requires<is_not_xoptional_nor_xmasked_value<T>>>
     auto xoptional<CT, CB>::operator^=(const T& rhs) -> xoptional&
     {
         if (m_flag)
@@ -677,7 +677,7 @@ namespace xtl
     }
 
     template <class CT, class CB>
-    template <class CTO, check_concept<is_not_xoptional_nor_xmasked_value<CTO>>>
+    template <class CTO, check_requires<is_not_xoptional_nor_xmasked_value<CTO>>>
     bool xoptional<CT, CB>::equal(const CTO& rhs) const noexcept
     {
         return m_flag ? (m_value == rhs) : false;

@@ -60,7 +60,7 @@ namespace xtl
         template <class T1, class B1>
         bool equal(const xmasked_value<T1, B1>& rhs) const noexcept;
 
-        template <class T1, XTL_REQUIRES(negation<is_xmasked_value<T1>>)>
+        template <class T1, XTL_DISALLOW(is_xmasked_value<T1>)>
         bool equal(const T1& rhs) const noexcept;
 
         template <class T1, class B1>
@@ -197,7 +197,7 @@ namespace xtl
     }
 
     template <class T, class B>
-    template <class T1, check_concept<negation<is_xmasked_value<T1>>>>
+    template <class T1, check_disallow<is_xmasked_value<T1>>>
     inline bool xmasked_value<T, B>::equal(const T1& rhs) const noexcept
     {
         return m_visible && m_value == rhs;
