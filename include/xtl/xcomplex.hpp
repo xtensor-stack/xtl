@@ -1164,7 +1164,7 @@ namespace xtl
         template <class T, class M>
         struct forward_type
         {
-            using type = apply_cv_t<T, M>&&;
+            using type = apply_cv_t<T, M>;
         };
 
         template <class T, class M>
