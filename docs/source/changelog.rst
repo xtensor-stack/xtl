@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.6.4
+-----
+
+- Fixed forward type
+
 0.6.3
 -----
 
