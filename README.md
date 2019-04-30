@@ -2,7 +2,7 @@
 
 [![Travis](https://travis-ci.org/QuantStack/xtl.svg?branch=master)](https://travis-ci.org/QuantStack/xtl)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/g9bldap2wirlue9w?svg=true)](https://ci.appveyor.com/project/QuantStack/xtl)
-[![Azure](https://dev.azure.com/robertodr/xtl/_apis/build/status/robertodr.xtl?branchName=master)](https://dev.azure.com/robertodr/xtl/_build/latest?definitionId=6&branchName=master)
+[![Azure]((https://dev.azure.com/johanmabille/johanmabille/_apis/build/status/QuantStack.xtl?branchName=master)](https://dev.azure.com/johanmabille/johanmabille/_build/latest?definitionId=1&branchName=master)
 [![Documentation Status](http://readthedocs.org/projects/xtl/badge/?version=latest)](https://xtl.readthedocs.io/en/latest/?badge=latest)
 [![Join the Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/QuantStack/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
