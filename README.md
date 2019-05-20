@@ -19,7 +19,7 @@ conda install -c conda-forge xtl
 Or you can directly install it from the sources:
 
 ```bash
-cmake -D CMAKE_INSTALL_PREFIX=your_install_prefix
+cmake -DCMAKE_INSTALL_PREFIX=your_install_prefix
 make install
 ```
 
