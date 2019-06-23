@@ -9,6 +9,11 @@
 #ifndef XTL_COMPLEX_HPP
 #define XTL_COMPLEX_HPP
 
+#if !defined(_MSC_VER)
+#include <cmath>
+using std::copysign;
+#endif
+
 #include <complex>
 #include <cstddef>
 #include <limits>
@@ -566,29 +571,29 @@ namespace xtl
                     bool recalc = false;
                     if (std::isinf(a) || std::isinf(b))
                     {
-                        a = std::copysign(std::isinf(a) ? value_type(1) : value_type(0), a);
-                        b = std::copysign(std::isinf(b) ? value_type(1) : value_type(0), b);
+                        a = copysign(std::isinf(a) ? value_type(1) : value_type(0), a);
+                        b = copysign(std::isinf(b) ? value_type(1) : value_type(0), b);
                         if (std::isnan(c))
                         {
-                            c = std::copysign(value_type(0), c);
+                            c = copysign(value_type(0), c);
                         }
                         if (std::isnan(d))
                         {
-                            d = std::copysign(value_type(0), d);
+                            d = copysign(value_type(0), d);
                         }
                         recalc = true;
                     }
                     if (std::isinf(c) || std::isinf(d))
                     {
-                        c = std::copysign(std::isinf(c) ? value_type(1) : value_type(0), c);
-                        d = std::copysign(std::isinf(c) ? value_type(1) : value_type(0), d);
+                        c = copysign(std::isinf(c) ? value_type(1) : value_type(0), c);
+                        d = copysign(std::isinf(c) ? value_type(1) : value_type(0), d);
                         if (std::isnan(a))
                         {
-                            a = std::copysign(value_type(0), a);
+                            a = copysign(value_type(0), a);
                         }
                         if (std::isnan(b))
                         {
-                            b = std::copysign(value_type(0), b);
+                            b = copysign(value_type(0), b);
                         }
                         recalc = true;
                     }
@@ -596,19 +601,19 @@ namespace xtl
                     {
                         if (std::isnan(a))
                         {
-                            a = std::copysign(value_type(0), a);
+                            a = copysign(value_type(0), a);
                         }
                         if (std::isnan(b))
                         {
-                            b = std::copysign(value_type(0), b);
+                            b = copysign(value_type(0), b);
                         }
                         if (std::isnan(c))
                         {
-                            c = std::copysign(value_type(0), c);
+                            c = copysign(value_type(0), c);
                         }
                         if (std::isnan(d))
                         {
-                            d = std::copysign(value_type(0), d);
+                            d = copysign(value_type(0), d);
                         }
                         recalc = true;
                     }
@@ -645,20 +650,20 @@ namespace xtl
                 {
                     if ((denom == value_type(0)) && (!std::isnan(a) || !std::isnan(b)))
                     {
-                        x = std::copysign(std::numeric_limits<value_type>::infinity(), c) * a;
-                        y = std::copysign(std::numeric_limits<value_type>::infinity(), c) * b;
+                        x = copysign(std::numeric_limits<value_type>::infinity(), c) * a;
+                        y = copysign(std::numeric_limits<value_type>::infinity(), c) * b;
                     }
                     else if ((std::isinf(a) || std::isinf(b)) && std::isfinite(c) && std::isfinite(d))
                     {
-                        a = std::copysign(std::isinf(a) ? value_type(1) : value_type(0), a);
-                        b = std::copysign(std::isinf(b) ? value_type(1) : value_type(0), b);
+                        a = copysign(std::isinf(a) ? value_type(1) : value_type(0), a);
+                        b = copysign(std::isinf(b) ? value_type(1) : value_type(0), b);
                         x = std::numeric_limits<value_type>::infinity() * (a*c + b*d);
                         y = std::numeric_limits<value_type>::infinity() * (b*c - a*d);
                     }
                     else if (std::isinf(logbw) && logbw > value_type(0) && std::isfinite(a) && std::isfinite(b))
                     {
-                        c = std::copysign(std::isinf(c) ? value_type(1) : value_type(0), c);
-                        d = std::copysign(std::isinf(d) ? value_type(1) : value_type(0), d);
+                        c = copysign(std::isinf(c) ? value_type(1) : value_type(0), c);
+                        d = copysign(std::isinf(d) ? value_type(1) : value_type(0), d);
                         x = value_type(0) * (a*c + b*d);
                         y = value_type(0) * (b*c - a*d);
                     }
