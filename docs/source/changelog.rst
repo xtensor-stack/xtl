@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.6.5
+-----
+
+- Add supports for clang-cl compiler
+- Fix cmake command
+- Fix compiler error with clang-cl compiler
+
 0.6.4
 -----
 
