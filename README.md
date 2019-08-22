@@ -10,16 +10,32 @@ Basic tools (containers, algorithms) used by other quantstack packages
 
 ## Installation
 
-`xtl` is a header-only library. We provide a package for the conda package manager.
+### Package managers
+
+If you are using Conan to manage your dependencies, merely add `xtl/x.y.z@omaralvarez/public-conan` to your requires, where x.y.z is the release version you want to use. Please file issues in [conan-xtl](https://github.com/omaralvarez/conan-xtl) if you experience problems with the packages. Sample `conanfile.txt`:
+
+```
+[requires]
+xtl/0.6.5@omaralvarez/public-conan
+
+[generators]
+cmake
+```
+
+We also provide a package for the conda package manager:
 
 ```bash
 conda install -c conda-forge xtl
 ```
 
-Or you can directly install it from the sources:
+### Install from sources
+
+`xtl` is a header-only library.
+
+You can directly install it from the sources:
 
 ```bash
-cmake -DCMAKE_INSTALL_PREFIX=your_install_prefix
+cmake -D CMAKE_INSTALL_PREFIX=your_install_prefix
 make install
 ```
 
