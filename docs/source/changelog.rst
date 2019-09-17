@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.6.6
+-----
+
+- Fixed ``promote_type`` fot ``std::chrono::time_point``
+- Update README for Conan installation instructions
+
 0.6.5
 -----
 
