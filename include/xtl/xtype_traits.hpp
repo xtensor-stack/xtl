@@ -71,6 +71,30 @@ namespace xtl
         using type = T;
     };
 
+    template <class T>
+    struct promote_type<bool, std::complex<T>>
+    {
+        using type = std::complex<T>;
+    };
+
+    template <class T1, class T2>
+    struct promote_type<T1, std::complex<T2>>
+    {
+        using type = std::complex<typename promote_type<T1, T2>::type>;
+    };
+
+    template <class T1, class T2>
+    struct promote_type<std::complex<T1>, T2>
+        : promote_type<T2, std::complex<T1>>
+    {
+    };
+
+    template <class T>
+    struct promote_type<std::complex<T>, std::complex<T>>
+    {
+        using type = std::complex<T>;
+    };
+
     template <class... REST>
     struct promote_type<bool, REST...>
     {

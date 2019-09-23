@@ -134,8 +134,8 @@ namespace xtl
     {
         using time_type = std::chrono::system_clock::time_point;
         EXPECT_TRUE((std::is_same<time_type, promote_type_t<time_type, time_type>>::value));
-
         EXPECT_TRUE((std::is_same<int, promote_type_t<unsigned char, unsigned char>>::value));
+        EXPECT_TRUE((std::is_same<std::complex<double>, promote_type_t<unsigned char, std::complex<double>>>::value));
     }
 }
 
