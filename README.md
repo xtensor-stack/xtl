@@ -1,8 +1,8 @@
 # ![xtl](docs/source/xtl.svg)
 
-[![Travis](https://travis-ci.org/QuantStack/xtl.svg?branch=master)](https://travis-ci.org/QuantStack/xtl)
-[![Appveyor](https://ci.appveyor.com/api/projects/status/g9bldap2wirlue9w?svg=true)](https://ci.appveyor.com/project/QuantStack/xtl)
-[![Azure](https://dev.azure.com/johanmabille/johanmabille/_apis/build/status/QuantStack.xtl?branchName=master)](https://dev.azure.com/johanmabille/johanmabille/_build/latest?definitionId=1&branchName=master)
+[![Travis](https://travis-ci.org/xtensor-stack/xtl.svg?branch=master)](https://travis-ci.org/QuantStack/xtl)
+[![Appveyor](https://ci.appveyor.com/api/projects/status/wikc50xlb5rbrjy7?svg=true)](https://ci.appveyor.com/project/xtensor-stack/xtl)
+[![Azure](https://dev.azure.com/xtensor-stack/xtensor-stack/_apis/build/status/xtensor-stack.xtl?branchName=master)](https://dev.azure.com/xtensor-stack/xtensor-stack/_build/latest?definitionId=2&branchName=master)
 [![Documentation Status](http://readthedocs.org/projects/xtl/badge/?version=latest)](https://xtl.readthedocs.io/en/latest/?badge=latest)
 [![Join the Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/QuantStack/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
