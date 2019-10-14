@@ -13,7 +13,6 @@
 
 #include "gtest/gtest.h"
 
-
 namespace xtl
 {
     TEST(xbase64, encode)
