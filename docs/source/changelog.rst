@@ -7,7 +7,12 @@
 Changelog
 =========
 
-0.6.6
+0.6.8
+-----
+
+- Fixed murmur implementation for x86 platform
+
+0.6.7
 -----
 
 - Specialized ``promote_type`` for ``std::complex``
