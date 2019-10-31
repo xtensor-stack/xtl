@@ -21,6 +21,9 @@ namespace xtl
 
     std::size_t hash_bytes(const void* buffer, std::size_t lenght, std::size_t seed);
 
+    uint32_t murmur2_x86(const void* buffer, std::size_t length, uint32_t seed);
+    uint64_t murmur2_x64(const void* buffer, std::size_t length, uint64_t seed);
+
     /******************************
      *  hash_bytes implementation *
      ******************************/
@@ -41,46 +44,53 @@ namespace xtl
         }
 
         // Murmur hash is an algorithm written by Austin Appleby. See https://github.com/aappleby/smhasher/blob/master/src/MurmurHash2.cpp
-        template <>
-        inline std::size_t murmur_hash<4>(const void* buffer, std::size_t length, std::size_t seed)
+        inline uint32_t murmur2_x86_impl(const void* buffer, std::size_t length, uint32_t seed)
         {
-            constexpr std::size_t m = 0x5bd1e995;
-            std::size_t hash = seed ^ length;
-            const unsigned char* data = static_cast<const unsigned char*>(buffer);
+            const uint32_t m = 0x5bd1e995;
+            uint32_t len = static_cast<uint32_t>(length);
 
-            // Mix 4 bytes at a time into the hash.
-            while (length >= 4)
+            // Initialize the hash to a 'random' value
+            uint32_t h = seed ^ len;
+
+            // Mix 4 bytes at a time into the hash
+            const unsigned char * data = (const unsigned char *)buffer;
+            
+            while(len >= 4)
             {
-                std::size_t k;
-                std::memcpy(&k, data, sizeof(k));
+                uint32_t k = *(uint32_t*)data;
                 k *= m;
                 k ^= k >> 24;
                 k *= m;
-                hash *= m;
-                hash ^= k;
+                
+                h *= m;
+                h ^= k;
+                
                 data += 4;
-                length -= 4;
+                len -= 4;
             }
-
-            // Handle the last frwe bytes of the input array.
-            switch (length)
+            
+            // Handle the last few bytes of the input array
+            switch(len)
             {
-            case 3:
-                hash ^= static_cast<std::size_t>(data[2] << 16);
-            case 2:
-                hash ^= static_cast<std::size_t>(data[1] << 8);
-            case 1:
-                hash ^= static_cast<std::size_t>(data[0]);
-                hash *= m;
-            }
+            case 3: h ^= static_cast<uint32_t>(data[2] << 16);
+            case 2: h ^= static_cast<uint32_t>(data[1] << 8);
+            case 1: h ^= static_cast<uint32_t>(data[0]);
+                h *= m;
+            };
 
-            // Do a few final mix of the hash to ensure the last few
-            // bytes are well-incorporated.
+            // Do a few final mixes of the hash to ensure the last few
+            // // bytes are well-incorporated.
+            h ^= h >> 13;
+            h *= m;
+            h ^= h >> 15;
+            
+            return h;
+        }
 
-            hash ^= hash >> 13;
-            hash *= m;
-            hash ^= hash >> 15;
-            return hash;
+        template <>
+        inline std::size_t murmur_hash<4>(const void* buffer, std::size_t length, std::size_t seed)
+        {
+            return std::size_t(murmur2_x86_impl(buffer, length, static_cast<uint32_t>(seed)));
         }
 
         inline std::size_t load_bytes(const char* p, int n)
@@ -182,6 +192,16 @@ namespace xtl
     inline std::size_t hash_bytes(const void* buffer, std::size_t length, std::size_t seed)
     {
         return detail::murmur_hash<sizeof(std::size_t)>(buffer, length, seed);
+    }
+
+    inline uint32_t murmur2_x86(const void* buffer, std::size_t length, uint32_t seed)
+    {
+        return detail::murmur2_x86_impl(buffer, length, seed);
+    }
+
+    inline uint64_t murmur2_x64(const void* buffer, std::size_t length, uint64_t seed)
+    {
+        return detail::murmur_hash<8>(buffer, length, seed);
     }
 }
 
