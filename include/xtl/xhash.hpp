@@ -19,7 +19,7 @@
 namespace xtl
 {
 
-    std::size_t hash_bytes(const void* buffer, std::size_t lenght, std::size_t seed);
+    std::size_t hash_bytes(const void* buffer, std::size_t length, std::size_t seed);
 
     uint32_t murmur2_x86(const void* buffer, std::size_t length, uint32_t seed);
     uint64_t murmur2_x64(const void* buffer, std::size_t length, uint64_t seed);
