@@ -74,6 +74,12 @@ make html
 
 from the `docs` subdirectory.
 
+## Compiling to WebAssembly
+
+A subset of the library has been compiled to WebAssembly so it can be used in a web browser.
+
+Refer to the [instructions](./js/README.md) for more information.
+
 ## License
 
 We use a shared copyright model that enables all contributors to maintain the

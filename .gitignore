@@ -50,3 +50,8 @@ docs/build/
 
 # Generated files
 *.pc
+
+# JavaScript files
+node_modules
+js/lib
+*.wasm

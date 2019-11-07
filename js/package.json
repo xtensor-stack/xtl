@@ -1,0 +1,29 @@
+{
+  "name": "xtl",
+  "version": "0.1.0",
+  "description": "XTL port to WebAssembly",
+  "main": "lib/xtl.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xtensor-stack/xtl.git"
+  },
+  "keywords": [
+    "xtl",
+    "wasm"
+  ],
+  "files": [
+    "lib/**/*.d.ts",
+    "lib/**/*.js.map",
+    "lib/**/*.js",
+    "lib/**/*.wasm"
+  ],
+  "author": "QuantStack",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/xtensor-stack/xtl/issues"
+  },
+  "homepage": "https://github.com/xtensor-stack/xtl#readme"
+}
