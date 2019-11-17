@@ -128,6 +128,7 @@ set(XTL_TESTS
     test_xoptional.cpp
     test_xsequence.cpp
     test_xtype_traits.cpp
+    test_xpaths.cpp
     test_xproxy_wrapper.cpp
     test_xvariant.cpp
 )
