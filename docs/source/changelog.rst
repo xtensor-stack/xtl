@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.6.9
+-----
+
+- Implemented stepping iterators
+
 0.6.8
 -----
 
