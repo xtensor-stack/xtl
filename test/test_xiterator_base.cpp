@@ -232,5 +232,49 @@ namespace xtl
         EXPECT_TRUE(b1);
         EXPECT_TRUE(b2);
     }
+
+    TEST(xstepping_iterator, increment)
+    {
+        std::vector<int> v = { 1, 2, 3, 4 };
+        auto it = make_stepping_iterator(v.begin(), 2);
+        auto it_end = make_stepping_iterator(v.end(), 2);
+        ++it;
+        EXPECT_EQ(*it, 3);
+        ++it;
+        EXPECT_EQ(it, it_end);
+    }
+
+    TEST(xstepping_iterator, decrement)
+    {
+        std::vector<int> v = { 1, 2, 3, 4 };
+        auto it = make_stepping_iterator(v.begin(), 2);
+        auto it_end = make_stepping_iterator(v.end(), 2);
+        --it_end;
+        EXPECT_EQ(*it_end, 3);
+        --it_end;
+        EXPECT_EQ(it, it_end);
+    }
+
+    TEST(xstepping_iterator, plus_assign)
+    {
+        std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8 };
+        auto it = make_stepping_iterator(v.begin(), 2);
+        auto it_end = make_stepping_iterator(v.end(), 2);
+        it += 2;
+        EXPECT_EQ(*it, 5);
+        it += 2;
+        EXPECT_EQ(it, it_end);
+    }
+
+    TEST(xstepping_iterator, minus_assign)
+    {
+        std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8 };
+        auto it = make_stepping_iterator(v.begin(), 2);
+        auto it_end = make_stepping_iterator(v.end(), 2);
+        it_end -= 2;
+        EXPECT_EQ(*it_end, 5);
+        it_end -= 2;
+        EXPECT_EQ(it_end, it);
+    }
 }
 
