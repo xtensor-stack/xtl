@@ -59,6 +59,13 @@ namespace xtl
                                                                        typename T::pointer,
                                                                        typename T::reference>;
 
+    template <class I, class T>
+    using xbidirectional_iterator_base3 = xbidirectional_iterator_base<I,
+                                                                       typename T::value_type,
+                                                                       typename T::difference_type,
+                                                                       typename T::pointer,
+                                                                       typename T::reference>;
+
     /********************************
      * xrandom_access_iterator_base *
      ********************************/
@@ -117,6 +124,13 @@ namespace xtl
 
     template <class T>
     using xrandom_access_iterator_base2 = xrandom_access_iterator_base<typename T::iterator_type,
+                                                                       typename T::value_type,
+                                                                       typename T::difference_type,
+                                                                       typename T::pointer,
+                                                                       typename T::reference>;
+
+    template <class I, class T>
+    using xrandom_access_iterator_base3 = xrandom_access_iterator_base<I,
                                                                        typename T::value_type,
                                                                        typename T::difference_type,
                                                                        typename T::pointer,
@@ -215,6 +229,105 @@ namespace xtl
 
         subiterator m_it;
     };
+
+    /**********************
+     * xstepping_iterator *
+     **********************/
+
+    template <class It>
+    class xstepping_iterator : public xrandom_access_iterator_base3<xstepping_iterator<It>,
+                                                                    std::iterator_traits<It>>
+    {
+    public:
+
+        using self_type = xstepping_iterator;
+        using base_type = xrandom_access_iterator_base3<self_type, std::iterator_traits<It>>;
+        using value_type = typename base_type::value_type;
+        using reference = typename base_type::reference;
+        using pointer = typename base_type::pointer;
+        using difference_type = typename base_type::difference_type;
+        using iterator_category = typename base_type::iterator_category;
+        using subiterator = It;
+
+        xstepping_iterator() = default;
+
+        inline xstepping_iterator(subiterator it, difference_type step) noexcept
+            : m_it(it), m_step(step)
+        {
+        }
+
+        inline self_type& operator++()
+        {
+            std::advance(m_it, m_step);
+            return *this;
+        }
+
+        inline self_type& operator--()
+        {
+            std::advance(m_it, -m_step);
+            return *this;
+        }
+
+        inline self_type& operator+=(difference_type n)
+        {
+            std::advance(m_it, n*m_step);
+            return *this;
+        }
+
+        inline self_type& operator-=(difference_type n)
+        {
+            std::advance(m_it, -n*m_step);
+            return *this;
+        }
+
+        inline difference_type operator-(const self_type& rhs) const
+        {
+            return std::distance(rhs.m_it, m_it) / m_step;
+        }
+
+        inline reference operator*() const
+        {
+            return *m_it;
+        }
+
+        inline pointer operator->() const
+        {
+            return m_it;
+        }
+
+        inline bool equal(const self_type& rhs) const
+        {
+            return m_it == rhs.m_it && m_step == rhs.m_step;
+        }
+
+        inline bool less_than(const self_type& rhs) const
+        {
+            return m_it < rhs.m_it && m_step == rhs.m_step;
+        }
+
+    private:
+
+        subiterator m_it;
+        difference_type m_step;
+    };
+
+    template <class It>
+    inline bool operator==(const xstepping_iterator<It>& lhs, const xstepping_iterator<It>& rhs)
+    {
+        return lhs.equal(rhs);
+    }
+
+    template <class It>
+    inline bool operator<(const xstepping_iterator<It>& lhs, const xstepping_iterator<It>& rhs)
+    {
+        return lhs.less_than(rhs);
+    }
+
+    template <class It>
+    inline xstepping_iterator<It> make_stepping_iterator(It it, typename std::iterator_traits<It>::difference_type step)
+    {
+        return xstepping_iterator<It>(it, step);
+    }
 
     /***********************
      * common_iterator_tag *
