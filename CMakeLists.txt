@@ -66,12 +66,12 @@ set(XTL_HEADERS
 )
 
 add_library(xtl INTERFACE)
-target_include_directories(xtl INTERFACE $<BUILD_INTERFACE:${XTL_INCLUDE_DIR}>
-                                         $<INSTALL_INTERFACE:include>)
 
-# xtl requires C++14 support!
+target_include_directories(xtl INTERFACE
+    $<BUILD_INTERFACE:${XTL_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:include>)
+
 target_compile_features(xtl INTERFACE cxx_std_14)
-
 
 option(BUILD_TESTS "xtl test suite" OFF)
 option(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
