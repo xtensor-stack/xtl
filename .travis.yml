@@ -3,6 +3,7 @@ dist: trusty
 matrix:
   include:
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
@@ -11,6 +12,7 @@ matrix:
             - g++-4.9
       env: COMPILER=gcc GCC=4.9
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
@@ -19,6 +21,7 @@ matrix:
             - g++-5
       env: COMPILER=gcc GCC=5
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
@@ -27,6 +30,7 @@ matrix:
             - g++-6
       env: COMPILER=gcc GCC=6
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
@@ -35,6 +39,7 @@ matrix:
             - g++-7
       env: COMPILER=gcc GCC=7
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
@@ -44,41 +49,43 @@ matrix:
             - clang-3.6
       env: COMPILER=clang CLANG=3.6
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-3.9
           packages:
             - g++-4.9
             - clang-3.9
       env: COMPILER=clang CLANG=3.9
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-4.0
           packages:
             - g++-4.9
             - clang-4.0
       env: COMPILER=clang CLANG=4.0
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-xenial-5.0
           packages:
             - g++-4.9
             - clang-5.0
       env: COMPILER=clang CLANG=5.0
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-xenial-6.0
           packages:
             - clang-6.0
       env: COMPILER=clang CLANG=6.0
