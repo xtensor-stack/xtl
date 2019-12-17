@@ -71,6 +71,12 @@ target_include_directories(xtl INTERFACE
     $<BUILD_INTERFACE:${XTL_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:include>)
 
+if(NOT (CMAKE_VERSION VERSION_LESS 3.15))  # CMake >= 3.15
+set_target_properties(xtl
+    PROPERTIES
+    PUBLIC_HEADER "${XTL_HEADERS}")
+endif()
+
 target_compile_features(xtl INTERFACE cxx_std_14)
 
 option(BUILD_TESTS "xtl test suite" OFF)
@@ -91,15 +97,23 @@ endif()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+if(CMAKE_VERSION VERSION_LESS 3.15)  # CMake < 3.15
 install(TARGETS xtl
         EXPORT ${PROJECT_NAME}-targets)
+else()
+install(TARGETS xtl
+        EXPORT ${PROJECT_NAME}-targets
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+endif()
 
 # Makes the project importable from the build directory
 export(EXPORT ${PROJECT_NAME}-targets
        FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
+if(CMAKE_VERSION VERSION_LESS 3.15)  # CMake < 3.15
 install(FILES ${XTL_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xtl)
+endif()
 
 set(XTL_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
     STRING "install path for xtlConfig.cmake")
