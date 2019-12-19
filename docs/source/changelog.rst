@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.6.10
+------
+
+- Set up xtl target's public headers
+- CMake: adding C++14 standard to target
+
 0.6.9
 -----
 
