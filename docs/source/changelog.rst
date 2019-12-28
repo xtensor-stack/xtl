@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.6.11
+------
+
+- Avoids C++20 "requires" keyword
+
 0.6.10
 ------
 
