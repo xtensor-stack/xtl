@@ -12,6 +12,6 @@ xtl.version_targets.append(version_xtl)
 xtl.release_targets.append(gittag_xtl)
 xtl.release_targets.append(gitpush)
 
-source_tarball_filename = 'https://github.com/QuantStack/xtl/archive/{version}.tar.gz'.format(version=version_xtl)
+source_tarball_filename = 'https://github.com/xtensor-stack/xtl/archive/{version}.tar.gz'.format(version=version_xtl)
 xtl.release_targets.append(ReleaseTargetCondaForge(xtl, '../xtl-feedstock', source_tarball_filename=source_tarball_filename))
 
