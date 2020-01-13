@@ -134,7 +134,8 @@ namespace xtl
         };
         
         template <class R, class A>
-        struct sequence_forwarder_impl<R, A, void_t<decltype(std::declval<R>().resize(std::size_t()))>>
+        struct sequence_forwarder_impl<R, A, void_t<decltype(std::declval<R>().resize(
+              std::declval<std::size_t>()))>>
         {
             template <class T>
             static inline auto forward(const T& r)

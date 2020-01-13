@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.6.12
+------
+
+- NVCC CUDA compiler compatibility
+
 0.6.11
 ------
 
