@@ -11,6 +11,7 @@ Changelog
 ------
 
 - NVCC CUDA compiler compatibility
+- Wrapped call to ``find_package``
 
 0.6.11
 ------
