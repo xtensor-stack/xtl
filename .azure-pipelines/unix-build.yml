@@ -1,0 +1,27 @@
+steps:
+  - script: |
+      conda config --set always_yes yes --set changeps1 no
+      conda update -q conda
+      conda env create --file environment-dev.yml
+    displayName: Install dependencies
+
+  - script: |
+      source activate xtl
+      mkdir build
+      cd build
+      cmake -DDOWNLOAD_GTEST=ON $(Build.SourcesDirectory)
+    displayName: Configure xtl
+    workingDirectory: $(Build.BinariesDirectory)
+      
+  - script: |
+      source activate xtl
+      make -j2 test_xtl
+    displayName: Build xtl
+    workingDirectory: $(Build.BinariesDirectory)/build
+          
+  - script: |
+      source activate xtl
+      cd test
+      ./test_xtl
+    displayName: Test xtl
+    workingDirectory: $(Build.BinariesDirectory)/build/test

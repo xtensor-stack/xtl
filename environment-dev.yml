@@ -1,0 +1,6 @@
+name: xtl
+channels:
+  - conda-forge
+dependencies:
+  - cmake
+  - nlohmann_json
