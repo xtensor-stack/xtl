@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.6.13
+------
+
+- mpark/variant small change for CUDA 10.2 workaround
+- Switched the documentation build to QuantStack channel
+- Refactored CI
+
 0.6.12
 ------
 
