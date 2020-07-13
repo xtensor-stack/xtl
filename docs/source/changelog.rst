@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.6.14
+------
+
+- Implemented value iterator for map containers
+
 0.6.13
 ------
 
