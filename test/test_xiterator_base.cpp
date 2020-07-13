@@ -218,6 +218,25 @@ namespace xtl
         EXPECT_EQ(it2, iterator(m.end()));
     }
 
+    TEST(xiterator_base, xvalue_iterator)
+    {
+        using map_type = std::map<std::string, int>;
+        map_type m = { {"a", 0}, {"b", 1}, {"c", 2} };
+        using iterator = xvalue_iterator<map_type>;
+
+        iterator it(m.begin());
+        EXPECT_EQ(*it, 0);
+        iterator it2 = it;
+        EXPECT_EQ(it, it2);
+        ++it2;
+        EXPECT_EQ(*it2, 1);
+        EXPECT_NE(it, it2);
+        ++it2;
+        EXPECT_EQ(*it2, 2);
+        ++it2;
+        EXPECT_EQ(it2, iterator(m.end()));
+    }
+
     TEST(xiterator_base, tag_promotion)
     {
         using random_iterator = std::vector<int>::iterator;
