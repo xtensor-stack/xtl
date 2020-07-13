@@ -230,6 +230,83 @@ namespace xtl
         subiterator m_it;
     };
 
+    /*******************
+     * xvalue_iterator *
+     *******************/
+
+    namespace detail
+    {
+        template <class M>
+        struct xvalue_iterator_types
+        {
+            using subiterator = typename M::iterator;
+            using value_type = typename M::mapped_type;
+            using reference = value_type&;
+            using pointer = value_type*;
+            using difference_type = typename subiterator::difference_type;
+        };
+
+        template <class M>
+        struct xvalue_iterator_types<const M>
+        {
+            using subiterator = typename M::const_iterator;
+            using value_type = typename M::mapped_type;
+            using reference = const value_type&;
+            using pointer = const value_type*;
+            using difference_type = typename subiterator::difference_type;
+        };
+   }
+
+    template <class M>
+    class xvalue_iterator : xbidirectional_iterator_base3<xvalue_iterator<M>,
+                                                          detail::xvalue_iterator_types<M>>
+    {
+    public:
+
+        using self_type = xvalue_iterator<M>;
+        using base_type = xbidirectional_iterator_base3<self_type, detail::xvalue_iterator_types<M>>;
+        using value_type = typename base_type::value_type;
+        using reference = typename base_type::reference;
+        using pointer = typename base_type::pointer;
+        using difference_type = typename base_type::difference_type;
+        using subiterator = typename detail::xvalue_iterator_types<M>::subiterator;
+
+        inline xvalue_iterator(subiterator it) noexcept
+            : m_it(it)
+        {
+        }
+
+        inline self_type& operator++()
+        {
+            ++m_it;
+            return *this;
+        }
+
+        inline self_type& operator--()
+        {
+            --m_it;
+            return *this;
+        }
+
+        inline reference operator*() const
+        {
+            return m_it->second;
+        }
+
+        inline pointer operator->() const
+        {
+            return&(m_it->second);
+        }
+
+        inline bool operator==(const self_type& rhs) const
+        {
+            return m_it == rhs.m_it;
+        }
+    private:
+
+        subiterator m_it;
+    };
+
     /**********************
      * xstepping_iterator *
      **********************/
