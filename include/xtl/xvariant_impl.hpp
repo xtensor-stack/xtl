@@ -5,8 +5,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
-#ifndef MPARK_VARIANT_HPP
-#define MPARK_VARIANT_HPP
+// We cannot keep the header guard from mpark variant because
+// this can conflict with other libraries that depend on or embed
+// mpark variant.
+#ifndef XTL_MPARK_VARIANT_HPP
+#define XTL_MPARK_VARIANT_HPP
 
 /*
    variant synopsis
