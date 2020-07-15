@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.6.15
+------
+
+- Renamed mpark variant header inclusion guard
+
 0.6.14
 ------
 
