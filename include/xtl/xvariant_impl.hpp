@@ -212,8 +212,8 @@ namespace std {
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
-#ifndef MPARK_CONFIG_HPP
-#define MPARK_CONFIG_HPP
+#ifndef XTL_MPARK_CONFIG_HPP
+#define XTL_MPARK_CONFIG_HPP
 
 // MSVC 2015 Update 3.
 #if __cplusplus < 201103L && (!defined(_MSC_VER) || _MSC_FULL_VER < 190024210)
@@ -302,7 +302,7 @@ namespace std {
 #define MPARK_INCOMPLETE_TYPE_TRAITS
 #endif
 
-#endif  // MPARK_CONFIG_HPP
+#endif  // XTL_MPARK_CONFIG_HPP
 
 // MPark.Variant
 //
@@ -311,8 +311,8 @@ namespace std {
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
-#ifndef MPARK_IN_PLACE_HPP
-#define MPARK_IN_PLACE_HPP
+#ifndef XTL_MPARK_IN_PLACE_HPP
+#define XTL_MPARK_IN_PLACE_HPP
 
 #include <cstddef>
 
@@ -337,7 +337,7 @@ namespace mpark {
 
 }  // namespace mpark
 
-#endif  // MPARK_IN_PLACE_HPP
+#endif  // XTL_MPARK_IN_PLACE_HPP
 
 // MPark.Variant
 //
@@ -346,8 +346,8 @@ namespace mpark {
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
-#ifndef MPARK_LIB_HPP
-#define MPARK_LIB_HPP
+#ifndef XTL_MPARK_LIB_HPP
+#define XTL_MPARK_LIB_HPP
 
 #include <memory>
 #include <functional>
