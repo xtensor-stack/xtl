@@ -15,6 +15,10 @@
 #include "gtest/gtest.h"
 #include "xtl/xtl_config.hpp"
 
+#ifdef HAVE_NLOHMANN_JSON
+#include "xtl/xjson.hpp"
+#endif
+
 using namespace std::literals;
 
 namespace xtl
@@ -203,4 +207,22 @@ namespace xtl
 
         EXPECT_TRUE(res);
     }
+
+#ifdef HAVE_NLOHMANN_JSON
+    TEST(xvariant, json)
+    {
+        typedef xtl::variant<double, std::string> stringNumType;
+
+        nlohmann::json j1;
+        stringNumType m1 = "Hello";
+        j1["salutation"] = m1;
+        EXPECT_EQ(j1.at("salutation"), "Hello");
+
+        nlohmann::json j2;
+        stringNumType m2 = 3.0;
+        j2["num"] = m2;
+        EXPECT_EQ(j2.at("num"), 3.0);
+    }
+#endif
+
 }
