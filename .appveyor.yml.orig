@@ -1,0 +1,35 @@
+build: false
+
+os: Visual Studio 2017
+
+platform:
+  - x64
+
+environment:
+  matrix:
+    - MINICONDA: C:\xtl-conda
+
+init:
+  - "ECHO %MINICONDA%"
+<<<<<<< HEAD
+  - C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat %PLATFORM%
+=======
+  - C:\"Program Files (x86)"\"Microsoft Visual Studio"\2017\Community\VC\Auxiliary\Build\vcvarsall.bat %PLATFORM%
+>>>>>>> 55168b1... VS 2017
+  - ps: Start-FileDownload 'http://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe' C:\Miniconda.exe; echo "Done"
+  - cmd: C:\Miniconda.exe /S /D=C:\xtl-conda
+  - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%MINICONDA%\\Library\\bin;%PATH%"
+
+install:
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+  - conda env create --file environment-dev.yml
+  - CALL conda.bat activate xtl
+  - conda install gtest==1.10.0 -c conda-forge
+  - cmake -G "NMake Makefiles" -D CMAKE_INSTALL_PREFIX=%MINICONDA%\\LIBRARY -DBUILD_TESTS=ON .
+  - nmake test_xtl
+  - cd test
+
+build_script:
+  - .\test_xtl
