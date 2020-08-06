@@ -3,4 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - cmake
-  - nlohmann_json<3.8
+  - nlohmann_json
