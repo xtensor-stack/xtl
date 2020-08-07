@@ -36,6 +36,7 @@ jobs:
       - script: |
           conda install cmake==3.14.0 ^
                         gtest==1.10.0 ^
+                        vc=14 ^
                         ninja ^
                         nlohmann_json ^
                         python=3.6
