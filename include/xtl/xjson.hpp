@@ -87,8 +87,10 @@ namespace mpark
 {
     template <class... Ts>
     void to_json(nlohmann::json& j, const xtl::variant<Ts...>& data) {
-        xtl::visit(
-            [&] (const auto & arg) { j = arg; }, data
+        xtl::visit
+        (
+            [&j] (const auto & arg) { j = arg; },
+            data
         );
     }
 }
