@@ -62,7 +62,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
         add_compile_options(-fno-exceptions)
     endif()
   else() # we are using clang-cl
-    add_compile_options(/EHsc /MP /bigobj -fms-compatibility)
+    add_compile_options(/EHsc /bigobj -fms-compatibility)
     set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
     if (XTL_DISABLE_EXCEPTIONS)
         add_compile_options(/EHs-c-)
