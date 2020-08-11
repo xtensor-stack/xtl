@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.6.16
+------
+
+- Fixed mpark variant inclusion guards
+- Add a serialiser for xvariant to json
+- Removed capture all by reference
+
 0.6.15
 ------
 
