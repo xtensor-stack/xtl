@@ -88,6 +88,20 @@ namespace xtl
         EXPECT_FALSE(res3);
     }
 
+    TEST(mpl, index_of)
+    {
+        using type1 = mpl::vector<int, double, float>;
+        std::size_t res1 = mpl::index_of<type1, int>::value;
+        std::size_t res2 = mpl::index_of<type1, double>::value;
+        std::size_t res3 = mpl::index_of<type1, float>::value;
+        std::size_t res4 = mpl::index_of<type1, short>::value;
+
+        EXPECT_EQ(res1, 0u);
+        EXPECT_EQ(res2, 1u);
+        EXPECT_EQ(res3, 2u);
+        EXPECT_EQ(res4, SIZE_MAX);
+    }
+
     TEST(mpl, front)
     {
         using type = mpl::front_t<variant_t>;

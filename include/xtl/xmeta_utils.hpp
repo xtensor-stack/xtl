@@ -11,6 +11,7 @@
 #define XTL_XMETA_UTILS_HPP
 
 #include <cstddef>
+#include <cstdint>
 #include <type_traits>
 
 #include "xfunctional.hpp"
@@ -221,6 +222,40 @@ namespace xtl
 
         template <class L, template <class> class P>
         struct count_if : detail::count_if_impl<L, P>
+        {
+        };
+
+        /************
+         * index_of *
+         ************/
+
+        namespace detail
+        {
+            template <class L, class V>
+            struct index_of_impl;
+
+            template <template <class...> class L, class V>
+            struct index_of_impl<L<>, V>
+            {
+                static constexpr size_t value = SIZE_MAX;
+            };
+
+            template <template <class...> class L, class... T, class V>
+            struct index_of_impl<L<V, T...>, V>
+            {
+                static constexpr size_t value = 0u;
+            };
+
+            template <template <class...> class L, class U, class... T, class V>
+            struct index_of_impl<L<U, T...>, V>
+            {
+                static constexpr size_t tmp = index_of_impl<L<T...>, V>::value;
+                static constexpr size_t value = tmp == SIZE_MAX ? SIZE_MAX : 1u + tmp;
+            };
+        }
+
+        template <class L, class T>
+        struct index_of : detail::index_of_impl<L, T>
         {
         };
 
