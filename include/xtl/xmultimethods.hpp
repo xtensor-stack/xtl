@@ -180,6 +180,28 @@ namespace xtl
         }
     };
 
+    /******************************
+     * dynamic and static casters *
+     ******************************/
+
+    template <class T, class F>
+    struct static_caster
+    {
+        static T& cast(F& f)
+        {
+            return static_cast<T&>(f);
+        }
+    };
+
+    template <class T, class F>
+    struct dynamic_caster
+    {
+        static T& cast(F& f)
+        {
+            return dynamic_cast<T&>(f);
+        }
+    };
+
     /**********************
      * functor_dispatcher *
      **********************/
@@ -187,12 +209,13 @@ namespace xtl
     template
     <
         class type_list,
-        class return_type
+        class return_type,
+        template <class, class> class casting_policy = dynamic_caster
     >
     class functor_dispatcher;
 
-    template <class return_type, class... B>
-    class functor_dispatcher<mpl::vector<B...>, return_type>
+    template <class return_type, template <class, class> class casting_policy, class... B>
+    class functor_dispatcher<mpl::vector<B...>, return_type, casting_policy>
     {
     private:
 
@@ -209,7 +232,7 @@ namespace xtl
         {
             functor_type f([fun](B&... args) -> return_type
             {
-                return fun(dynamic_cast<D&>(args)...);
+                return fun(casting_policy<D&, B&>::cast(args)...);
             });
             m_backend.template insert<D...>(std::move(f));
 
