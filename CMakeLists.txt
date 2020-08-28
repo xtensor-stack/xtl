@@ -56,6 +56,7 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xmasked_value_meta.hpp
     ${XTL_INCLUDE_DIR}/xtl/xmasked_value.hpp
     ${XTL_INCLUDE_DIR}/xtl/xmeta_utils.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xmultimethods.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional_meta.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional_sequence.hpp
