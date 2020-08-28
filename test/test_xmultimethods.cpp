@@ -32,8 +32,6 @@ namespace xtl
 
         shape& operator=(const shape&) = delete;
         shape& operator=(shape&&) = delete;
-        
-        virtual shape_id get_id() const = 0;
 
     protected:
 
@@ -46,8 +44,9 @@ namespace xtl
     public:
 
         shape_impl() = default;
+        virtual ~shape_impl() = default;
 
-        shape_id get_id() const override
+        shape_id get_id() const
         {
             return id;
         }
@@ -57,33 +56,54 @@ namespace xtl
     using circle = shape_impl<shape_id::circle_id>;
     using triangle = shape_impl<shape_id::triangle_id>;
 
-    class static_dispatch_tester
+    using dispatch_return_type = std::pair<shape_id, shape_id>;
+
+    namespace
     {
-    public:
-
-        using return_type = std::pair<shape_id, shape_id>;
-
         template <class T1, class T2>
-        return_type run(const T1& t1, const T2& t2) const
+        dispatch_return_type dispatch_shape_impl(const T1& t1, const T2& t2)
         {
             return std::make_pair(t1.get_id(), t2.get_id());
         }
 
-        return_type on_error(const shape& t1, const shape& t2) const
+#define DEFINE_DISPATCH_SHAPE(T1, T2) \
+        dispatch_return_type dispatch_##T1##_##T2(const T1& t1, const T2& t2) \
+        { return dispatch_shape_impl(t1, t2); }
+
+        DEFINE_DISPATCH_SHAPE(rectangle, circle)
+        DEFINE_DISPATCH_SHAPE(rectangle, triangle)
+        DEFINE_DISPATCH_SHAPE(circle, rectangle)
+        DEFINE_DISPATCH_SHAPE(circle, triangle)
+        DEFINE_DISPATCH_SHAPE(triangle, rectangle)
+        DEFINE_DISPATCH_SHAPE(triangle, circle)
+    }
+
+    class dispatch_tester
+    {
+    public:
+
+        using return_type = dispatch_return_type;
+
+        template <class T1, class T2>
+        return_type run(const T1& t1, const T2& t2) const
         {
-            return std::make_pair(t1.get_id(), t2.get_id());
+            return dispatch_shape_impl(t1, t2);
+        }
+
+        return_type on_error(const shape&, const shape&) const
+        {
+            return std::make_pair(shape_id::unknown_id, shape_id::unknown_id);
         }
     };
 
     TEST(multimethods, static_dispatch)
     {
-        using return_type = static_dispatch_tester::return_type;
+        using return_type = dispatch_tester::return_type;
         using dispatcher_type = static_dispatcher
         <
-            static_dispatch_tester,
+            dispatch_tester,
             const shape,
             mpl::vector<const rectangle, const circle, const triangle>,
-            false,
             return_type
         >;
         rectangle r;
@@ -92,7 +112,7 @@ namespace xtl
         shape* p1 = &r;
         shape* p2 = &c;
         shape* p3 = &t;
-        static_dispatch_tester tester;
+        dispatch_tester tester;
 
         return_type r1 = dispatcher_type::dispatch(*p1, *p2, tester);
         return_type r2 = dispatcher_type::dispatch(*p1, *p3, tester);
@@ -111,14 +131,14 @@ namespace xtl
 
     TEST(multimethods, static_dispatch_symmetry)
     {
-        using return_type = static_dispatch_tester::return_type;
+        using return_type = dispatch_tester::return_type;
         using dispatcher_type = static_dispatcher
         <
-            static_dispatch_tester,
+            dispatch_tester,
             const shape,
             mpl::vector<const rectangle, const circle, const triangle>,
-            true,
-            return_type
+            return_type,
+            symmetric_dispatch
         >;
         rectangle r;
         circle c;
@@ -126,7 +146,7 @@ namespace xtl
         shape* p1 = &r;
         shape* p2 = &c;
         shape* p3 = &t;
-        static_dispatch_tester tester;
+        dispatch_tester tester;
 
         return_type r1 = dispatcher_type::dispatch(*p1, *p2, tester);
         return_type r2 = dispatcher_type::dispatch(*p1, *p3, tester);
@@ -141,6 +161,45 @@ namespace xtl
         EXPECT_EQ(r4, return_type(shape_id::circle_id, shape_id::triangle_id));
         EXPECT_EQ(r5, return_type(shape_id::rectangle_id, shape_id::triangle_id));
         EXPECT_EQ(r6, return_type(shape_id::circle_id, shape_id::triangle_id));
+    }
+
+    TEST(multimethods, function_dispatcher)
+    {
+        using return_type = dispatch_return_type;
+        using dispatcher_type = functor_dispatcher
+        <
+            mpl::vector<const shape, const shape>,
+            return_type
+        >;
+
+        dispatcher_type d;
+        d.insert<const rectangle, const circle>(&dispatch_rectangle_circle);
+        d.insert<const rectangle, const triangle>(&dispatch_rectangle_triangle);
+        d.insert<const circle, const rectangle>(&dispatch_circle_rectangle);
+        d.insert<const circle, const triangle>(&dispatch_circle_triangle);
+        d.insert<const triangle, const rectangle>(&dispatch_triangle_rectangle);
+        d.insert<const triangle, const circle>(&dispatch_triangle_circle);
+
+        rectangle r;
+        circle c;
+        triangle t;
+        shape* p1 = &r;
+        shape* p2 = &c;
+        shape* p3 = &t;
+
+        return_type r1 = d.dispatch(*p1, *p2);
+        return_type r2 = d.dispatch(*p1, *p3);
+        return_type r3 = d.dispatch(*p2, *p1);
+        return_type r4 = d.dispatch(*p2, *p3);
+        return_type r5 = d.dispatch(*p3, *p1);
+        return_type r6 = d.dispatch(*p3, *p2);
+
+        EXPECT_EQ(r1, return_type(shape_id::rectangle_id, shape_id::circle_id));
+        EXPECT_EQ(r2, return_type(shape_id::rectangle_id, shape_id::triangle_id));
+        EXPECT_EQ(r3, return_type(shape_id::circle_id, shape_id::rectangle_id));
+        EXPECT_EQ(r4, return_type(shape_id::circle_id, shape_id::triangle_id));
+        EXPECT_EQ(r5, return_type(shape_id::triangle_id, shape_id::rectangle_id));
+        EXPECT_EQ(r6, return_type(shape_id::triangle_id, shape_id::circle_id));
     }
 }
 
