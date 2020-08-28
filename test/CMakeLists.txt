@@ -127,6 +127,7 @@ set(XTL_TESTS
     test_xiterator_base.cpp
     test_xmasked_value.cpp
     test_xmeta_utils.cpp
+    test_xmultimethods.cpp
     test_xoptional.cpp
     test_xsequence.cpp
     test_xtype_traits.cpp
