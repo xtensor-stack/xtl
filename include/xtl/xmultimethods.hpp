@@ -26,15 +26,33 @@ namespace xtl
     <
         class executor,
         class base_lhs,
-        class type_lhs,
+        class lhs_type_list,
         bool symmetric = false,
         class return_type = void,
         class base_rhs = base_lhs,
-        class type_rhs = type_lhs
+        class rhs_type_list = lhs_type_list
     >
     class static_dispatcher
     {
     private:
+
+        template <class lhs_type, class rhs_type>
+        static return_type invoke_executor(lhs_type& lhs,
+                                           rhs_type& rhs,
+                                           executor& exec,
+                                           std::false_type)
+        {
+            return exec.run(lhs, rhs);
+        }
+
+        template <class lhs_type, class rhs_type>
+        static return_type invoke_executor(lhs_type& lhs,
+                                           rhs_type& rhs,
+                                           executor& exec,
+                                           std::true_type)
+        {
+            return exec.run(rhs, lhs);
+        }
 
         template <class lhs_type>
         static return_type dispatch_rhs(lhs_type& lhs,
@@ -53,7 +71,12 @@ namespace xtl
         {
             if (T* p = dynamic_cast<T*>(&rhs))
             {
-                return exec.run(lhs, *p);
+                constexpr size_t lhs_index = mpl::index_of<lhs_type_list, lhs_type>::value;
+                constexpr size_t rhs_index = mpl::index_of<rhs_type_list, T>::value;
+
+                using invoke_flag = std::integral_constant<bool,
+                    symmetric && (rhs_index < lhs_index)>;
+                return invoke_executor(lhs, *p, exec, invoke_flag());
             }
             return dispatch_rhs(lhs, rhs, exec, mpl::vector<U...>());
         }
@@ -74,7 +97,7 @@ namespace xtl
         {
             if (T* p = dynamic_cast<T*>(&lhs))
             {
-                return dispatch_rhs(*p, rhs, exec, type_rhs());
+                return dispatch_rhs(*p, rhs, exec, rhs_type_list());
             }
             return dispatch_lhs(lhs, rhs, exec, mpl::vector<U...>());
         }
@@ -83,7 +106,7 @@ namespace xtl
 
         static return_type dispatch(base_lhs& lhs, base_rhs& rhs, executor& exec)
         {
-            return dispatch_lhs(lhs, rhs, exec, type_lhs());
+            return dispatch_lhs(lhs, rhs, exec, lhs_type_list());
         }
     };
 }
