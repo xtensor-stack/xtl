@@ -11,9 +11,12 @@
 #define XTL_MULTIMETHODS_HPP
 
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <typeindex>
+#include <type_traits>
+#include <vector>
 
 #include "xmeta_utils.hpp"
 
@@ -133,7 +136,12 @@ namespace xtl
     >
     class basic_dispatcher;
 
-    template <class return_type, class callback_type, class... B>
+    template
+    <
+        class return_type,
+        class callback_type,
+        class... B
+    >
     class basic_dispatcher<mpl::vector<B...>, return_type, callback_type>
     {
     private:
@@ -180,6 +188,157 @@ namespace xtl
         }
     };
 
+    /*************************
+     * basic_fast_dispatcher *
+     *************************/
+
+#define XTL_IMPLEMENT_INDEXABLE_CLASS()         \
+    static size_t& get_class_static_index()     \
+    {                                           \
+        static size_t index = SIZE_MAX;         \
+        return index;                           \
+    }                                           \
+    virtual size_t get_class_index() const      \
+    {                                           \
+        return get_class_static_index();        \
+    }
+
+    namespace detail
+    {
+        template <class T>
+        class recursive_container_impl : private std::vector<T>
+        {
+        public:
+
+            using base_type = std::vector<T>;
+
+            using base_type::base_type;
+            using base_type::operator[];
+            using base_type::size;
+            using base_type::resize;
+        };
+
+        template <class callback_type, size_t level>
+        class recursive_container
+            : public recursive_container_impl<recursive_container<callback_type, level-1>>
+        {
+        };
+
+        template <class callback>
+        class recursive_container<callback, 0>
+            : public recursive_container_impl<callback>
+        {
+        };
+      }
+
+    template
+    <
+        class type_list,
+        class return_type,
+        class callback_type
+    >
+    class basic_fast_dispatcher;
+
+    template
+    <
+        class return_type,
+        class callback_type,
+        class... B
+    >
+    class basic_fast_dispatcher<mpl::vector<B...>, return_type, callback_type>
+    {
+    private:
+
+        static constexpr size_t nb_args = sizeof...(B);
+
+        static_assert(nb_args > size_t(1), "dispatcher dimension must be greater than 1");
+        
+        using storage_type = detail::recursive_container<callback_type, sizeof...(B) - 1>;
+        using index_type = std::array<size_t, nb_args>;
+        using index_ref_type = std::array<std::reference_wrapper<size_t>, nb_args>;
+
+        storage_type m_callbacks;
+        size_t m_next_index;
+
+        template <size_t I, class C>
+        void resize_container(C& c, const index_ref_type& index)
+        {
+            size_t& idx = index[I];
+            if (idx == SIZE_MAX)
+            {
+                c.resize(++m_next_index);
+                idx = c.size() - 1u;
+            }
+            else if(c.size() <= idx)
+            {
+                c.resize(idx + 1u);
+            }
+        }
+
+        template <size_t I, class C>
+        std::enable_if_t<I + 1 == nb_args>
+        insert_impl(callback_type&& cb, C& c, const index_ref_type& index)
+        {
+            resize_container<I>(c, index);
+            c[index[I]] = std::move(cb);
+        }
+
+        template <size_t I, class C>
+        std::enable_if_t<I + 1 != nb_args>
+        insert_impl(callback_type&& cb, C& c, const index_ref_type& index)
+        {
+            resize_container<I>(c, index);
+            insert_impl<I+1>(std::move(cb), c[index[I]], index);
+        }
+
+        template <size_t I, class C>
+        void check_size(C& c, const index_type& index) const
+        {
+            if (index[I] >= c.size())
+            {
+                throw std::runtime_error("callback not found");
+            }
+        }
+
+        template <size_t I, class C>
+        std::enable_if_t<I + 1 == nb_args, return_type>
+        dispatch_impl(C& c, const index_type& index, B&... args) const
+        {
+            check_size<I>(c, index);
+            return c[index[I]](args...);
+        }
+
+        template <size_t I, class C>
+        std::enable_if_t<I + 1 != nb_args, return_type>
+        dispatch_impl(C& c, const index_type& index, B&... args) const
+        {
+            check_size<I>(c, index);
+            return dispatch_impl<I+1>(c[index[I]], index, args...);
+        }
+
+    public:
+
+        inline basic_fast_dispatcher()
+            : m_next_index(0)
+        {
+        }
+
+        template <class... D>
+        void insert(callback_type&& cb)
+        {
+            static_assert(sizeof...(D) == sizeof...(B),
+                          "Number of callback arguments must match dispatcher dimension");
+            index_ref_type index = {{std::ref(D::get_class_static_index())...}};
+            insert_impl<0>(std::move(cb), m_callbacks, index);
+        }
+
+        inline return_type dispatch(B&... args) const
+        {
+            index_type index = {{args.get_class_index()...}};
+            return dispatch_impl<0>(m_callbacks, index, args...);
+        }
+    };
+
     /******************************
      * dynamic and static casters *
      ******************************/
@@ -210,19 +369,26 @@ namespace xtl
     <
         class type_list,
         class return_type,
-        template <class, class> class casting_policy = dynamic_caster
+        template <class, class> class casting_policy = dynamic_caster,
+        template <class, class, class> class dispatcher = basic_dispatcher
     >
     class functor_dispatcher;
 
-    template <class return_type, template <class, class> class casting_policy, class... B>
-    class functor_dispatcher<mpl::vector<B...>, return_type, casting_policy>
+    template
+    <
+        class return_type, 
+        template <class, class> class casting_policy,
+        template <class, class, class> class dispatcher,
+        class... B
+    >
+    class functor_dispatcher<mpl::vector<B...>, return_type, casting_policy, dispatcher>
     {
     private:
 
         using functor_type = std::function<return_type (B&...)>;
-        using backend = basic_dispatcher<mpl::vector<B...>,
-                                         return_type,
-                                         functor_type>;
+        using backend = dispatcher<mpl::vector<B...>,
+                                   return_type,
+                                   functor_type>;
         backend m_backend;
 
     public:
@@ -235,7 +401,6 @@ namespace xtl
                 return fun(casting_policy<D&, B&>::cast(args)...);
             });
             m_backend.template insert<D...>(std::move(f));
-
         }
 
         template <class... D>

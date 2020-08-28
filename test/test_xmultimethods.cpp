@@ -7,6 +7,7 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
+#include <iostream>
 #include "xtl/xmultimethods.hpp"
 
 #include "gtest/gtest.h"
@@ -24,7 +25,9 @@ namespace xtl
     class shape
     {
     public:
-
+        
+        XTL_IMPLEMENT_INDEXABLE_CLASS()
+        
         virtual ~shape() = default;
 
         shape(const shape&) = delete;
@@ -42,6 +45,8 @@ namespace xtl
     class shape_impl : public shape
     {
     public:
+        
+        XTL_IMPLEMENT_INDEXABLE_CLASS()
 
         shape_impl() = default;
         virtual ~shape_impl() = default;
@@ -163,22 +168,18 @@ namespace xtl
         EXPECT_EQ(r6, return_type(shape_id::circle_id, shape_id::triangle_id));
     }
 
-    TEST(multimethods, function_dispatcher)
+    template <class D>
+    void test_function_dispatcher()
     {
+        using dispatcher_type = D;
         using return_type = dispatch_return_type;
-        using dispatcher_type = functor_dispatcher
-        <
-            mpl::vector<const shape, const shape>,
-            return_type
-        >;
-
         dispatcher_type d;
-        d.insert<const rectangle, const circle>(&dispatch_rectangle_circle);
-        d.insert<const rectangle, const triangle>(&dispatch_rectangle_triangle);
-        d.insert<const circle, const rectangle>(&dispatch_circle_rectangle);
-        d.insert<const circle, const triangle>(&dispatch_circle_triangle);
-        d.insert<const triangle, const rectangle>(&dispatch_triangle_rectangle);
-        d.insert<const triangle, const circle>(&dispatch_triangle_circle);
+        d.template insert<const rectangle, const circle>(&dispatch_rectangle_circle);
+        d.template insert<const rectangle, const triangle>(&dispatch_rectangle_triangle);
+        d.template insert<const circle, const rectangle>(&dispatch_circle_rectangle);
+        d.template insert<const circle, const triangle>(&dispatch_circle_triangle);
+        d.template insert<const triangle, const rectangle>(&dispatch_triangle_rectangle);
+        d.template insert<const triangle, const circle>(&dispatch_triangle_circle);
 
         rectangle r;
         circle c;
@@ -200,6 +201,45 @@ namespace xtl
         EXPECT_EQ(r4, return_type(shape_id::circle_id, shape_id::triangle_id));
         EXPECT_EQ(r5, return_type(shape_id::triangle_id, shape_id::rectangle_id));
         EXPECT_EQ(r6, return_type(shape_id::triangle_id, shape_id::circle_id));
+    }
+
+    TEST(multimethods, function_dispatcher)
+    {
+        using return_type = dispatch_return_type;
+        using dispatcher_type = functor_dispatcher
+        <
+            mpl::vector<const shape, const shape>,
+            return_type
+        >;
+
+        test_function_dispatcher<dispatcher_type>();
+    }
+
+    TEST(multimethods, function_dispatcher_static_cast)
+    {
+        using return_type = dispatch_return_type;
+        using dispatcher_type = functor_dispatcher
+        <
+            mpl::vector<const shape, const shape>,
+            return_type,
+            static_caster
+        >;
+
+        test_function_dispatcher<dispatcher_type>();
+    }
+
+    TEST(multimethods, fast_function_dispatcher)
+    {
+        using return_type = dispatch_return_type;
+        using dispatcher_type = functor_dispatcher
+        <
+            mpl::vector<const shape, const shape>,
+            return_type,
+            static_caster,
+            basic_fast_dispatcher
+        >;
+
+        test_function_dispatcher<dispatcher_type>();
     }
 }
 
