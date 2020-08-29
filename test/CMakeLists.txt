@@ -133,6 +133,7 @@ set(XTL_TESTS
     test_xtype_traits.cpp
     test_xproxy_wrapper.cpp
     test_xvariant.cpp
+    test_xvisitor.cpp
 )
 
 if(nlohmann_json_FOUND)
