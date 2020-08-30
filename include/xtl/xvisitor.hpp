@@ -10,6 +10,7 @@
 #ifndef XTL_VISITOR_HPP
 #define XTL_VISITOR_HPP
 
+#include <stdexcept>
 #include "xmeta_utils.hpp"
 
 namespace xtl
@@ -150,6 +151,44 @@ namespace xtl
     return_type accept(::xtl::base_visitor& vis) const override \
     { return accept_impl(*this, vis); }
 
+    /******************
+     * cyclic_visitor *
+     ******************/
+
+    template <class T, class R, bool is_const = true>
+    class cyclic_visitor;
+
+    template <class R, bool is_const, class... T>
+    class cyclic_visitor<mpl::vector<T...>, R, is_const>
+        : public visitor<mpl::vector<T...>, R, is_const>
+    {
+    public:
+
+        using return_type = R;
+
+        template <class V>
+        return_type generic_visit(V& visited)
+        {
+            visitor<std::remove_const_t<V>, return_type, is_const>& sub_obj = *this;
+            return sub_obj.visit(visited);
+        }
+    };
+
+    /*******************************
+     * XTL_DEFINE_CYCLIC_VISITABLE *
+     *******************************/
+
+#define XTL_DEFINE_CYCLIC_VISITABLE(some_visitor)                     \
+    virtual some_visitor::return_type accept(some_visitor& vis)       \
+    {                                                                 \
+        return vis.generic_visit(*this);                              \
+    }
+
+#define XTL_DEFINE_CONST_CYCLIC_VISITABLE(some_visitor)               \
+    virtual some_visitor::return_type accept(some_visitor& vis) const \
+    {                                                                 \
+        return vis.generic_visit(*this);                              \
+    }
 }
 
 #endif

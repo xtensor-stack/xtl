@@ -119,7 +119,118 @@ namespace xtl
 
         int res2 = r2->accept(t);
         EXPECT_EQ(res2, 2);
+    }
 
+    class cleaf_one;
+    class cleaf_two;
+
+    class cyclic_visitor_tester
+        : public cyclic_visitor<mpl::vector<cleaf_one, cleaf_two>, int, false>
+    {
+    public:
+
+        int visit(cleaf_one&) override
+        {
+            return 1;
+        }
+
+        int visit(cleaf_two&) override
+        {
+            return 2;
+        }
+    };
+
+    class croot
+    {
+    public:
+
+        virtual int accept(cyclic_visitor_tester&) = 0;
+    };
+
+    class cleaf_one : public croot
+    {
+    public:
+
+        XTL_DEFINE_CYCLIC_VISITABLE(cyclic_visitor_tester)
+    };
+
+    class cleaf_two : public croot
+    {
+    public:
+
+        XTL_DEFINE_CYCLIC_VISITABLE(cyclic_visitor_tester)
+    };
+    
+    TEST(visitor, cyclic_visitor)
+    {
+        cleaf_one l1;
+        cleaf_two l2;
+        croot* r1 = &l1;
+        croot* r2 = &l2;
+
+        cyclic_visitor_tester t;
+
+        int res1 = r1->accept(t);
+        EXPECT_EQ(res1, 1);
+
+        int res2 = r2->accept(t);
+        EXPECT_EQ(res2, 2);
+    }
+
+    class ccleaf_one;
+    class ccleaf_two;
+
+    class ccyclic_visitor_tester
+        : public cyclic_visitor<mpl::vector<ccleaf_one, ccleaf_two>, int, true>
+    {
+    public:
+
+        int visit(const ccleaf_one&) override
+        {
+            return 1;
+        }
+
+        int visit(const ccleaf_two&) override
+        {
+            return 2;
+        }
+    };
+
+    class ccroot
+    {
+    public:
+
+        virtual int accept(ccyclic_visitor_tester&) const = 0;
+    };
+
+    class ccleaf_one : public ccroot
+    {
+    public:
+
+        XTL_DEFINE_CONST_CYCLIC_VISITABLE(ccyclic_visitor_tester)
+    };
+
+    class ccleaf_two : public ccroot
+    {
+    public:
+
+        XTL_DEFINE_CONST_CYCLIC_VISITABLE(ccyclic_visitor_tester)
+    };
+    
+    TEST(visitor, const_cyclic_visitor)
+    {
+        ccleaf_one l1;
+        ccleaf_two l2;
+        ccroot* r1 = &l1;
+        ccroot* r2 = &l2;
+
+        ccyclic_visitor_tester t;
+
+        int res1 = r1->accept(t);
+        EXPECT_EQ(res1, 1);
+
+        int res2 = r2->accept(t);
+        EXPECT_EQ(res2, 2);
     }
 }
 
