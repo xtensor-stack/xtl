@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.6.17
+------
+
+- Implemented ``index_of`` for ``mpl::vector``
+- Implemented multimethods pattern
+- Implemented visitor pattern
+
 0.6.16
 ------
 
