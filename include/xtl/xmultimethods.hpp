@@ -146,8 +146,6 @@ namespace xtl
     {
     private:
 
-        static_assert(sizeof...(B) > size_t(1), "dispatcher dimension must be greater than 1");
-
         using key_type = std::array<std::type_index, sizeof...(B)>;
         using map_type = std::map<key_type, callback_type>;
         map_type m_callback_map;
@@ -251,8 +249,6 @@ namespace xtl
 
         static constexpr size_t nb_args = sizeof...(B);
 
-        static_assert(nb_args > size_t(1), "dispatcher dimension must be greater than 1");
-        
         using storage_type = detail::recursive_container<callback_type, sizeof...(B) - 1>;
         using index_type = std::array<size_t, nb_args>;
         using index_ref_type = std::array<std::reference_wrapper<size_t>, nb_args>;
