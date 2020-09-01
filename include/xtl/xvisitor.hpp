@@ -77,7 +77,7 @@ namespace xtl
     {
         static R on_unknown_visitor(T&, base_visitor&)
         {
-            throw std::runtime_error("Unknown visited type");
+            XTL_THROW(std::runtime_error, "Unknown visited type");
         }
     };
 
