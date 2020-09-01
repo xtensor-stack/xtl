@@ -26,4 +26,14 @@
 #define XTL_NO_EXCEPTIONS
 #endif
 
+#if defined(XTL_NO_EXCEPTIONS)
+#define XTL_THROW(_, msg)              \
+    {                                  \
+        std::cerr << msg << std::endl; \
+        std::abort();                  \
+    }
+#else
+#define XTL_THROW(exception, msg) throw exception(msg)
+#endif
+
 #endif

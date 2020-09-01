@@ -180,7 +180,7 @@ namespace xtl
             auto it = m_callback_map.find(k);
             if (it == m_callback_map.end())
             {
-                throw std::runtime_error("callback not found");
+                XTL_THROW(std::runtime_error, "callback not found");
             }
             return (it->second)(args...);
         }
@@ -292,7 +292,7 @@ namespace xtl
         {
             if (index[I] >= c.size())
             {
-                throw std::runtime_error("callback not found");
+                XTL_THROW(std::runtime_error, "callback not found");
             }
         }
 
