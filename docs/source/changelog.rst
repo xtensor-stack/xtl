@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.6.18
+------
+
+- Relaxed dimension constraint on multidispatcher
+- Replaced throw with XTL_THROW to support disabling exceptions
+
 0.6.17
 ------
 
