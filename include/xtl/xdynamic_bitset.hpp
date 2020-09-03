@@ -256,7 +256,7 @@ namespace xtl
         if (sz != this->m_size) {
 #if defined(XTL_NO_EXCEPTIONS)
             std::fprintf(stderr, "cannot resize bitset_view\n");
-            std::terminate();        
+            std::terminate();
 #else
             throw std::runtime_error("cannot resize bitset_view");
 #endif
@@ -577,10 +577,10 @@ namespace xtl
     }
 
     template <class B, class A>
-    inline void xdynamic_bitset<B, A>::resize(size_type size, bool b)
+    inline void xdynamic_bitset<B, A>::resize(size_type asize, bool b)
     {
         size_type old_block_count = base_type::block_count();
-        size_type new_block_count = base_type::compute_block_count(size);
+        size_type new_block_count = base_type::compute_block_count(asize);
         block_type value = b ? ~block_type(0) : block_type(0);
 
         if (new_block_count != old_block_count)
@@ -588,7 +588,7 @@ namespace xtl
             base_type::m_buffer.resize(new_block_count, value);
         }
 
-        if (b && size > base_type::m_size)
+        if (b && asize > base_type::m_size)
         {
             size_type extra_bits = base_type::count_extra_bits();
             if (extra_bits > 0)
@@ -597,7 +597,7 @@ namespace xtl
             }
         }
 
-        base_type::m_size = size;
+        base_type::m_size = asize;
         base_type::zero_unused_bits();
     }
 
@@ -1077,7 +1077,7 @@ namespace xtl
     }
 
     template <class B>
-    inline auto xdynamic_bitset_base<B>::derived_cast() const -> const derived_class& 
+    inline auto xdynamic_bitset_base<B>::derived_cast() const -> const derived_class&
     {
         return *(reinterpret_cast<const derived_class*>(this));
     }
