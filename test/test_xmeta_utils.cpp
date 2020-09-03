@@ -148,12 +148,6 @@ namespace xtl
         EXPECT_TRUE(res);
     }
 
-    template <class T>
-    struct DEBUG
-    {
-        using type = typename T::coincoin;
-    };
-
     TEST(mpl, merge_set)
     {
         using arg2 = mpl::vector<double, float, int, short>;
