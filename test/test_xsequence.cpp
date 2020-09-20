@@ -87,7 +87,7 @@ namespace xtl
 
         vector_type v0 = xtl::make_sequence<vector_type>(size);
         EXPECT_EQ(v0.size(), size);
-        
+
         array_type a0 = xtl::make_sequence<array_type>(size);
         EXPECT_EQ(a0.size(), size);
 
@@ -114,6 +114,17 @@ namespace xtl
         EXPECT_EQ(a2[0], 3);
         EXPECT_EQ(a2[1], 2);
         EXPECT_EQ(a2[2], 4);
+    }
+
+    TEST(xsequence, are_equivalent_sequences)
+    {
+        std::array<size_t, 2> a = {2, 3};
+        std::array<size_t, 2> b = {2, 4};
+        std::array<size_t, 3> c = {2, 4, 4};
+
+        EXPECT_TRUE(xtl::are_equivalent_sequences(a, a) == true);
+        EXPECT_TRUE(xtl::are_equivalent_sequences(a, b) == false);
+        EXPECT_TRUE(xtl::are_equivalent_sequences(a, c) == false);
     }
 }
 
