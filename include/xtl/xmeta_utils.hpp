@@ -263,8 +263,31 @@ namespace xtl
          * contains *
          ************/
 
+        namespace detail
+        {
+            template <class L, class V>
+            struct contains_impl;
+
+            template <template <class...> class L, class V>
+            struct contains_impl<L<>, V> : std::false_type
+            {
+            };
+
+            template <template <class...> class L, class... T, class V>
+            struct contains_impl<L<V, T...>, V> : std::true_type
+            {
+            };
+
+            template <template <class...> class L, class U, class... T, class V>
+            struct contains_impl<L<U, T...>, V> : contains_impl<L<T...>, V>
+            {
+            };
+        }
+
         template <class L, class V>
-        using contains = bool_<count<L, V>::value != 0>;
+        struct contains : detail::contains_impl<L, V>
+        {
+        };
 
         /*********
          * front *
