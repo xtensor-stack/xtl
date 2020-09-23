@@ -7,6 +7,13 @@
 Changelog
 =========
 
+0.6.19
+------
+
+- Improved ``mpl::contains`` implementation
+- Added ``are_equivalent_sequences``
+- Various minor improvements
+
 0.6.18
 ------
 
