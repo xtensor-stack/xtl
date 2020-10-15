@@ -9,6 +9,11 @@
 
 #include "gtest/gtest.h"
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
 #include "xtl/xhalf_float.hpp"
 
 namespace xtl
@@ -34,4 +39,8 @@ namespace xtl
         EXPECT_EQ((half_float)f0/(half_float)f1, (float)(h0/h1));
     }
 }
+
+#ifdef GCC
+#pragma GCC diagnostic pop
+#endif
 
