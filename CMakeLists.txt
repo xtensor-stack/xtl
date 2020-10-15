@@ -49,6 +49,8 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xspan_impl.hpp
     ${XTL_INCLUDE_DIR}/xtl/xdynamic_bitset.hpp
     ${XTL_INCLUDE_DIR}/xtl/xfunctional.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xhalf_float.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xhalf_float_impl.hpp
     ${XTL_INCLUDE_DIR}/xtl/xhash.hpp
     ${XTL_INCLUDE_DIR}/xtl/xhierarchy_generator.hpp
     ${XTL_INCLUDE_DIR}/xtl/xiterator_base.hpp
