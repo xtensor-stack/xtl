@@ -57,22 +57,22 @@ namespace xtl
         EXPECT_EQ(res, false);
     }
 
-    template <class T, XTL_REQUIRES(std::is_integral<T>, std::is_signed<T>)>
+    template <class T, XTL_REQUIRES(xtl::is_integral<T>, xtl::is_signed<T>)>
     int test_requires(T);
 
-    template <class T, XTL_REQUIRES_IMPL(std::is_integral<T>, std::is_signed<T>)>
+    template <class T, XTL_REQUIRES_IMPL(xtl::is_integral<T>, xtl::is_signed<T>)>
     int test_requires(T)
     {
         return 0;
     }
 
-    template <class T, XTL_REQUIRES(std::is_integral<T>, xtl::negation<std::is_signed<T>>)>
+    template <class T, XTL_REQUIRES(xtl::is_integral<T>, xtl::negation<xtl::is_signed<T>>)>
     int test_requires(T)
     {
         return 1;
     }
 
-    template <class T, XTL_DISALLOW(std::is_integral<T>)>
+    template <class T, XTL_DISALLOW(xtl::is_integral<T>)>
     int test_requires(T)
     {
         return 2;
@@ -88,13 +88,13 @@ namespace xtl
         EXPECT_EQ(test_requires(d), 2);
     }
 
-    template <class T, XTL_EITHER(std::is_integral<T>, std::is_floating_point<T>)>
+    template <class T, XTL_EITHER(xtl::is_integral<T>, xtl::is_floating_point<T>)>
     int test_either_disallow(T)
     {
         return 0;
     }
 
-    template <class T, XTL_DISALLOW_ONE(std::is_integral<T>, std::is_floating_point<T>)>
+    template <class T, XTL_DISALLOW_ONE(xtl::is_integral<T>, xtl::is_floating_point<T>)>
     int test_either_disallow(T)
     {
         return 1;
