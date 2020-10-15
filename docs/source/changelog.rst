@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.6.20
+------
+
+- Added xtraits for future simple specialization
+- Added half_float implementation
+
 0.6.19
 ------
 
