@@ -130,6 +130,7 @@ set(XTL_TESTS
     test_xclosure.cpp
     test_xdynamic_bitset.cpp
     test_xfunctional.cpp
+    test_xhalf_float.cpp
     test_xhash.cpp
     test_xhierarchy_generator.cpp
     test_xiterator_base.cpp

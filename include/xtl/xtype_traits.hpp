@@ -21,18 +21,36 @@ namespace xtl
     /************************************
      * std proxy traits                 *
      ************************************/
+
     template <class T>
-    struct is_scalar:std::is_scalar<T>{};
+    struct is_scalar : std::is_scalar<T>
+    {
+    };
+
     template <class T>
-    struct is_arithmetic:std::is_arithmetic<T>{};
+    struct is_arithmetic : std::is_arithmetic<T>
+    {
+    };
+
     template <class T>
-    struct is_fundamental:std::is_fundamental<T>{};
+    struct is_fundamental : std::is_fundamental<T>
+    {
+    };
+    
     template <class T>
-    struct is_signed:std::is_signed<T>{};
+    struct is_signed : std::is_signed<T>
+    {
+    };
+    
     template <class T>
-    struct is_floating_point:std::is_floating_point<T>{};
+    struct is_floating_point : std::is_floating_point<T>
+    {
+    };
+    
     template <class T>
-    struct is_integral:std::is_integral<T>{};
+    struct is_integral : std::is_integral<T>
+    {
+    };
 
     /************************************
      * arithmetic type promotion traits *
