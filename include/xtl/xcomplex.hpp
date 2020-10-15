@@ -104,7 +104,7 @@ namespace xtl
      *****************/
 
     template <class E, class R = void>
-    using enable_scalar = std::enable_if_t<std::is_arithmetic<E>::value, R>;
+    using enable_scalar = std::enable_if_t<xtl::is_arithmetic<E>::value, R>;
 
     /*******************
      * common_xcomplex *

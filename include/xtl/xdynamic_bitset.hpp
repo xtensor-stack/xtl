@@ -17,6 +17,7 @@
 #include "xclosure.hpp"
 #include "xspan.hpp"
 #include "xiterator_base.hpp"
+#include "xtype_traits.hpp"
 
 namespace xtl
 {
@@ -63,7 +64,7 @@ namespace xtl
     struct container_internals<xtl::span<X>>
     {
         using value_type = typename xtl::span<X>::value_type;
-        static_assert(std::is_scalar<value_type>::value, "");
+        static_assert(xtl::is_scalar<value_type>::value, "");
         using allocator_type = std::allocator<value_type>;
         using size_type = std::size_t;
         using difference_type = typename xtl::span<X>::difference_type;
@@ -73,7 +74,7 @@ namespace xtl
     struct container_internals<std::vector<X, A>>
     {
         using value_type = X;
-        static_assert(std::is_scalar<value_type>::value, "");
+        static_assert(xtl::is_scalar<value_type>::value, "");
         using allocator_type = A;
         using size_type = typename std::vector<X>::size_type;
         using difference_type = typename std::vector<X>::difference_type;
