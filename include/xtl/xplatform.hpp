@@ -15,25 +15,28 @@
 
 namespace xtl
 {
-  enum class endian {
-    big_endian,
-    little_endian,
-    mixed,
-  };
+    enum class endian
+    {
+        big_endian,
+        little_endian,
+        mixed
+    };
 
-  inline endian endianness() {
-    uint32_t utmp = 0x01020304;
-    char btmp[sizeof(utmp)];
-    std::memcpy(&btmp[0], &utmp, sizeof(utmp));
-    switch(btmp[0]) {
-      case 0x01:
-        return endian::big_endian;
-      case 0x04:
-        return endian::little_endian;
-      default:
-        return endian::mixed;
+    inline endian endianness()
+    {
+        uint32_t utmp = 0x01020304;
+        char btmp[sizeof(utmp)];
+        std::memcpy(&btmp[0], &utmp, sizeof(utmp));
+        switch(btmp[0])
+        {
+        case 0x01:
+            return endian::big_endian;
+        case 0x04:
+            return endian::little_endian;
+        default:
+            return endian::mixed;
+        }
     }
-  }
 }
 
 #endif
