@@ -60,6 +60,7 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xoptional_meta.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional.hpp
     ${XTL_INCLUDE_DIR}/xtl/xoptional_sequence.hpp
+    ${XTL_INCLUDE_DIR}/xtl/xplatform.hpp
     ${XTL_INCLUDE_DIR}/xtl/xproxy_wrapper.hpp
     ${XTL_INCLUDE_DIR}/xtl/xsequence.hpp
     ${XTL_INCLUDE_DIR}/xtl/xtl_config.hpp

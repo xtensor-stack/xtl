@@ -8,6 +8,7 @@
 ****************************************************************************/
 
 #include "xtl/xhash.hpp"
+#include "xtl/xplatform.hpp"
 
 #include <cstdint>
 #include <cstdlib>
@@ -147,11 +148,17 @@ namespace xtl
     TEST(hash, verification)
     {
 #if INTPTR_MAX == INT64_MAX
-#if SYSTEM_IS_BIG_ENDIAN
-        uint32_t res = 0x8fda498d;
-#else
-        uint32_t res = sizeof(std::size_t) == 4 ? 0x27864c1e : 0x1f0d3804;
-#endif
+      uint32_t res;
+      switch(endianness()) {
+        case endian::big_endian:
+          res = 0x8fda498d;
+          break;
+        case endian::little_endian:
+          res = sizeof(std::size_t) == 4 ? 0x27864c1e : 0x1f0d3804;
+          break;
+        default:
+          assert(false && "unsupported exotic architecture");
+      }
 #elif INTPTR_MAX == INT32_MAX
         uint32_t res = sizeof(std::size_t) == 4 ? 0x27864c1e : 0xdd537c05;
 #else

@@ -117,12 +117,6 @@ endif()
 
 find_package(Threads)
 
-include(TestBigEndian)
-TEST_BIG_ENDIAN(BIG_ENDIAN)
-if(BIG_ENDIAN)
-    add_definitions(-DSYSTEM_IS_BIG_ENDIAN)
-endif(BIG_ENDIAN)
-
 include_directories(${GTEST_INCLUDE_DIRS})
 
 set(XTL_TESTS
@@ -143,6 +137,7 @@ set(XTL_TESTS
     test_xoptional.cpp
     test_xsequence.cpp
     test_xtype_traits.cpp
+    test_xplatform.cpp
     test_xproxy_wrapper.cpp
     test_xvariant.cpp
     test_xvisitor.cpp
