@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.6.21
+------
+
+- CMake: Modernized GTest integration
+- Add support for ``xtl::endianness``
+
 0.6.20
 ------
 
