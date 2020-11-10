@@ -1,8 +1,7 @@
 name: xtl-docs
 
 channels:
-  - QuantStack
+  - conda-forge
 
 dependencies:
   - breathe
-  - sphinx=2.4.4
