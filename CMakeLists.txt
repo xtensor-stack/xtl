@@ -121,7 +121,7 @@ install(FILES ${XTL_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xtl)
 endif()
 
-set(XTL_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
+set(XTL_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}" CACHE
     STRING "install path for xtlConfig.cmake")
 
 configure_package_config_file(${PROJECT_NAME}Config.cmake.in
@@ -135,7 +135,8 @@ set(_XTL_CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
 unset(CMAKE_SIZEOF_VOID_P)
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
                                  VERSION ${${PROJECT_NAME}_VERSION}
-                                 COMPATIBILITY AnyNewerVersion)
+                                 COMPATIBILITY AnyNewerVersion
+                                 ARCH_INDEPENDENT)
 set(CMAKE_SIZEOF_VOID_P ${_XTL_CMAKE_SIZEOF_VOID_P})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
@@ -148,4 +149,4 @@ configure_file(${PROJECT_NAME}.pc.in
                "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
                 @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig/")
