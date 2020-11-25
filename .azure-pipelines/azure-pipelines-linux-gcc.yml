@@ -4,12 +4,10 @@ jobs:
       matrix:
         gcc_4:
           gcc_version: '4.9'
-          install_version: '4.9'
         gcc_5:
           gcc_version: '5'
         gcc_6:
           gcc_version: '6'
-          install_version: '6'
         gcc_7:
           gcc_version: '7'
         gcc_8:
@@ -28,7 +26,7 @@ jobs:
           if [[ $(gcc_version) == '4.9' || $(gcc_version) == '6' ]]; then
             sudo add-apt-repository ppa:ubuntu-toolchain-r/test
             sudo apt-get update
-            sudo apt-get --no-install-suggests --no-install-recommends install g++-$(install_version)
+            sudo apt-get --no-install-suggests --no-install-recommends install g++-$(gcc_version)
           fi
         displayName: Install build toolchain
           

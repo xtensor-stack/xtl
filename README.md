@@ -1,6 +1,5 @@
 # ![xtl](docs/source/xtl.svg)
 
-[![Travis](https://travis-ci.com/xtensor-stack/xtl.svg?branch=master)](https://travis-ci.com/xtensor-stack/xtl)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/wikc50xlb5rbrjy7?svg=true)](https://ci.appveyor.com/project/xtensor-stack/xtl)
 [![Azure](https://dev.azure.com/xtensor-stack/xtensor-stack/_apis/build/status/xtensor-stack.xtl?branchName=master)](https://dev.azure.com/xtensor-stack/xtensor-stack/_build/latest?definitionId=2&branchName=master)
 [![Documentation Status](http://readthedocs.org/projects/xtl/badge/?version=latest)](https://xtl.readthedocs.io/en/latest/?badge=latest)
