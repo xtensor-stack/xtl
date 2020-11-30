@@ -140,10 +140,22 @@ namespace xtl
             }
         }
 
+        /// C++17 equivalent of clear
+        void reset() noexcept
+        {
+            clear();
+        }
+
         /// Returns true if *this has no contained object, otherwise false.
         bool empty() const noexcept
         {
             return this->vtable == nullptr;
+        }
+
+        /// C++17 equivalent of !empty()
+        bool has_value() const noexcept
+        {
+            return !empty();
         }
 
         /// If *this has a contained object of type T, typeid(T); otherwise typeid(void).
