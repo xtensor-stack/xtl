@@ -9,6 +9,15 @@
 
 Basic tools (containers, algorithms) used by other quantstack packages
 
+Introduction
+------------
+
+`xtl` gathers generic purpose algorithms and containers that are used by
+the `xtensor` stack and the `xeus` stack.
+
+Some of the features are C++14 backport of C++17 classes and algorithms,
+such as `variant` or `any`.
+
 Licensing
 ---------
 
@@ -23,6 +32,16 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
 
    installation
    changelog
+
+.. toctree::
+   :caption: USAGE
+   :maxdepth: 2
+
+   basic_types
+   containers
+   meta_programming
+   design_patterns
+   miscellaneous
 
 .. toctree::
    :caption: DEVELOPER ZONE
