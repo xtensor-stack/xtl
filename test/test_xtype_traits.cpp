@@ -137,6 +137,7 @@ namespace xtl
         EXPECT_TRUE((std::is_same<time_type, promote_type_t<time_type, time_type>>::value));
         EXPECT_TRUE((std::is_same<int, promote_type_t<unsigned char, unsigned char>>::value));
         EXPECT_TRUE((std::is_same<std::complex<double>, promote_type_t<unsigned char, std::complex<double>>>::value));
+        EXPECT_TRUE((std::is_same<std::complex<double>, promote_type_t<std::complex<float>, std::complex<double>>>::value));
     }
 }
 
