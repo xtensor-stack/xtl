@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.6.23
+------
+
+- Added ``xtl::executable_path`` and ``xtl::prefix_path``
+
 0.6.22
 ------
 

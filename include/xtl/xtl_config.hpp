@@ -12,7 +12,7 @@
 
 #define XTL_VERSION_MAJOR 0
 #define XTL_VERSION_MINOR 6
-#define XTL_VERSION_PATCH 22
+#define XTL_VERSION_PATCH 23
 
 #ifndef __has_feature
 #define __has_feature(x) 0
