@@ -139,6 +139,7 @@ set(XTL_TESTS
     test_xtype_traits.cpp
     test_xplatform.cpp
     test_xproxy_wrapper.cpp
+    test_xsystem.cpp
     test_xvariant.cpp
     test_xvisitor.cpp
 )
