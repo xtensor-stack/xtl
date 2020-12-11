@@ -7,22 +7,26 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#include "xtl/xplatform.hpp"
+#include "xtl/xsystem.hpp"
 
 #include "gtest/gtest.h"
 
 namespace xtl
 {
-
-    TEST(platform, endian)
+    TEST(system, executable_path)
     {
-#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN
-        EXPECT_TRUE(endianness() == endian::big_endian);
-#endif
+        std::string exec_path = executable_path();
+        EXPECT_TRUE(!exec_path.empty());
+    }
 
-#if defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN
-        EXPECT_TRUE(endianness() == endian::little_endian);
-#endif
+    TEST(system, prefix_path)
+    {
+        std::string prefix = prefix_path();
+        std::string exec_path = executable_path();
+
+        EXPECT_NE(prefix.size(), exec_path.size());
+        EXPECT_TRUE(std::equal(prefix.cbegin(), prefix.cend(), exec_path.cbegin()));
+        EXPECT_NE(exec_path.find("test_xtl"), std::string::npos);
     }
 }
 
