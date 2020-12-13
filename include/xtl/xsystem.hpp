@@ -81,7 +81,8 @@ namespace xtl
         }
 #elif defined (__FreeBSD__)
         int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1};
-        if (sysctl(mib, 4, buffer, sizeof(buffer), NULL, 0) != -1)
+        size_t buffer_size = sizeof(buffer);
+        if (sysctl(mib, 4, buffer, &buffer_size, NULL, 0) != -1)
         {
             path = buffer;
         }
