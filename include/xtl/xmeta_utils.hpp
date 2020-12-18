@@ -602,6 +602,38 @@ namespace xtl
         {
             return static_if(std::integral_constant<bool, cond>(), tf, ff);
         }
+
+        /***********
+         * switch_ *
+         ***********/
+
+        using default_t = std::true_type;
+
+        namespace detail
+        {
+            template <class... T>
+            struct switch_impl;
+
+            template <class C, class T, class... U>
+            struct switch_impl<C, T, U...>
+                : std::conditional<C::value, T, typename switch_impl<U...>::type>
+            {
+            };
+
+            template <class C, class T, class U>
+            struct switch_impl<C, T, default_t, U>
+                : std::conditional<C::value, T, U>
+            {
+            };
+        }
+
+        template <class... T>
+        struct switch_ : detail::switch_impl<T...>
+        {
+        };
+
+        template <class... T>
+        using switch_t = typename switch_<T...>::type;
     }
 }
 

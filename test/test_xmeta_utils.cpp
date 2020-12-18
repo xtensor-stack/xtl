@@ -301,4 +301,20 @@ namespace xtl
         EXPECT_TRUE(res1);
         EXPECT_TRUE(res2);
     }
+
+    template <class T>
+    using switch_type = mpl::switch_t<std::is_integral<T>, int,
+                                      std::is_floating_point<T>, double,
+                                      mpl::default_t, char>;
+
+    TEST(mpl, switch_t)
+    {
+        constexpr bool res1 = std::is_same<switch_type<short>, int>::value;
+        constexpr bool res2 = std::is_same<switch_type<float>, double>::value;
+        constexpr bool res3 = std::is_same<switch_type<mpl::vector<>>, char>::value;
+
+        EXPECT_TRUE(res1);
+        EXPECT_TRUE(res2);
+        EXPECT_TRUE(res3);
+    }
 }
