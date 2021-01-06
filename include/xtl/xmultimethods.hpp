@@ -227,7 +227,7 @@ namespace xtl
             : public recursive_container_impl<callback>
         {
         };
-      }
+    }
 
     template
     <
@@ -335,6 +335,86 @@ namespace xtl
         }
     };
 
+    /*************************************
+     * basic_fast_partial_dispatcher_1_1 *
+     *************************************/
+
+    template
+    <
+        class B,
+        class E,
+        class return_type,
+        class callback_type
+    >
+    class basic_fast_partial_dispatcher_1_1
+    {
+    private:
+
+        using storage_type = detail::recursive_container<callback_type, 0>;
+        using index_type = size_t;
+        //using index_ref_type = std::reference_wrapper<size_t>;
+
+        storage_type m_callbacks;
+        size_t m_next_index;
+
+        template <class C>
+        void resize_container(C& c, std::size_t& index)
+        {
+            if (index == SIZE_MAX)
+            {
+                c.resize(++m_next_index);
+                index = c.size() - 1u;
+            }
+            else if(c.size() <= index)
+            {
+                c.resize(index + 1u);
+            }
+        }
+
+        template <class C>
+        void insert_impl(callback_type&& cb, C& c, std::size_t& index)
+        {
+            resize_container(c, index);
+            c[index] = std::move(cb);
+        }
+
+        template <class C>
+        void check_size(C& c, const index_type& index) const
+        {
+            if (index >= c.size())
+            {
+                XTL_THROW(std::runtime_error, "callback not found");
+            }
+        }
+
+        template <class C>
+        return_type dispatch_impl(C& c, const index_type& index, B arg, E ignored_arg) const
+        {
+            check_size(c, index);
+            return c[index](arg, ignored_arg);
+        }
+
+    public:
+
+        inline basic_fast_partial_dispatcher_1_1()
+            : m_next_index(0)
+        {
+        }
+
+        template <class D>
+        void insert(callback_type&& cb)
+        {
+            std::size_t& index = std::ref(D::get_class_static_index());
+            insert_impl(std::move(cb), m_callbacks, index);
+        }
+
+        inline return_type dispatch(B& arg, E& ignored_arg) const
+        {
+            index_type index = arg.get_class_index();
+            return dispatch_impl(m_callbacks, index, arg, ignored_arg);
+        }
+    };
+
     /******************************
      * dynamic and static casters *
      ******************************/
@@ -372,7 +452,7 @@ namespace xtl
 
     template
     <
-        class return_type, 
+        class return_type,
         template <class, class> class casting_policy,
         template <class, class, class> class dispatcher,
         class... B
@@ -411,7 +491,54 @@ namespace xtl
         }
     };
 
+    /**********************************
+     * functor_partial_dispatcher_1_1 *
+     **********************************/
+
+    template
+    <
+        class B,
+        class E,
+        class return_type,
+        template <class, class> class casting_policy = dynamic_caster,
+        template <class, class, class, class> class dispatcher = basic_fast_partial_dispatcher_1_1
+    >
+    class functor_partial_dispatcher_1_1
+    {
+    private:
+
+        using functor_type = std::function<return_type (B&, E&)>;
+
+        using backend = dispatcher<B,
+                                   E,
+                                   return_type,
+                                   functor_type>;
+        backend m_backend;
+
+    public:
+
+        template <class D, class Fun>
+        void insert(const Fun& fun)
+        {
+            functor_type f([fun](B& arg, E& ignored_arg) -> return_type
+            {
+                return fun(casting_policy<D&, B&>::cast(arg), ignored_arg);
+            });
+            m_backend.template insert<D>(std::move(f));
+        }
+
+        template <class D>
+        void erase()
+        {
+            m_backend.template erase<D>();
+        }
+
+        inline return_type dispatch(B& arg, E& ignored_arg) const
+        {
+            return m_backend.dispatch(arg, ignored_arg);
+        }
+    };
+
 }
 
 #endif
-

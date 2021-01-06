@@ -14,6 +14,10 @@
 
 namespace xtl
 {
+    struct ignored_type
+    {
+    };
+
     enum class shape_id
     {
         unknown_id,
@@ -25,9 +29,9 @@ namespace xtl
     class shape
     {
     public:
-        
+
         XTL_IMPLEMENT_INDEXABLE_CLASS()
-        
+
         virtual ~shape() = default;
 
         shape(const shape&) = delete;
@@ -45,7 +49,7 @@ namespace xtl
     class shape_impl : public shape
     {
     public:
-        
+
         XTL_IMPLEMENT_INDEXABLE_CLASS()
 
         shape_impl() = default;
@@ -81,6 +85,20 @@ namespace xtl
         DEFINE_DISPATCH_SHAPE(circle, triangle)
         DEFINE_DISPATCH_SHAPE(triangle, rectangle)
         DEFINE_DISPATCH_SHAPE(triangle, circle)
+
+        template <class T, class ignored_type>
+        shape_id partial_dispatch_1_1_shape_impl(const T& t, const ignored_type&)
+        {
+            return t.get_id();
+        }
+
+#define DEFINE_PARTIAL_DISPATCH_1_1_SHAPE(T) \
+        shape_id partial_dispatch_1_1_##T(const T& t, const ignored_type& i) \
+        { return partial_dispatch_1_1_shape_impl(t, i); }
+
+        DEFINE_PARTIAL_DISPATCH_1_1_SHAPE(rectangle)
+        DEFINE_PARTIAL_DISPATCH_1_1_SHAPE(circle)
+        DEFINE_PARTIAL_DISPATCH_1_1_SHAPE(triangle)
     }
 
     class dispatch_tester
@@ -241,5 +259,47 @@ namespace xtl
 
         test_function_dispatcher<dispatcher_type>();
     }
-}
 
+    template <class D>
+    void test_function_partial_dispatcher_1_1()
+    {
+        using dispatcher_type = D;
+        using return_type = shape_id;
+        dispatcher_type d;
+        d.template insert<const rectangle>(&partial_dispatch_1_1_rectangle);
+        d.template insert<const circle>(&partial_dispatch_1_1_circle);
+        d.template insert<const triangle>(&partial_dispatch_1_1_triangle);
+
+        ignored_type i;
+
+        rectangle r;
+        circle c;
+        triangle t;
+        shape* p1 = &r;
+        shape* p2 = &c;
+        shape* p3 = &t;
+
+        return_type r1 = d.dispatch(*p1, i);
+        return_type r3 = d.dispatch(*p2, i);
+        return_type r5 = d.dispatch(*p3, i);
+
+        EXPECT_EQ(r1, return_type(shape_id::rectangle_id));
+        EXPECT_EQ(r3, return_type(shape_id::circle_id));
+        EXPECT_EQ(r5, return_type(shape_id::triangle_id));
+    }
+
+    TEST(multimethods, fast_function_partial_dispatcher_1_1)
+    {
+        using return_type = shape_id;
+        using dispatcher_type = functor_partial_dispatcher_1_1
+        <
+            const shape&,
+            const ignored_type,
+            return_type,
+            static_caster,
+            basic_fast_partial_dispatcher_1_1
+        >;
+
+        test_function_partial_dispatcher_1_1<dispatcher_type>();
+    }
+}
