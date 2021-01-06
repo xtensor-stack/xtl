@@ -82,8 +82,8 @@ namespace xtl
         {
             if (T* p = dynamic_cast<T*>(&rhs))
             {
-                constexpr size_t lhs_index = mpl::index_of<lhs_type_list, lhs_type>::value;
-                constexpr size_t rhs_index = mpl::index_of<rhs_type_list, T>::value;
+                constexpr std::size_t lhs_index = mpl::index_of<lhs_type_list, lhs_type>::value;
+                constexpr std::size_t rhs_index = mpl::index_of<rhs_type_list, T>::value;
 
                 using invoke_flag = std::integral_constant<bool,
                     std::is_same<symmetric, symmetric_dispatch>::value && (rhs_index < lhs_index)>;
@@ -191,12 +191,12 @@ namespace xtl
      *************************/
 
 #define XTL_IMPLEMENT_INDEXABLE_CLASS()         \
-    static size_t& get_class_static_index()     \
+    static std::size_t& get_class_static_index()\
     {                                           \
-        static size_t index = SIZE_MAX;         \
+        static std::size_t index = SIZE_MAX;    \
         return index;                           \
     }                                           \
-    virtual size_t get_class_index() const      \
+    virtual std::size_t get_class_index() const \
     {                                           \
         return get_class_static_index();        \
     }
@@ -216,7 +216,7 @@ namespace xtl
             using base_type::resize;
         };
 
-        template <class callback_type, size_t level>
+        template <class callback_type, std::size_t level>
         class recursive_container
             : public recursive_container_impl<recursive_container<callback_type, level-1>>
         {
@@ -247,19 +247,19 @@ namespace xtl
     {
     private:
 
-        static constexpr size_t nb_args = sizeof...(B);
+        static constexpr std::size_t nb_args = sizeof...(B);
 
         using storage_type = detail::recursive_container<callback_type, sizeof...(B) - 1>;
-        using index_type = std::array<size_t, nb_args>;
-        using index_ref_type = std::array<std::reference_wrapper<size_t>, nb_args>;
+        using index_type = std::array<std::size_t, nb_args>;
+        using index_ref_type = std::array<std::reference_wrapper<std::size_t>, nb_args>;
 
         storage_type m_callbacks;
-        size_t m_next_index;
+        std::size_t m_next_index;
 
-        template <size_t I, class C>
+        template <std::size_t I, class C>
         void resize_container(C& c, const index_ref_type& index)
         {
-            size_t& idx = index[I];
+            std::size_t& idx = index[I];
             if (idx == SIZE_MAX)
             {
                 c.resize(++m_next_index);
@@ -271,7 +271,7 @@ namespace xtl
             }
         }
 
-        template <size_t I, class C>
+        template <std::size_t I, class C>
         std::enable_if_t<I + 1 == nb_args>
         insert_impl(callback_type&& cb, C& c, const index_ref_type& index)
         {
@@ -279,7 +279,7 @@ namespace xtl
             c[index[I]] = std::move(cb);
         }
 
-        template <size_t I, class C>
+        template <std::size_t I, class C>
         std::enable_if_t<I + 1 != nb_args>
         insert_impl(callback_type&& cb, C& c, const index_ref_type& index)
         {
@@ -287,7 +287,7 @@ namespace xtl
             insert_impl<I+1>(std::move(cb), c[index[I]], index);
         }
 
-        template <size_t I, class C>
+        template <std::size_t I, class C>
         void check_size(C& c, const index_type& index) const
         {
             if (index[I] >= c.size())
@@ -296,7 +296,7 @@ namespace xtl
             }
         }
 
-        template <size_t I, class C>
+        template <std::size_t I, class C>
         std::enable_if_t<I + 1 == nb_args, return_type>
         dispatch_impl(C& c, const index_type& index, B&... args) const
         {
@@ -304,7 +304,7 @@ namespace xtl
             return c[index[I]](args...);
         }
 
-        template <size_t I, class C>
+        template <std::size_t I, class C>
         std::enable_if_t<I + 1 != nb_args, return_type>
         dispatch_impl(C& c, const index_type& index, B&... args) const
         {
@@ -335,83 +335,115 @@ namespace xtl
         }
     };
 
-    /*************************************
-     * basic_fast_partial_dispatcher_1_1 *
-     *************************************/
+    /*********************************
+     * basic_fast_partial_dispatcher *
+     *********************************/
 
     template
     <
-        class B,
+        class type_list,
         class E,
         class return_type,
         class callback_type
     >
-    class basic_fast_partial_dispatcher_1_1
+    class basic_fast_partial_dispatcher;
+
+    template
+    <
+        class E,
+        class return_type,
+        class callback_type,
+        class... B
+    >
+    class basic_fast_partial_dispatcher<mpl::vector<B...>, E, return_type, callback_type>
     {
     private:
 
-        using storage_type = detail::recursive_container<callback_type, 0>;
-        using index_type = size_t;
-        //using index_ref_type = std::reference_wrapper<size_t>;
+        static constexpr std::size_t nb_args = sizeof...(B);
+
+        using storage_type = detail::recursive_container<callback_type, sizeof...(B) - 1>;
+        using index_type = std::array<std::size_t, nb_args>;
+        using index_ref_type = std::array<std::reference_wrapper<std::size_t>, nb_args>;
 
         storage_type m_callbacks;
-        size_t m_next_index;
+        std::size_t m_next_index;
 
-        template <class C>
-        void resize_container(C& c, std::size_t& index)
+        template <std::size_t I, class C>
+        void resize_container(C& c, const index_ref_type& index)
         {
-            if (index == SIZE_MAX)
+            std::size_t& idx = index[I];
+            if (idx == SIZE_MAX)
             {
                 c.resize(++m_next_index);
-                index = c.size() - 1u;
+                idx = c.size() - 1u;
             }
-            else if(c.size() <= index)
+            else if(c.size() <= idx)
             {
-                c.resize(index + 1u);
+                c.resize(idx + 1u);
             }
         }
 
-        template <class C>
-        void insert_impl(callback_type&& cb, C& c, std::size_t& index)
+        template <std::size_t I, class C>
+        std::enable_if_t<I + 1 == nb_args>
+        insert_impl(callback_type&& cb, C& c, const index_ref_type& index)
         {
-            resize_container(c, index);
-            c[index] = std::move(cb);
+            resize_container<I>(c, index);
+            c[index[I]] = std::move(cb);
         }
 
-        template <class C>
+        template <std::size_t I, class C>
+        std::enable_if_t<I + 1 != nb_args>
+        insert_impl(callback_type&& cb, C& c, const index_ref_type& index)
+        {
+            resize_container<I>(c, index);
+            insert_impl<I+1>(std::move(cb), c[index[I]], index);
+        }
+
+        template <std::size_t I, class C>
         void check_size(C& c, const index_type& index) const
         {
-            if (index >= c.size())
+            if (index[I] >= c.size())
             {
                 XTL_THROW(std::runtime_error, "callback not found");
             }
         }
 
-        template <class C>
-        return_type dispatch_impl(C& c, const index_type& index, B arg, E ignored_arg) const
+        template <std::size_t I, class C>
+        std::enable_if_t<I + 1 == nb_args, return_type>
+        dispatch_impl(C& c, const index_type& index, B&... args, E& ignored_arg) const
         {
-            check_size(c, index);
-            return c[index](arg, ignored_arg);
+            check_size<I>(c, index);
+            return c[index[I]](args..., ignored_arg);
+        }
+
+        template <std::size_t I, class C>
+        std::enable_if_t<I + 1 != nb_args, return_type>
+        dispatch_impl(C& c, const index_type& index, B&... args, E& ignored_arg) const
+        {
+            check_size<I>(c, index);
+            return dispatch_impl<I+1>(c[index[I]], index, args..., ignored_arg);
         }
 
     public:
 
-        inline basic_fast_partial_dispatcher_1_1()
+        inline basic_fast_partial_dispatcher()
             : m_next_index(0)
         {
         }
 
-        template <class D>
+        template <class... D>
         void insert(callback_type&& cb)
         {
-            std::size_t& index = std::ref(D::get_class_static_index());
-            insert_impl(std::move(cb), m_callbacks, index);
+            static_assert(sizeof...(D) == sizeof...(B),
+                          "Number of callback arguments must match dispatcher dimension");
+            index_ref_type index = {{std::ref(D::get_class_static_index())...}};
+            insert_impl<0>(std::move(cb), m_callbacks, index);
         }
 
-        inline return_type dispatch(B& arg, E& ignored_arg) const
+        inline return_type dispatch(B&... args, E& ignored_arg) const
         {
-            index_type index = arg.get_class_index();
-            return dispatch_impl(m_callbacks, index, arg, ignored_arg);
+            index_type index = {{args.get_class_index()...}};
+            return dispatch_impl<0>(m_callbacks, index, args..., ignored_arg);
         }
     };
 
@@ -491,25 +523,35 @@ namespace xtl
         }
     };
 
-    /**********************************
-     * functor_partial_dispatcher_1_1 *
-     **********************************/
+    /******************************
+     * functor_partial_dispatcher *
+     ******************************/
 
     template
     <
-        class B,
+        class type_list,
         class E,
         class return_type,
         template <class, class> class casting_policy = dynamic_caster,
-        template <class, class, class, class> class dispatcher = basic_fast_partial_dispatcher_1_1
+        template <class, class, class, class> class dispatcher = basic_fast_partial_dispatcher
     >
-    class functor_partial_dispatcher_1_1
+    class functor_partial_dispatcher;
+
+    template
+    <
+        class E,
+        class return_type,
+        template <class, class> class casting_policy,
+        template <class, class, class, class> class dispatcher,
+        class... B
+    >
+    class functor_partial_dispatcher<mpl::vector<B...>, E, return_type, casting_policy, dispatcher>
     {
     private:
 
-        using functor_type = std::function<return_type (B&, E&)>;
+        using functor_type = std::function<return_type (B&..., E&)>;
 
-        using backend = dispatcher<B,
+        using backend = dispatcher<mpl::vector<B...>,
                                    E,
                                    return_type,
                                    functor_type>;
@@ -517,25 +559,25 @@ namespace xtl
 
     public:
 
-        template <class D, class Fun>
+        template <class... D, class Fun>
         void insert(const Fun& fun)
         {
-            functor_type f([fun](B& arg, E& ignored_arg) -> return_type
+            functor_type f([fun](B&... args, E& ignored_arg) -> return_type
             {
-                return fun(casting_policy<D&, B&>::cast(arg), ignored_arg);
+                return fun(casting_policy<D&, B&>::cast(args)..., ignored_arg);
             });
-            m_backend.template insert<D>(std::move(f));
+            m_backend.template insert<D...>(std::move(f));
         }
 
-        template <class D>
+        template <class... D>
         void erase()
         {
-            m_backend.template erase<D>();
+            m_backend.template erase<D...>();
         }
 
-        inline return_type dispatch(B& arg, E& ignored_arg) const
+        inline return_type dispatch(B&... args, E& ignored_arg) const
         {
-            return m_backend.dispatch(arg, ignored_arg);
+            return m_backend.dispatch(args..., ignored_arg);
         }
     };
 
