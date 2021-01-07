@@ -132,6 +132,7 @@ namespace xtl
     <
         class type_list,
         class return_type,
+        class undispatched_type_list,
         class callback_type
     >
     class basic_dispatcher;
@@ -140,9 +141,10 @@ namespace xtl
     <
         class return_type,
         class callback_type,
-        class... B
+        class... B,
+        class... T
     >
-    class basic_dispatcher<mpl::vector<B...>, return_type, callback_type>
+    class basic_dispatcher<mpl::vector<B...>, return_type, mpl::vector<T...>, callback_type>
     {
     private:
 
@@ -174,7 +176,7 @@ namespace xtl
             m_callback_map.erase(make_key<D...>());
         }
 
-        inline return_type dispatch(B&... args) const
+        inline return_type dispatch(B&... args, T&... udargs) const
         {
             key_type k = {{std::type_index(typeid(args))...}};
             auto it = m_callback_map.find(k);
@@ -182,7 +184,7 @@ namespace xtl
             {
                 XTL_THROW(std::runtime_error, "callback not found");
             }
-            return (it->second)(args...);
+            return (it->second)(args..., udargs...);
         }
     };
 
@@ -233,6 +235,7 @@ namespace xtl
     <
         class type_list,
         class return_type,
+        class undispatched_type_list,
         class callback_type
     >
     class basic_fast_dispatcher;
@@ -241,9 +244,10 @@ namespace xtl
     <
         class return_type,
         class callback_type,
-        class... B
+        class... B,
+        class... T
     >
-    class basic_fast_dispatcher<mpl::vector<B...>, return_type, callback_type>
+    class basic_fast_dispatcher<mpl::vector<B...>, return_type, mpl::vector<T...>, callback_type>
     {
     private:
 
@@ -298,18 +302,18 @@ namespace xtl
 
         template <std::size_t I, class C>
         std::enable_if_t<I + 1 == nb_args, return_type>
-        dispatch_impl(C& c, const index_type& index, B&... args) const
+        dispatch_impl(C& c, const index_type& index, B&... args, T&... udargs) const
         {
             check_size<I>(c, index);
-            return c[index[I]](args...);
+            return c[index[I]](args..., udargs...);
         }
 
         template <std::size_t I, class C>
         std::enable_if_t<I + 1 != nb_args, return_type>
-        dispatch_impl(C& c, const index_type& index, B&... args) const
+        dispatch_impl(C& c, const index_type& index, B&... args, T&... udargs) const
         {
             check_size<I>(c, index);
-            return dispatch_impl<I+1>(c[index[I]], index, args...);
+            return dispatch_impl<I+1>(c[index[I]], index, args..., udargs...);
         }
 
     public:
@@ -328,122 +332,10 @@ namespace xtl
             insert_impl<0>(std::move(cb), m_callbacks, index);
         }
 
-        inline return_type dispatch(B&... args) const
+        inline return_type dispatch(B&... args, T&... udargs) const
         {
             index_type index = {{args.get_class_index()...}};
-            return dispatch_impl<0>(m_callbacks, index, args...);
-        }
-    };
-
-    /*********************************
-     * basic_fast_partial_dispatcher *
-     *********************************/
-
-    template
-    <
-        class type_list,
-        class E,
-        class return_type,
-        class callback_type
-    >
-    class basic_fast_partial_dispatcher;
-
-    template
-    <
-        class E,
-        class return_type,
-        class callback_type,
-        class... B
-    >
-    class basic_fast_partial_dispatcher<mpl::vector<B...>, E, return_type, callback_type>
-    {
-    private:
-
-        static constexpr std::size_t nb_args = sizeof...(B);
-
-        using storage_type = detail::recursive_container<callback_type, sizeof...(B) - 1>;
-        using index_type = std::array<std::size_t, nb_args>;
-        using index_ref_type = std::array<std::reference_wrapper<std::size_t>, nb_args>;
-
-        storage_type m_callbacks;
-        std::size_t m_next_index;
-
-        template <std::size_t I, class C>
-        void resize_container(C& c, const index_ref_type& index)
-        {
-            std::size_t& idx = index[I];
-            if (idx == SIZE_MAX)
-            {
-                c.resize(++m_next_index);
-                idx = c.size() - 1u;
-            }
-            else if(c.size() <= idx)
-            {
-                c.resize(idx + 1u);
-            }
-        }
-
-        template <std::size_t I, class C>
-        std::enable_if_t<I + 1 == nb_args>
-        insert_impl(callback_type&& cb, C& c, const index_ref_type& index)
-        {
-            resize_container<I>(c, index);
-            c[index[I]] = std::move(cb);
-        }
-
-        template <std::size_t I, class C>
-        std::enable_if_t<I + 1 != nb_args>
-        insert_impl(callback_type&& cb, C& c, const index_ref_type& index)
-        {
-            resize_container<I>(c, index);
-            insert_impl<I+1>(std::move(cb), c[index[I]], index);
-        }
-
-        template <std::size_t I, class C>
-        void check_size(C& c, const index_type& index) const
-        {
-            if (index[I] >= c.size())
-            {
-                XTL_THROW(std::runtime_error, "callback not found");
-            }
-        }
-
-        template <std::size_t I, class C>
-        std::enable_if_t<I + 1 == nb_args, return_type>
-        dispatch_impl(C& c, const index_type& index, B&... args, E& ignored_arg) const
-        {
-            check_size<I>(c, index);
-            return c[index[I]](args..., ignored_arg);
-        }
-
-        template <std::size_t I, class C>
-        std::enable_if_t<I + 1 != nb_args, return_type>
-        dispatch_impl(C& c, const index_type& index, B&... args, E& ignored_arg) const
-        {
-            check_size<I>(c, index);
-            return dispatch_impl<I+1>(c[index[I]], index, args..., ignored_arg);
-        }
-
-    public:
-
-        inline basic_fast_partial_dispatcher()
-            : m_next_index(0)
-        {
-        }
-
-        template <class... D>
-        void insert(callback_type&& cb)
-        {
-            static_assert(sizeof...(D) == sizeof...(B),
-                          "Number of callback arguments must match dispatcher dimension");
-            index_ref_type index = {{std::ref(D::get_class_static_index())...}};
-            insert_impl<0>(std::move(cb), m_callbacks, index);
-        }
-
-        inline return_type dispatch(B&... args, E& ignored_arg) const
-        {
-            index_type index = {{args.get_class_index()...}};
-            return dispatch_impl<0>(m_callbacks, index, args..., ignored_arg);
+            return dispatch_impl<0>(m_callbacks, index, args..., udargs...);
         }
     };
 
@@ -477,8 +369,9 @@ namespace xtl
     <
         class type_list,
         class return_type,
+        class undispatched_type = mpl::vector<>,
         template <class, class> class casting_policy = dynamic_caster,
-        template <class, class, class> class dispatcher = basic_dispatcher
+        template <class, class, class, class> class dispatcher = basic_dispatcher
     >
     class functor_dispatcher;
 
@@ -486,74 +379,18 @@ namespace xtl
     <
         class return_type,
         template <class, class> class casting_policy,
-        template <class, class, class> class dispatcher,
-        class... B
-    >
-    class functor_dispatcher<mpl::vector<B...>, return_type, casting_policy, dispatcher>
-    {
-    private:
-
-        using functor_type = std::function<return_type (B&...)>;
-        using backend = dispatcher<mpl::vector<B...>,
-                                   return_type,
-                                   functor_type>;
-        backend m_backend;
-
-    public:
-
-        template <class... D, class Fun>
-        void insert(const Fun& fun)
-        {
-            functor_type f([fun](B&... args) -> return_type
-            {
-                return fun(casting_policy<D&, B&>::cast(args)...);
-            });
-            m_backend.template insert<D...>(std::move(f));
-        }
-
-        template <class... D>
-        void erase()
-        {
-            m_backend.template erase<D...>();
-        }
-
-        inline return_type dispatch(B&... args) const
-        {
-            return m_backend.dispatch(args...);
-        }
-    };
-
-    /******************************
-     * functor_partial_dispatcher *
-     ******************************/
-
-    template
-    <
-        class type_list,
-        class E,
-        class return_type,
-        template <class, class> class casting_policy = dynamic_caster,
-        template <class, class, class, class> class dispatcher = basic_fast_partial_dispatcher
-    >
-    class functor_partial_dispatcher;
-
-    template
-    <
-        class E,
-        class return_type,
-        template <class, class> class casting_policy,
         template <class, class, class, class> class dispatcher,
-        class... B
+        class... B,
+        class... T
     >
-    class functor_partial_dispatcher<mpl::vector<B...>, E, return_type, casting_policy, dispatcher>
+    class functor_dispatcher<mpl::vector<B...>, return_type, mpl::vector<T...>, casting_policy, dispatcher>
     {
     private:
 
-        using functor_type = std::function<return_type (B&..., E&)>;
-
+        using functor_type = std::function<return_type (B&..., T&...)>;
         using backend = dispatcher<mpl::vector<B...>,
-                                   E,
                                    return_type,
+                                   mpl::vector<T...>,
                                    functor_type>;
         backend m_backend;
 
@@ -562,9 +399,9 @@ namespace xtl
         template <class... D, class Fun>
         void insert(const Fun& fun)
         {
-            functor_type f([fun](B&... args, E& ignored_arg) -> return_type
+            functor_type f([fun](B&... args, T&... udargs) -> return_type
             {
-                return fun(casting_policy<D&, B&>::cast(args)..., ignored_arg);
+                return fun(casting_policy<D&, B&>::cast(args)..., udargs...);
             });
             m_backend.template insert<D...>(std::move(f));
         }
@@ -575,12 +412,11 @@ namespace xtl
             m_backend.template erase<D...>();
         }
 
-        inline return_type dispatch(B&... args, E& ignored_arg) const
+        inline return_type dispatch(B&... args, T&... udargs) const
         {
-            return m_backend.dispatch(args..., ignored_arg);
+            return m_backend.dispatch(args..., udargs...);
         }
     };
-
 }
 
 #endif

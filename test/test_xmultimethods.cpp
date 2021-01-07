@@ -14,7 +14,7 @@
 
 namespace xtl
 {
-    struct ignored_type
+    struct undispatched_type
     {
     };
 
@@ -87,13 +87,13 @@ namespace xtl
         DEFINE_DISPATCH_SHAPE(triangle, circle)
 
         template <class T1, class T2>
-        dispatch_return_type partial_dispatch_shape_impl(const T1& t1, const T2& t2, const ignored_type&)
+        dispatch_return_type partial_dispatch_shape_impl(const T1& t1, const T2& t2, const undispatched_type&)
         {
             return std::make_pair(t1.get_id(), t2.get_id());
         }
 
 #define DEFINE_PARTIAL_DISPATCH_SHAPE(T1, T2) \
-        dispatch_return_type partial_dispatch_##T1##_##T2(const T1& t1, const T2& t2, const ignored_type& i) \
+        dispatch_return_type partial_dispatch_##T1##_##T2(const T1& t1, const T2& t2, const undispatched_type& i) \
         { return partial_dispatch_shape_impl(t1, t2, i); }
 
         DEFINE_PARTIAL_DISPATCH_SHAPE(rectangle, circle)
@@ -243,6 +243,7 @@ namespace xtl
         <
             mpl::vector<const shape, const shape>,
             return_type,
+            mpl::vector<>,
             static_caster
         >;
 
@@ -256,6 +257,7 @@ namespace xtl
         <
             mpl::vector<const shape, const shape>,
             return_type,
+            mpl::vector<>,
             static_caster,
             basic_fast_dispatcher
         >;
@@ -276,7 +278,7 @@ namespace xtl
         d.template insert<const triangle, const rectangle>(&partial_dispatch_triangle_rectangle);
         d.template insert<const triangle, const circle>(&partial_dispatch_triangle_circle);
 
-        ignored_type i;
+        undispatched_type i;
 
         rectangle r;
         circle c;
@@ -303,13 +305,13 @@ namespace xtl
     TEST(multimethods, fast_function_partial_dispatcher)
     {
         using return_type = dispatch_return_type;
-        using dispatcher_type = functor_partial_dispatcher
+        using dispatcher_type = functor_dispatcher
         <
             mpl::vector<const shape, const shape>,
-            const ignored_type,
             return_type,
+            mpl::vector<const undispatched_type>,
             static_caster,
-            basic_fast_partial_dispatcher
+            basic_fast_dispatcher
         >;
 
         test_function_partial_dispatcher<dispatcher_type>();
