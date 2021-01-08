@@ -1276,4 +1276,11 @@ namespace xtl
     }
 #endif
 
+    TEST(xfixed_string, limit)
+    {
+      using string_type = xbasic_fixed_string<char, 255, buffer | store_size, string_policy::throwing_error>;
+      string_type s1 = "hello";
+      static_assert(sizeof(s1) == 256 * sizeof(char), "minimal storage");
+    }
+
 } // xtl
