@@ -67,7 +67,7 @@ namespace xtl
         template <int selector>
         struct select_storage;
 
-        template <class T, std::size_t N>
+        template <class T>
         struct fixed_string_storage_impl
         {
             fixed_string_storage_impl() = default;
@@ -108,7 +108,7 @@ namespace xtl
             std::size_t m_size;
         };
 
-        template <class T, std::size_t N>
+        template <class T>
         struct fixed_string_external_storage_impl
         {
             fixed_string_external_storage_impl() = default;
@@ -150,14 +150,14 @@ namespace xtl
         struct select_storage<buffer | store_size>
         {
             template <class T, std::size_t N>
-            using type = fixed_string_storage_impl<T[N + 1], N>;
+            using type = fixed_string_storage_impl<T[N + 1]>;
         };
 
         template <>
         struct select_storage<buffer>
         {
             template <class T, std::size_t N>
-            using type = fixed_string_external_storage_impl<T[N + 1], N>;
+            using type = fixed_string_external_storage_impl<T[N + 1]>;
         };
     }
 
