@@ -7,6 +7,15 @@
 Changelog
 =========
 
+0.6.24
+------
+
+- Added missing FreeBSD headers
+- Fixed call to sysctl
+- Added meta switch
+- Implement partial dispatch
+- Improve xbasic fixed string
+
 0.6.23
 ------
 

@@ -9,22 +9,12 @@ Basic tools (containers, algorithms) used by other quantstack packages
 
 ## Installation
 
-### Package managers
+### Install from conda
 
 We provide a package for the conda package manager:
 
 ```bash
 conda install -c conda-forge xtl
-```
-
-If you are using Conan to manage your dependencies, merely add `xtl/x.y.z@omaralvarez/public-conan` to your requires, where x.y.z is the release version you want to use. Please file issues in [conan-xtl](https://github.com/omaralvarez/conan-xtl) if you experience problems with the packages. Sample `conanfile.txt`:
-
-```
-[requires]
-xtl/0.6.5@omaralvarez/public-conan
-
-[generators]
-cmake
 ```
 
 ### Install from sources
