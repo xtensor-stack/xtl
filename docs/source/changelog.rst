@@ -7,8 +7,8 @@
 Changelog
 =========
 
-0.6.24
-------
+0.7.0
+-----
 
 - Added missing FreeBSD headers
 - Fixed call to sysctl
