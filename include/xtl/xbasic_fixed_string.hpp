@@ -87,12 +87,12 @@ namespace xtl
                 m_buffer[N - 1] = N - size;
             }
 
-            auto& buffer()
+            T* buffer()
             {
                 return m_buffer;
             }
 
-            auto const & buffer() const
+            const T* buffer() const
             {
                 return m_buffer;
             }
