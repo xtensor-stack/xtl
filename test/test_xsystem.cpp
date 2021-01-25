@@ -26,7 +26,6 @@ namespace xtl
 
         EXPECT_NE(prefix.size(), exec_path.size());
         EXPECT_TRUE(std::equal(prefix.cbegin(), prefix.cend(), exec_path.cbegin()));
-        EXPECT_NE(exec_path.find("test_xtl"), std::string::npos);
+        EXPECT_TRUE((exec_path.find("test_xtl") != std::string::npos) || (exec_path.find("test_xsystem") != std::string::npos));
     }
 }
-
