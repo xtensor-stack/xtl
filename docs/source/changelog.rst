@@ -7,6 +7,12 @@
 Changelog
 =========
 
+0.7.1
+-----
+
+- test/test_xsystem.cpp: Allow for ctest executable names
+- Fixed return type in xbasic_fixed_string to be compatible with C++11
+
 0.7.0
 -----
 
