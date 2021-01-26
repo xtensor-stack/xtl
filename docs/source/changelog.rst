@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.7.2
+-----
+
+- Removed C++14 code from xbase_fixed_string 
+
 0.7.1
 -----
 
