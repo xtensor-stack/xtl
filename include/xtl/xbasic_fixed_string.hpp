@@ -99,13 +99,17 @@ namespace xtl
 
             std::size_t size() const
             {
-                return N - reinterpret_cast<std::make_unsigned_t<T> const*>(m_buffer)[N - 1];
+                // Don't use std::make_unsinged_t here, this should remain C++11 compatible
+                using unsigned_type = typename std::make_unsigned<T>::type;
+                return N - reinterpret_cast<unsigned_type const*>(m_buffer)[N - 1];
             }
 
             void set_size(std::size_t sz)
             {
                 assert(sz < N && "setting a small size");
-                reinterpret_cast<std::make_unsigned_t<T> *>(m_buffer)[N - 1] = static_cast<std::make_unsigned_t<T>>(N - sz);
+                // Don't use std::make_unsinged_t here, this should remain C++11 compatible
+                using unsigned_type = typename std::make_unsigned<T>::type;
+                reinterpret_cast<unsigned_type*>(m_buffer)[N - 1] = static_cast<unsigned_type>(N - sz);
                 m_buffer[sz] = '\0';
             }
 
