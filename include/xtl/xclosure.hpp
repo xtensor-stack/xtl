@@ -62,9 +62,9 @@ namespace xtl
     template <class S>
     using const_closure_type_t = typename const_closure_type<S>::type;
 
-    /****************************
-     * ptr_closure_closure_type *
-     ****************************/
+    /********************
+     * ptr_closure_type *
+     ********************/
 
     template <class S>
     struct ptr_closure_type
@@ -415,9 +415,9 @@ namespace xtl
         return xclosure_wrapper<const_closure_type_t<T>>(std::forward<T>(t));
     }
 
-    /********************************************
-     * closure_pointer et const_closure_pointer *
-     ********************************************/
+    /*********************************************
+     * closure_pointer and const_closure_pointer *
+     *********************************************/
 
     template <class T>
     inline auto closure_pointer(T&& t)
