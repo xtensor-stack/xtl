@@ -9,12 +9,12 @@ Basic tools (containers, algorithms) used by other quantstack packages
 
 ## Installation
 
-### Install from conda
+### Package managers
 
-We provide a package for the conda package manager:
+We provide a package for the mamba (or conda) package manager:
 
 ```bash
-conda install -c conda-forge xtl
+mamba install -c conda-forge xtl
 ```
 
 ### Install from sources
