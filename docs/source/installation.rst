@@ -27,14 +27,14 @@ Besides the xtl headers, all these methods place the ``cmake`` project configura
 
 .. image:: conda.svg
 
-Using the conda package
------------------------
+Using the conda-forge package
+-----------------------------
 
-A package for xtl is available on the conda package manager.
+A package for xtl is available for the mamba (or conda) package manager.
 
 .. code::
 
-    conda install -c conda-forge xtl 
+    mamba install -c conda-forge xtl 
 
 .. image:: spack.svg
 
