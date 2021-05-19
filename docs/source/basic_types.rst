@@ -83,9 +83,9 @@ to store values as references. Full documentation can be found on
 half_float
 ----------
 
-The `half_cloat` class implements an IEEE-conformant half-precision floating-point type
+The `half_float` class implements an IEEE-conformant half-precision floating-point type
 with the usual arithmetic operators and conversions. It is implicitly convertible from
-single-precision floating-point, which makes expressions and fnuctions with mixed-type
+single-precision floating-point, which makes expressions and functions with mixed-type
 operands to be of the most precise operand type.
 
 .. code::
