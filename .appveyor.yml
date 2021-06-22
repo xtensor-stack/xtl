@@ -29,7 +29,7 @@ install:
   - conda info -a
   - conda env create --file environment-dev.yml
   - CALL conda.bat activate xtl
-  - cmake -G "NMake Makefiles" -D CMAKE_INSTALL_PREFIX=%MINICONDA%\\LIBRARY -DDOWNLOAD_GTEST=ON .
+  - cmake -G "NMake Makefiles" -D CMAKE_INSTALL_PREFIX=%MINICONDA%\\LIBRARY -DBUILD_TESTS=ON .
   - nmake test_xtl
   - cd test
 

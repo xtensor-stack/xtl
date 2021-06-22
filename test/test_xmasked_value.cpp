@@ -10,7 +10,7 @@
 
 #include "xtl/xmasked_value.hpp"
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 #include "xtl/xoptional.hpp"
 
 namespace xtl

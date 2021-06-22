@@ -9,7 +9,7 @@ steps:
       source activate xtl
       mkdir build
       cd build
-      cmake -DDOWNLOAD_GTEST=ON $(Build.SourcesDirectory)
+      cmake -DBUILD_TESTS=ON $(Build.SourcesDirectory)
     displayName: Configure xtl
     workingDirectory: $(Build.BinariesDirectory)
       

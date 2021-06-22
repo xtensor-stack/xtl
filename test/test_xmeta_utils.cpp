@@ -8,7 +8,7 @@
 ****************************************************************************/
 #include "xtl/xmeta_utils.hpp"
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 #include "xtl/xvariant.hpp"
 
 namespace xtl
@@ -174,12 +174,6 @@ namespace xtl
         using arg3 = mpl::vector<>;
         constexpr size_t res3 = mpl::find_if<xtl::is_integral, arg3>::value;
         EXPECT_EQ(res3, 0ul);
-    }
-
-    template <class T>
-    void debug(T&&)
-    {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
 
     TEST(mpl, split)

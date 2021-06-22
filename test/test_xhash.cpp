@@ -14,7 +14,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 
 namespace xtl
 {
@@ -157,7 +157,7 @@ namespace xtl
           res = sizeof(std::size_t) == 4 ? 0x27864c1e : 0x1f0d3804;
           break;
         default:
-          assert(false && "unsupported exotic architecture");
+          CHECK_MESSAGE(false, "unsupported exotic architecture");
       }
 #elif INTPTR_MAX == INT32_MAX
         uint32_t res = sizeof(std::size_t) == 4 ? 0x27864c1e : 0xdd537c05;

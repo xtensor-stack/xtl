@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 #include "xtl/xtl_config.hpp"
 
 #ifdef HAVE_NLOHMANN_JSON

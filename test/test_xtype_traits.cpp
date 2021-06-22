@@ -9,7 +9,7 @@
 
 #include "xtl/xtype_traits.hpp"
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 
 
 namespace xtl
