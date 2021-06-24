@@ -9,6 +9,9 @@
 
 cmake_minimum_required(VERSION 3.1)
 
+find_package(doctest            REQUIRED)
+find_package(Threads)
+
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     project(xtl-test)
 
@@ -78,46 +81,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
   endif()
 endif()
 
-if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
-    if(DOWNLOAD_GTEST)
-        # Download and unpack googletest at configure time
-        configure_file(downloadGTest.cmake.in googletest-download/CMakeLists.txt)
-    else()
-        # Copy local source of googletest at configure time
-        configure_file(copyGTest.cmake.in googletest-download/CMakeLists.txt)
-    endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-                    RESULT_VARIABLE result
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-    if(result)
-        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-    endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build .
-                    RESULT_VARIABLE result
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-    if(result)
-        message(FATAL_ERROR "Build step for googletest failed: ${result}")
-    endif()
-
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-    # Add googletest directly to our build. This defines
-    # the gtest and gtest_main targets.
-    add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
-                     ${CMAKE_CURRENT_BINARY_DIR}/googletest-build EXCLUDE_FROM_ALL)
-
-    set(GTEST_INCLUDE_DIRS "${gtest_SOURCE_DIR}/include")
-    add_library(GTest::GTest INTERFACE IMPORTED)
-    target_link_libraries(GTest::GTest INTERFACE gtest)
-    add_library(GTest::Main INTERFACE IMPORTED)
-    target_link_libraries(GTest::Main INTERFACE gtest_main)
-else()
-    find_package(GTest REQUIRED)
-endif()
-
 find_package(Threads)
-
-include_directories(${GTEST_INCLUDE_DIRS})
 
 set(XTL_TESTS
     test_xbase64.cpp
@@ -157,19 +121,16 @@ endif()
 foreach(filename IN LISTS XTL_TESTS)
     get_filename_component(targetname ${filename} NAME_WE)
 
-    add_executable(${targetname} ${filename} ${XTL_HEADERS})
+    add_executable(${targetname} main.cpp  ${filename} ${XTL_HEADERS})
     target_include_directories(${targetname} PRIVATE ${XTL_INCLUDE_DIR})
-    target_link_libraries(${targetname} xtl GTest::GTest GTest::Main Threads::Threads ${nlohmann_json_TARGET})
+    target_link_libraries(${targetname} xtl doctest::doctest Threads::Threads ${nlohmann_json_TARGET})
 
     add_test(NAME ${targetname} COMMAND ${targetname})
 endforeach()
 
-add_executable(test_xtl ${XTL_TESTS} ${XTL_HEADERS})
+add_executable(test_xtl main.cpp ${XTL_TESTS} ${XTL_HEADERS})
 target_include_directories(test_xtl PRIVATE ${XTL_INCLUDE_DIR})
-if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
-    add_dependencies(test_xtl gtest_main)
-endif()
-target_link_libraries(test_xtl xtl GTest::GTest GTest::Main Threads::Threads ${nlohmann_json_TARGET})
+target_link_libraries(test_xtl xtl doctest::doctest Threads::Threads ${nlohmann_json_TARGET})
 
 add_custom_target(xtest COMMAND test_xtl DEPENDS test_xtl)
 add_test(NAME xtest COMMAND test_xtl)

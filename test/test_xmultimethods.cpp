@@ -10,7 +10,7 @@
 #include <iostream>
 #include "xtl/xmultimethods.hpp"
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 
 namespace xtl
 {

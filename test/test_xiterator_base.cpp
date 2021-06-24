@@ -13,7 +13,11 @@
 #include <string>
 #include <vector>
 
-#include "gtest/gtest.h"
+#ifdef __APPLE__
+#include <iostream>  // https://github.com/onqtam/doctest/issues/126
+#endif
+
+#include "test_common_macros.hpp"
 
 
 namespace adl

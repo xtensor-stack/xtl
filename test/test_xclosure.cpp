@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 
 namespace xtl
 {

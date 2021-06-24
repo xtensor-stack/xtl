@@ -13,7 +13,7 @@
 #include "xtl/xjson.hpp"
 #endif
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 #include "xtl/xtl_config.hpp"
 
 namespace xtl

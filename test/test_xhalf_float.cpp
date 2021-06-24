@@ -7,7 +7,7 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push

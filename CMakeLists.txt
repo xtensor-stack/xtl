@@ -89,10 +89,6 @@ option(BUILD_TESTS "xtl test suite" OFF)
 option(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
 option(XTL_DISABLE_EXCEPTIONS "Disable C++ exceptions" OFF)
 
-if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
-    set(BUILD_TESTS ON)
-endif()
-
 if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)

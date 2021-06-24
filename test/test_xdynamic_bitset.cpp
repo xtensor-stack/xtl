@@ -9,7 +9,7 @@
 
 #include "xtl/xdynamic_bitset.hpp"
 
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 
 namespace xtl
 {
@@ -278,13 +278,6 @@ namespace xtl
         std::array<uint64_t, 2> bs = {0, 0};
         bitset_view b(bs.data(), 80);
         test_bitset_reverse_iterator(b);
-    }
-
-    template <class C>
-    void print(C& c)
-    {
-        for (auto el : c) std::cout << el << ", ";
-        std::cout << std::endl;
     }
 
     template <class B>

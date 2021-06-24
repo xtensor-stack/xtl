@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "xtl/xany.hpp"
-#include "gtest/gtest.h"
+#include "test_common_macros.hpp"
 
 #ifdef HAVE_NLOHMANN_JSON
 #include "xtl/xjson.hpp"
