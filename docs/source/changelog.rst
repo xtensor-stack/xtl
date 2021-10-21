@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.7.3
+-----
+
+- Fixed line endings in xhalf_float_impl.hpp
+
 0.7.2
 -----
 
