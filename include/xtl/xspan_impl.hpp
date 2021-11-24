@@ -116,7 +116,7 @@ inline void contract_violation(const char* msg)
 #define TCB_SPAN_HAVE_DEDUCTION_GUIDES
 #endif
 
-#if defined(TCB_SPAN_HAVE_CPP17) || defined(__cpp_lib_byte)
+#if defined(TCB_SPAN_HAVE_CPP17) || defined(__cpp_lib_byte) && !(defined(_HAS_STD_BYTE) && !_HAS_STD_BYTE)
 #define TCB_SPAN_HAVE_STD_BYTE
 #endif
 
