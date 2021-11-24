@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.7.4
+-----
+
+- check _HAS_STD_BYTE MSVC macro in xspan implementation
+
 0.7.3
 -----
 
