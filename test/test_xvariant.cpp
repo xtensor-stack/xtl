@@ -164,27 +164,27 @@ namespace xtl
     TEST(xvariant, const_closure_wrapper)
     {
         {
-            const int i = 2;
+            static const int i = 2;
             variant_cref v = closure(i);
             const int& cir = xtl::xget<const int&>(v);
             EXPECT_EQ(&cir, &i);
         }
 
         {
-            const int i = 2;
+            static const int i = 2;
             const variant_cref v = closure(i);
             const int& cir = xtl::xget<const int&>(v);
             EXPECT_EQ(&cir, &i);
         }
 
         {
-            const int i = 2;
+            static const int i = 2;
             const int& cir = xtl::xget<const int&>(build_test_variant(i));
             EXPECT_EQ(&cir, &i);
         }
 
         {
-            const int i = 2;
+            static const int i = 2;
             const int& cir = xtl::xget<const int&>(build_test_cvariant(i));
             EXPECT_EQ(&cir, &i);
         }
