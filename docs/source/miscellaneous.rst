@@ -22,3 +22,11 @@ endianness
 
 TODO
 
+Comparison
+----------
+
+.. cpp:namespace-push:: xt
+
+.. doxygengroup:: xtl_xcompare
+
+.. cpp:namespace-pop::
