@@ -2,7 +2,7 @@
 jobs:
   - job: 'Windows_clangcl'
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: 'windows-2019'
     timeoutInMinutes: 360
     steps:
 
@@ -38,7 +38,7 @@ jobs:
                         ninja ^
                         doctest ^
                         nlohmann_json ^
-                        python=3.6
+                        python=3.9
           conda list
         displayName: "Install conda packages"
 
