@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.7.5
+-----
+
+- added a backport of the C++20 header for integer comparison
+
 0.7.4
 -----
 
