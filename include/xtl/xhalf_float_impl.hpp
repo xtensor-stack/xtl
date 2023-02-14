@@ -4016,3 +4016,4 @@ namespace half_float {
 	#pragma warning(pop)
 	#undef HALF_POP_WARNINGS
 #endif
+
