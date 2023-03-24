@@ -11,6 +11,7 @@
 #define XTL_BASIC_FIXED_STRING_HPP
 
 #include <cstddef>
+#include <exception>
 #include <functional>
 #include <iterator>
 #include <sstream>

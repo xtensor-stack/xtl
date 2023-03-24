@@ -10,6 +10,7 @@
 #ifndef XTL_ANY_HPP
 #define XTL_ANY_HPP
 
+#include <exception>
 #include <stdexcept>
 #include <type_traits>
 #include <typeinfo>
