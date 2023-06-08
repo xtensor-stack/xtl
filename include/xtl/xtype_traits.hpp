@@ -36,17 +36,17 @@ namespace xtl
     struct is_fundamental : std::is_fundamental<T>
     {
     };
-    
+
     template <class T>
     struct is_signed : std::is_signed<T>
     {
     };
-    
+
     template <class T>
     struct is_floating_point : std::is_floating_point<T>
     {
     };
-    
+
     template <class T>
     struct is_integral : std::is_integral<T>
     {
@@ -86,12 +86,6 @@ namespace xtl
     struct promote_type<T0, T1>
     {
         using type = decltype(std::declval<std::decay_t<T0>>() + std::declval<std::decay_t<T1>>());
-    };
-
-    template <class T0, class... REST>
-    struct promote_type<T0, REST...>
-    {
-        using type = decltype(std::declval<std::decay_t<T0>>() + std::declval<typename promote_type<REST...>::type>());
     };
 
     template <>
@@ -136,10 +130,10 @@ namespace xtl
         using type = std::complex<typename promote_type<T1, T2>::type>;
     };
 
-    template <class... REST>
-    struct promote_type<bool, REST...>
+    template <class T, class... REST>
+    struct promote_type<T, REST...>
     {
-        using type = typename promote_type<bool, typename promote_type<REST...>::type>::type;
+        using type = typename promote_type<T, typename promote_type<REST...>::type>::type;
     };
 
     /**
