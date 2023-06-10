@@ -1,0 +1,92 @@
+name: Linux
+on:
+  workflow_dispach:
+  pull_request:
+  push:
+    branches: [master]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.job }}-${{ github.ref }}
+  cancel-in-progress: true
+defaults:
+  run:
+    shell: bash -l {0}
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    name: '${{ matrix.sys.compiler }} ${{ matrix.sys.version }}'
+    strategy:
+      matrix:
+        sys:
+          - { compiler: 'gcc',   version: '7' }
+          - { compiler: 'gcc',   version: '8' }
+          - { compiler: 'gcc',   version: '9' }
+          - { compiler: 'gcc',   version: '10' }
+          - { compiler: 'gcc',   version: '11' }
+          - { compiler: 'clang', version: '8' }
+          - { compiler: 'clang', version: '10' }
+          - { compiler: 'clang', version: '12' }
+          - { compiler: 'clang', version: '13' }
+          - { compiler: 'clang', version: '14' }
+          - { compiler: 'clang', version: '15' }
+
+    steps:
+    - name: Setup compiler
+      if: ${{ matrix.sys.compiler == 'gcc' }}
+      run: |
+        GCC_VERSION=${{ matrix.sys.version }}
+        if [[ $GCC_VERSION == '6' || $GCC_VERSION == '7' || $GCC_VERSION == '8' ]]; then
+        #sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get --no-install-suggests --no-install-recommends install g++-$GCC_VERSION
+        fi
+        CC=gcc-$GCC_VERSION
+        echo "CC=$CC" >> $GITHUB_ENV
+        CXX=g++-$GCC_VERSION
+        echo "CXX=$CXX" >> $GITHUB_ENV
+
+    - name: Setup compiler
+      if: ${{ matrix.sys.compiler == 'clang' }}
+      run: |
+        LLVM_VERSION=${{ matrix.sys.version }}
+        #sudo add-apt-repository ppa:ubuntu-toolchain-r/test || exit 1
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - || exit 1
+        if [[ $LLVM_VERSION -ge 13 ]]; then
+          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-$LLVM_VERSION main" || exit 1
+        else
+          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" || exit 1
+        fi || exit 1
+        sudo apt-get update || exit 1
+        sudo apt-get --no-install-suggests --no-install-recommends install clang-$LLVM_VERSION || exit 1
+        sudo apt-get --no-install-suggests --no-install-recommends install g++-9 g++-9-multilib || exit 1
+        sudo ln -s /usr/include/asm-generic /usr/include/asm
+        CC=clang-$LLVM_VERSION
+        echo "CC=$CC" >> $GITHUB_ENV
+        CXX=clang++-$LLVM_VERSION
+        echo "CXX=$CXX" >> $GITHUB_ENV
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set conda environment
+      uses: mamba-org/provision-with-micromamba@main
+      with:
+        environment-name: myenv
+        environment-file: environment-dev.yml
+
+    - name: Configure
+      env:
+        CC: ${{ env.CC }}
+        CXX: ${{ env.CXX }}
+      run: |
+        mkdir -p build
+        cd build
+        cmake .. -DBUILD_TESTS=ON
+
+    - name: Build
+      run: ninja -C build test_xtl
+
+    - name: Test
+      run: |
+        cd build/test
+        ./test_xtl
+
