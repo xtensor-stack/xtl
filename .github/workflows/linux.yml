@@ -1,6 +1,6 @@
 name: Linux
 on:
-  workflow_dispach:
+  workflow_dispatch:
   pull_request:
   push:
     branches: [master]
@@ -34,11 +34,8 @@ jobs:
       if: ${{ matrix.sys.compiler == 'gcc' }}
       run: |
         GCC_VERSION=${{ matrix.sys.version }}
-        if [[ $GCC_VERSION == '6' || $GCC_VERSION == '7' || $GCC_VERSION == '8' ]]; then
-        #sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-          sudo apt-get update
-          sudo apt-get --no-install-suggests --no-install-recommends install g++-$GCC_VERSION
-        fi
+        sudo apt-get update
+        sudo apt-get --no-install-suggests --no-install-recommends install g++-$GCC_VERSION
         CC=gcc-$GCC_VERSION
         echo "CC=$CC" >> $GITHUB_ENV
         CXX=g++-$GCC_VERSION
@@ -48,7 +45,6 @@ jobs:
       if: ${{ matrix.sys.compiler == 'clang' }}
       run: |
         LLVM_VERSION=${{ matrix.sys.version }}
-        #sudo add-apt-repository ppa:ubuntu-toolchain-r/test || exit 1
         wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - || exit 1
         if [[ $LLVM_VERSION -ge 13 ]]; then
           sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-$LLVM_VERSION main" || exit 1
@@ -70,7 +66,6 @@ jobs:
     - name: Set conda environment
       uses: mamba-org/provision-with-micromamba@main
       with:
-        environment-name: myenv
         environment-file: environment-dev.yml
 
     - name: Configure
@@ -80,7 +75,10 @@ jobs:
       run: |
         mkdir -p build
         cd build
-        cmake .. -DBUILD_TESTS=ON
+        cmake .. -DBUILD_TESTS=ON \
+                 -DCMAKE_C_COMPILER=$CC \
+                 -DCMAKE_CXX_COMPILER=$CXX \
+                 -G Ninja
 
     - name: Build
       run: ninja -C build test_xtl
