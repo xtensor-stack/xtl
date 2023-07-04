@@ -1,4 +1,4 @@
-name: OSX
+name: Windows
 on:
   workflow_dispatch:
   pull_request:
@@ -7,17 +7,26 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.job }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   build:
+    name: 'MSVC ${{ matrix.os }}'
+    defaults:
+      run:
+        shell: bash {0}
     strategy:
       matrix:
         os:
-          - 11
-          - 12
-    runs-on: macos-${{ matrix.os }}
-    name: 'macos-${{ matrix.os }}'
+          - 2019
+          - 2022
+    runs-on: windows-${{ matrix.os }}
 
     steps:
+    - name: Setup compiler
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+
     - name: Checkout code
       uses: actions/checkout@v3
 
@@ -26,21 +35,18 @@ jobs:
       with:
         environment-file: environment-dev.yml
         cache-environment: true
+        init-shell: bash cmd.exe
 
     - name: Configure
-      shell: bash -l {0}
-      run: |
-        mkdir -p build
-        cd build
-        cmake .. -DBUILD_TESTS=ON \
-                 -GNinja
+      shell: cmd /C CALL {0}
+      run: cmake -G "NMake Makefiles" -D CMAKE_INSTALL_PREFIX=%MINICONDA%\\LIBRARY -DBUILD_TESTS=ON .
 
     - name: Build
-      shell: bash -l {0}
-      run: ninja -C build test_xtl
+      shell: cmd /C CALL {0}
+      run: nmake test_xtl
 
     - name: Test
       run: |
-        cd build/test
+        cd test
         ./test_xtl
 
