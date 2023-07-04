@@ -63,7 +63,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set conda environment
+    - name: Set mamba environment
       uses: mamba-org/setup-micromamba@v1
       with:
         environment-file: environment-dev.yml
