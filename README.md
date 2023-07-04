@@ -1,6 +1,8 @@
 # ![xtl](docs/source/xtl.svg)
 
-[![Build Status](https://github.com/xtensor-stack/xtl/workflows/CI/badge.svg)](https://github.com/xtensor-stack/xtl/actions)
+[![Linux](https://github.com/xtensor-stack/xtl/actions/workflows/linux.yml/badge.svg)](https://github.com/xtensor-stack/xtl/actions/workflows/linux.yml)
+[![OSX](https://github.com/xtensor-stack/xtl/actions/workflows/osx.yml/badge.svg)](https://github.com/xtensor-stack/xtl/actions/workflows/osx.yml)
+[![Windows](https://github.com/xtensor-stack/xtl/actions/workflows/windows.yml/badge.svg)](https://github.com/xtensor-stack/xtl/actions/workflows/windows.yml)
 [![Documentation Status](http://readthedocs.org/projects/xtl/badge/?version=latest)](https://xtl.readthedocs.io/en/latest/?badge=latest)
 [![Join the Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/QuantStack/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
