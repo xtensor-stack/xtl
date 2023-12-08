@@ -85,10 +85,10 @@ find_package(Threads)
 set(XTL_TESTS
     test_xbase64.cpp
     test_xbasic_fixed_string.cpp
-    test_xcomplex.cpp
+    test_xclosure.cpp
     test_xcompare.cpp
     test_xcomplex_sequence.cpp
-    test_xclosure.cpp
+    test_xcomplex.cpp
     test_xdynamic_bitset.cpp
     test_xfunctional.cpp
     test_xhalf_float.cpp
@@ -99,11 +99,11 @@ set(XTL_TESTS
     test_xmeta_utils.cpp
     test_xmultimethods.cpp
     test_xoptional.cpp
-    test_xsequence.cpp
-    test_xtype_traits.cpp
     test_xplatform.cpp
     test_xproxy_wrapper.cpp
+    test_xsequence.cpp
     test_xsystem.cpp
+    test_xtype_traits.cpp
     test_xvariant.cpp
     test_xvisitor.cpp
 )
