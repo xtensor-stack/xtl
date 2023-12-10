@@ -136,6 +136,12 @@ namespace xtl
         using type = typename promote_type<T, typename promote_type<REST...>::type>::type;
     };
 
+    template <class T0, class T1, class... REST>
+    struct promote_type<std::complex<T0>, std::complex<T1>, REST...>
+    {
+        using type = std::complex<typename promote_type<T0, T1, REST...>::type>;
+    };
+
     /**
      * Abbreviation of 'typename promote_type<T>::type'.
      */
