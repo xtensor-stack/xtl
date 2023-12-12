@@ -7,6 +7,15 @@
 Changelog
 =========
 
+0.7.6
+-----
+
+- Add missing #include <exception>
+- Fix promote_type with two complex floats and one double
+- test/CMakeLists.txt: remove extra find_package(Threads)
+- Fixed half errhandling throw except
+- Resolve issue promoting multiple std::complex
+
 0.7.5
 -----
 
