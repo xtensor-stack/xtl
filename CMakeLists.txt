@@ -7,7 +7,7 @@
 # The full license is in the file LICENSE, distributed with this software. #
 ############################################################################
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 project(xtl)
 
 set(XTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
