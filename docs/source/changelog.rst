@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.7.7
+-----
+
+- Use GetModuleFileNameW for wchar_t array
+
 0.7.6
 -----
 
