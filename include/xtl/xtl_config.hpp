@@ -22,11 +22,16 @@
 #if (defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)) && !defined(XTL_NO_EXCEPTIONS)
 // Exceptions are enabled.
 #else
+#if !defined(XTL_NO_EXCEPTIONS)
 // Exceptions are disabled.
 #define XTL_NO_EXCEPTIONS
 #endif
+#endif
 
 #if defined(XTL_NO_EXCEPTIONS)
+
+#include <iostream>
+
 #define XTL_THROW(_, msg)              \
     {                                  \
         std::cerr << msg << std::endl; \
