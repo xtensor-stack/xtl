@@ -1,0 +1,9 @@
+module(
+    name = "xtl",
+)
+
+bazel_dep(
+    name = "doctest",
+    version = "2.4.11",
+    dev_dependency = True,
+)
