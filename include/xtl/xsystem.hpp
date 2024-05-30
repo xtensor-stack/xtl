@@ -39,14 +39,20 @@
 
 namespace xtl
 {
+    std::string module_path(bool executable);
     std::string executable_path();
-    std::string prefix_path();
+    std::string prefix_path(bool executable);
 
     /******************
      * implementation *
      ******************/
     
     inline std::string executable_path()
+    {
+        return module_path(false);
+    }
+
+    inline std::string module_path(bool executable = true)
     {
         std::string path;
 #if defined(UNICODE)
@@ -65,8 +71,13 @@ namespace xtl
             // failed to determine run path
         }
 #elif defined (_WIN32)
+        HMODULE handle = nullptr;
+        if (!executable)
+        {
+            GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCTSTR>(module_path), &handle);
+        }
     #if defined(UNICODE)
-        if (GetModuleFileNameW(nullptr, buffer, sizeof(buffer)) != 0)
+        if (GetModuleFileNameW(handle, buffer, sizeof(buffer)) != 0)
         {
             // Convert wchar_t to std::string
             std::wstring wideString(buffer);
@@ -74,7 +85,7 @@ namespace xtl
             path = narrowString;
         }
     #else
-        if (GetModuleFileNameA(nullptr, buffer, sizeof(buffer)) != 0)
+        if (GetModuleFileNameA(handle, buffer, sizeof(buffer)) != 0)
         {
             path = buffer;
         }
@@ -107,9 +118,9 @@ namespace xtl
         return path;
     }
 
-    inline std::string prefix_path()
+    inline std::string prefix_path(bool executable = true)
     {
-        std::string path = executable_path();
+        std::string path = module_path(executable);
 #if defined (_WIN32)
         char separator = '\\';
 #else
