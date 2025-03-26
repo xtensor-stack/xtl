@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.8.0
+-----
+
+- Migrated to C++17 and replaced backported features with standard ones
+
 0.7.7
 -----
 
