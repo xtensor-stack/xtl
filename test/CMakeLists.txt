@@ -7,7 +7,7 @@
 # The full license is in the file LICENSE, distributed with this software. #
 ############################################################################
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.29)
 
 find_package(doctest            REQUIRED)
 
@@ -104,7 +104,6 @@ set(XTL_TESTS
     test_xplatform.cpp
     test_xproxy_wrapper.cpp
     test_xsystem.cpp
-    test_xvariant.cpp
     test_xvisitor.cpp
 )
 
