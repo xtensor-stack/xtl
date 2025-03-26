@@ -6,15 +6,17 @@
 *                                                                          *
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
+
+#include <variant>
+
 #include "xtl/xmeta_utils.hpp"
 
 #include "test_common_macros.hpp"
-#include "xtl/xvariant.hpp"
 
 namespace xtl
 {
     using vector_t = mpl::vector<int, double, char*>;
-    using variant_t = variant<int, double, char*>;
+    using variant_t = std::variant<int, double, char*>;
 
     TEST(mpl, if_)
     {
@@ -30,7 +32,7 @@ namespace xtl
 
     TEST(mpl, cast)
     {
-        using type = mpl::cast_t<vector_t, variant>;
+        using type = mpl::cast_t<vector_t, std::variant>;
         bool res = std::is_same<type, variant_t>::value;
         EXPECT_TRUE(res);
     }
@@ -224,62 +226,6 @@ namespace xtl
             EXPECT_TRUE(first_res);
             EXPECT_TRUE(second_res);
         }
-    }
-
-    template <bool B>
-    int static_if_tester()
-    {
-        int input = 0;
-        return mpl::static_if<B == false>([&](auto /*self*/)
-        {
-            return input;
-        }, /*else*/ [&](auto /*self*/)
-        {
-            return input + 1;
-        });
-    }
-
-    TEST(mpl, static_if)
-    {
-        int output_0 = static_if_tester<false>();
-        int output_1 = static_if_tester<true>();
-        EXPECT_EQ(output_0, 0);
-        EXPECT_EQ(output_1, 1);
-    }
-
-    template <bool B>
-    struct static_if_tester2
-    {
-        int input = 0;
-
-        inline int& operator()()
-        {
-            return mpl::static_if<B == false>([&](auto /*self*/) -> int&
-            {
-                return input;
-            }, /*else*/ [&](auto /*self*/) -> int&
-            {
-                input++;
-                return input;
-            });
-        }
-    };
-
-    TEST(mpl, static_if2)
-    {
-        static_if_tester2<false> tester;
-        int& output_0 = tester();
-        EXPECT_EQ(output_0, 0);
-
-        output_0++;
-        int& output_1 = tester();
-        EXPECT_EQ(output_1, 1);
-
-        static_if_tester2<true> tester2;
-        int& output_3 = tester2();
-        EXPECT_EQ(output_3, 1);
-        tester2();
-        EXPECT_EQ(output_3, 2);
     }
 
     TEST(mpl, unique)

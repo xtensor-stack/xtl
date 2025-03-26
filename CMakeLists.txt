@@ -7,7 +7,7 @@
 # The full license is in the file LICENSE, distributed with this software. #
 ############################################################################
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.29)
 project(xtl)
 
 set(XTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -37,7 +37,6 @@ endif()
 # =====
 
 set(XTL_HEADERS
-    ${XTL_INCLUDE_DIR}/xtl/xany.hpp
     ${XTL_INCLUDE_DIR}/xtl/xbasic_fixed_string.hpp
     ${XTL_INCLUDE_DIR}/xtl/xbase64.hpp
     ${XTL_INCLUDE_DIR}/xtl/xclosure.hpp
@@ -67,8 +66,6 @@ set(XTL_HEADERS
     ${XTL_INCLUDE_DIR}/xtl/xsystem.hpp
     ${XTL_INCLUDE_DIR}/xtl/xtl_config.hpp
     ${XTL_INCLUDE_DIR}/xtl/xtype_traits.hpp
-    ${XTL_INCLUDE_DIR}/xtl/xvariant.hpp
-    ${XTL_INCLUDE_DIR}/xtl/xvariant_impl.hpp
     ${XTL_INCLUDE_DIR}/xtl/xvisitor.hpp
 )
 
@@ -78,13 +75,11 @@ target_include_directories(xtl INTERFACE
     $<BUILD_INTERFACE:${XTL_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:include>)
 
-if(NOT (CMAKE_VERSION VERSION_LESS 3.15))  # CMake >= 3.15
 set_target_properties(xtl
     PROPERTIES
     PUBLIC_HEADER "${XTL_HEADERS}")
-endif()
 
-target_compile_features(xtl INTERFACE cxx_std_14)
+target_compile_features(xtl INTERFACE cxx_std_17)
 
 option(BUILD_TESTS "xtl test suite" OFF)
 option(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
@@ -101,23 +96,13 @@ endif()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-if(CMAKE_VERSION VERSION_LESS 3.15)  # CMake < 3.15
-install(TARGETS xtl
-        EXPORT ${PROJECT_NAME}-targets)
-else()
 install(TARGETS xtl
         EXPORT ${PROJECT_NAME}-targets
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
-endif()
 
 # Makes the project importable from the build directory
 export(EXPORT ${PROJECT_NAME}-targets
        FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
-
-if(CMAKE_VERSION VERSION_LESS 3.15)  # CMake < 3.15
-install(FILES ${XTL_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xtl)
-endif()
 
 set(XTL_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}" CACHE
     STRING "install path for xtlConfig.cmake")
@@ -132,16 +117,10 @@ configure_package_config_file(${PROJECT_NAME}Config.cmake.in
 set(_XTL_CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
 unset(CMAKE_SIZEOF_VOID_P)
 # ARCH_INDEPENDENT feature was introduced in cmake 3.14
-if (${CMAKE_VERSION} VERSION_LESS "3.14.0")
-    write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-                                     VERSION ${${PROJECT_NAME}_VERSION}
-                                     COMPATIBILITY AnyNewerVersion)
-else ()
-    write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-                                     VERSION ${${PROJECT_NAME}_VERSION}
-                                     COMPATIBILITY AnyNewerVersion
-                                     ARCH_INDEPENDENT)
-endif ()
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+                                 VERSION ${${PROJECT_NAME}_VERSION}
+                                 COMPATIBILITY AnyNewerVersion
+                                 ARCH_INDEPENDENT)
 set(CMAKE_SIZEOF_VOID_P ${_XTL_CMAKE_SIZEOF_VOID_P})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
