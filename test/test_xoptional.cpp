@@ -11,11 +11,11 @@
 #include "xtl/xoptional_sequence.hpp"
 
 #include <algorithm>
+#include <any>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#include "xtl/xany.hpp"
 #include "test_common_macros.hpp"
 
 #ifdef HAVE_NLOHMANN_JSON
@@ -274,9 +274,9 @@ namespace xtl
         double d = 1.;
         bool f = true;
         opt_type o(d, f);
-        xtl::any a(o);
+        std::any a(o);
 
-        opt_type res = any_cast<opt_type>(a);
+        opt_type res = std::any_cast<opt_type>(a);
         EXPECT_EQ(res.value(), o.value());
         EXPECT_EQ(res.has_value(), o.has_value());
     }

@@ -7,38 +7,6 @@
 Basic types
 ===========
 
-any
----
-
-`xtl::any` is a backport of the C++17 class `std::any`. The class describes a 
-type-safe container for single values of any type:
-
-.. code::
-
-    #include <iostream>
-    #include "xtl/xany.hpp"
-
-    xtl::any a = 1;
-    std::cout << a.type().name() << ": " << xtl::any_cast<int>(a) << std::endl;
-    // => i: 1
-
-    try
-    {
-        std::cout << xtl::any_cast<float>(a) << std::endl;
-    }
-    catch(const xtl::bad_any_cast& e)
-    {
-        std::cout << e.what() << std::endl;
-    }
-    // => bad any_cast
-
-    a.reset();
-    std::cout << std::boolalpha << a.empty() << std::endl;
-    // => true
-
-The API of `xtl::any` is the same as that of `std::any`. Full documentation
-can be found on `cppreference <https://en.cppreference.com/w/cpp/utility/any>`_.
-
 xbasic_fixed_string
 -------------------
 
@@ -105,11 +73,6 @@ TODO
 
 xoptional
 ---------
-
-TODO
-
-xvariant
---------
 
 TODO
 
