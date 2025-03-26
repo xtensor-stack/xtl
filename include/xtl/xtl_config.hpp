@@ -11,8 +11,8 @@
 #define XTL_CONFIG_HPP
 
 #define XTL_VERSION_MAJOR 0
-#define XTL_VERSION_MINOR 7
-#define XTL_VERSION_PATCH 7
+#define XTL_VERSION_MINOR 8
+#define XTL_VERSION_PATCH 0
 
 #ifndef __has_feature
 #define __has_feature(x) 0
