@@ -179,7 +179,7 @@ namespace half_float {
 	/// half_float::half = 4.2_h;
 	/// ~~~~
 	namespace literal {
-		half operator "" _h(long double);
+		half operator""_h(long double);
 	}
 
 	/// \internal
@@ -1820,7 +1820,7 @@ namespace half_float {
 		template<class,class,std::float_round_style> friend struct detail::half_caster;
 		friend class std::numeric_limits<half>;
 		friend struct std::hash<half>;
-		friend half literal::operator "" _h(long double);
+		friend half literal::operator""_h(long double);
 	};
 
 	namespace literal {
@@ -1831,7 +1831,7 @@ namespace half_float {
 		/// \param value literal value
 		/// \return half with of given value (possibly rounded)
 		/// \exception FE_OVERFLOW, ...UNDERFLOW, ...INEXACT according to rounding
-		inline half operator "" _h(long double value) { return half(detail::binary, detail::float2half<half::round_style>(value)); }
+		inline half operator""_h(long double value) { return half(detail::binary, detail::float2half<half::round_style>(value)); }
 	}
 
 	namespace detail {
