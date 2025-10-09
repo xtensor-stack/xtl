@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         os:
-          - 2019
           - 2022
+          - 2025
     runs-on: windows-${{ matrix.os }}
 
     steps:
