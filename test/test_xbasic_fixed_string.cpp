@@ -199,7 +199,7 @@ namespace xtl
 #if defined(XTL_NO_EXCEPTIONS)
             EXPECT_DEATH_IF_SUPPORTED(s.assign(ctothrow, size_type(18)), "");
 #else
-            EXPECT_THROW(s.assign(ctothrow, size_type(17)), std::length_error);
+            EXPECT_THROW(s.assign(ctothrow, size_type(18)), std::length_error);
 #endif
         }
 
