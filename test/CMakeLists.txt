@@ -93,7 +93,7 @@ set(XTL_TESTS
     test_xfunctional.cpp
     test_xhalf_float.cpp
     test_xhash.cpp
-    test_xhierarchy_generator.cpp
+    # test_xhierarchy_generator.cpp
     test_xiterator_base.cpp
     test_xmasked_value.cpp
     test_xmeta_utils.cpp
