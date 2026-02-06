@@ -12,36 +12,35 @@ jobs:
     strategy:
       matrix:
         os:
-          - 13
           - 14
           - 15
+          - 26
     runs-on: macos-${{ matrix.os }}
-    name: 'macos-${{ matrix.os }}'
+    name: "macos-${{ matrix.os }}"
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set mamba environment
-      uses: mamba-org/setup-micromamba@v1
-      with:
-        environment-file: environment-dev.yml
-        cache-environment: true
+      - name: Set mamba environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: environment-dev.yml
+          cache-environment: true
 
-    - name: Configure
-      shell: bash -l {0}
-      run: |
-        mkdir -p build
-        cd build
-        cmake .. -DBUILD_TESTS=ON \
-                 -GNinja
+      - name: Configure
+        shell: bash -l {0}
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DBUILD_TESTS=ON \
+                   -GNinja
 
-    - name: Build
-      shell: bash -l {0}
-      run: ninja -C build test_xtl
+      - name: Build
+        shell: bash -l {0}
+        run: ninja -C build test_xtl
 
-    - name: Test
-      run: |
-        cd build/test
-        ./test_xtl
-
+      - name: Test
+        run: |
+          cd build/test
+          ./test_xtl
