@@ -39,14 +39,24 @@ namespace xtl
         return result(xtl::forward_sequence<shape_type, T>(arg));
     }
 
+    template <class T>
+    auto test_data(T&& arg)
+    {
+        using shape_type = std::array<int, 1>;
+        shape_type a = xtl::forward_sequence<shape_type, T>(arg);
+        return a;
+    }
+
     TEST(xsequence, forward_type)
     {
         std::array<int, 2> a;
-        std::vector<int> c;
+        std::vector<int> c(2);
+
         EXPECT_TRUE(test(std::move(a)));
         EXPECT_FALSE(test(a));
         EXPECT_TRUE(test(c));
         EXPECT_TRUE(test(std::move(c)));
+        EXPECT_EQ(test_data(c)[0], 0);
     }
 
     template <class R, class T>

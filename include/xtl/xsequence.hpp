@@ -121,8 +121,8 @@ namespace xtl
             static inline R forward(const T& r)
             {
                 R ret;
-                std::copy_n(std::begin(r), std::size(r), std::begin(ret));
-                // std::copy(std::begin(r), std::end(r), std::begin(ret));
+                // We can not use std::copy here because it gives an array-bounds warning with GCC
+                std::copy_n(std::begin(r), std::size(ret), std::begin(ret));
                 return ret;
             }
         };
