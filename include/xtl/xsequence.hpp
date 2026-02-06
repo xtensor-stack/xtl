@@ -121,8 +121,8 @@ namespace xtl
             static inline R forward(const T& r)
             {
                 R ret;
-                // std::copy_n(std::begin(r), std::size(ret), std::begin(ret));
-                std::copy(std::begin(r), std::end(r), std::begin(ret));
+                std::copy_n(std::begin(r), std::size(r), std::begin(ret));
+                // std::copy(std::begin(r), std::end(r), std::begin(ret));
                 return ret;
             }
         };
