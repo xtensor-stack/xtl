@@ -916,8 +916,8 @@ namespace xtl
     template <class InputIt>
     inline auto xbasic_fixed_string<CT, N, ST, EP, TR>::assign(InputIt first, InputIt last) -> self_type&
     {
-        auto size = static_cast<size_type>(std::distance(first, last));
-        m_storage.set_size(error_policy::check_size(size));
+        auto size = error_policy::check_size(static_cast<size_type>(std::distance(first, last)));
+        m_storage.set_size(size);
         std::copy_n(first, m_storage.size(), data());
         return *this;
     }
