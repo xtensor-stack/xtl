@@ -218,7 +218,7 @@ namespace xtl
         struct select_storage<buffer | store_size>
         {
             template <class T, std::size_t N>
-            using type = typename select_fixed_storage<T[N + 1], N < (1u << (8 * sizeof(T)))>::type;
+            using type = typename select_fixed_storage<T[N + 1], N < (1ull << (8 * sizeof(T)))>::type;
         };
 
         template <>

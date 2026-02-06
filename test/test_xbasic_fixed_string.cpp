@@ -1170,7 +1170,7 @@ namespace xtl
     {
         std::string s = "thisisatest";
         char buf[16];
-        strcpy(buf, s.c_str());
+        strcpy_s(buf, sizeof(buf), s.c_str());
         numpy_string* x = reinterpret_cast<numpy_string*>(buf);
 
         EXPECT_EQ(*x, s);
@@ -1277,8 +1277,8 @@ namespace xtl
 
     TEST(xfixed_string, limit)
     {
-      using string_type = xbasic_fixed_string<char, 255, buffer | store_size, string_policy::throwing_error>;
-      string_type s1 = "hello";
+      using string_type_ = xbasic_fixed_string<char, 255, buffer | store_size, string_policy::throwing_error>;
+      string_type_ s1 = "hello";
       static_assert(sizeof(s1) == 256 * sizeof(char), "minimal storage");
     }
 
