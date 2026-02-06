@@ -918,7 +918,8 @@ namespace xtl
     {
         auto size = error_policy::check_size(static_cast<size_type>(std::distance(first, last)));
         m_storage.set_size(size);
-        std::copy_n(first, m_storage.size(), data());
+        // std::copy_n(first, m_storage.size(), data());
+        std::copy(first, last, data());
         return *this;
     }
 
