@@ -551,13 +551,13 @@ private:
 
 /* Deduction Guides */
 template <class T, size_t N>
-span(T (&)[N])->span<T, N>;
+span(T (&)[N])->span<T, static_cast<std::ptrdiff_t>(N)>;
 
 template <class T, size_t N>
-span(std::array<T, N>&)->span<T, N>;
+span(std::array<T, N>&)->span<T, static_cast<std::ptrdiff_t>(N)>;
 
 template <class T, size_t N>
-span(const std::array<T, N>&)->span<const T, N>;
+span(const std::array<T, N>&)->span<const T, static_cast<std::ptrdiff_t>(N)>;
 
 template <class Container>
 span(Container&)->span<typename Container::value_type>;

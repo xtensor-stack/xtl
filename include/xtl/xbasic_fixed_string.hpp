@@ -218,7 +218,7 @@ namespace xtl
         struct select_storage<buffer | store_size>
         {
             template <class T, std::size_t N>
-            using type = typename select_fixed_storage<T[N + 1], N < (1u << (8 * sizeof(T)))>::type;
+            using type = typename select_fixed_storage<T[N + 1], N < (1ull << (8 * sizeof(T)))>::type;
         };
 
         template <>
@@ -916,8 +916,9 @@ namespace xtl
     template <class InputIt>
     inline auto xbasic_fixed_string<CT, N, ST, EP, TR>::assign(InputIt first, InputIt last) -> self_type&
     {
-        m_storage.set_size(error_policy::check_size(static_cast<size_type>(std::distance(first, last))));
-        std::copy(first, last, data());
+        auto size = error_policy::check_size(static_cast<size_type>(std::distance(first, last)));
+        m_storage.set_size(size);
+        std::copy_n(first, size, data());
         return *this;
     }
 

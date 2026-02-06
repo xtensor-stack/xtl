@@ -318,7 +318,7 @@ namespace xtl
     {
         double x = 5.0;
         auto x_closure = closure(x);
-        std::complex<double> b(0, 5), c;
+        std::complex<double> b(0, 5);
         EXPECT_COMPLEX_APPROX_EQ(b + x_closure, b + 5.0);
         EXPECT_COMPLEX_APPROX_EQ(x_closure + b, 5.0 + b);
         EXPECT_COMPLEX_APPROX_EQ(b - x_closure, b - 5.0);

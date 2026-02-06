@@ -3994,7 +3994,7 @@ namespace half_float {
 	/// \throw std::overflow_error if `FE_OVERFLOW` is selected and set
 	/// \throw std::underflow_error if `FE_UNDERFLOW` is selected and set
 	/// \throw std::range_error if `FE_INEXACT` is selected and set
-	inline void fethrowexcept(int excepts, const char *msg = "") {
+	inline void fethrowexcept([[maybe_unused]] int excepts, const char *msg = "") {
 		excepts &= detail::errflags();
 #if HALF_ERRHANDLING_THROWS
 	#ifdef HALF_ERRHANDLING_THROW_INVALID

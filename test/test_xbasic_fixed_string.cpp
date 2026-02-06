@@ -1105,7 +1105,6 @@ namespace xtl
     {
         string_type s1 = "aabcdef";
         string_type s2 = "abcdefg";
-        string_type s3 = "aabcd";
 
         EXPECT_TRUE(s1 < s2);
         EXPECT_TRUE(s1 <= s2);
@@ -1278,8 +1277,8 @@ namespace xtl
 
     TEST(xfixed_string, limit)
     {
-      using string_type = xbasic_fixed_string<char, 255, buffer | store_size, string_policy::throwing_error>;
-      string_type s1 = "hello";
+      using string_type_ = xbasic_fixed_string<char, 255, buffer | store_size, string_policy::throwing_error>;
+      string_type_ s1 = "hello";
       static_assert(sizeof(s1) == 256 * sizeof(char), "minimal storage");
     }
 

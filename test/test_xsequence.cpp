@@ -39,14 +39,24 @@ namespace xtl
         return result(xtl::forward_sequence<shape_type, T>(arg));
     }
 
+    template <class T>
+    auto test_data(T&& arg)
+    {
+        using shape_type = std::array<int, 1>;
+        shape_type a = xtl::forward_sequence<shape_type, T>(arg);
+        return a;
+    }
+
     TEST(xsequence, forward_type)
     {
-        std::array<int, 2> a, b;
-        std::vector<int> c;
+        std::array<int, 2> a;
+        std::vector<int> c(2);
+
         EXPECT_TRUE(test(std::move(a)));
         EXPECT_FALSE(test(a));
         EXPECT_TRUE(test(c));
         EXPECT_TRUE(test(std::move(c)));
+        EXPECT_EQ(test_data(c)[0], 0);
     }
 
     template <class R, class T>
@@ -57,11 +67,19 @@ namespace xtl
 
     TEST(xsequence, different_arrays)
     {
-        std::array<int, 3> x, y;
-        aligned_array<int, 3> aa, ab;
+        std::array<int, 3> x{};
+        aligned_array<int, 3> aa{};
 
         auto res1 = test_different_array<aligned_array<int, 3>>(x);
+            EXPECT_EQ(res1.size(), 3);
+            EXPECT_EQ(res1[0], 0);
+            EXPECT_EQ(res1[1], 0);
+            EXPECT_EQ(res1[2], 0);
         auto res2 = test_different_array<aligned_array<int, 3>>(aa);
+            EXPECT_EQ(res2.size(), 3);
+            EXPECT_EQ(res2[0], 0);
+            EXPECT_EQ(res2[1], 0);
+            EXPECT_EQ(res2[2], 0);
     }
 
     TEST(xsequence, forward)
