@@ -1170,7 +1170,7 @@ namespace xtl
     {
         std::string s = "thisisatest";
         char buf[16];
-        strncpy(buf, s.c_str(), sizeof(buf));
+        strcpy(buf, s.c_str());
         numpy_string* x = reinterpret_cast<numpy_string*>(buf);
 
         EXPECT_EQ(*x, s);

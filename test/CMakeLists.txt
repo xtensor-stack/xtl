@@ -51,7 +51,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Intel)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-    add_compile_options(/EHsc /MP /bigobj /W4 /WX)
+    add_compile_options(/EHsc /MP /bigobj /W4 /WX /wd4996)
     set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
     if (XTL_DISABLE_EXCEPTIONS)
         add_compile_options(/EHs-c-)
