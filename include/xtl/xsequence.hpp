@@ -11,6 +11,7 @@
 #define XTL_SEQUENCE_HPP
 
 #include <array>
+#include <algorithm>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -120,7 +121,7 @@ namespace xtl
             static inline R forward(const T& r)
             {
                 R ret;
-                std::copy(std::begin(r), std::end(r), std::begin(ret));
+                std::copy_n(std::begin(r), std::size(ret), std::begin(ret));
                 return ret;
             }
         };

@@ -37,7 +37,7 @@ if(nlohmann_json_FOUND)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Intel)
-    add_compile_options(-Wunused-parameter -Wextra -Wreorder -Wconversion -Wsign-conversion)
+    add_compile_options(-Werror -Wall -Wextra)
 
     if(NOT CMAKE_CXX_FLAGS MATCHES "-march")
         CHECK_CXX_COMPILER_FLAG(-march=native HAS_MARCH_NATIVE)
@@ -60,7 +60,7 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
   if(NOT WIN32)
-    add_compile_options(-Wunused-parameter -Wextra -Wreorder -Wconversion -Wsign-conversion)
+    add_compile_options(-Werror -Wall -Wextra)
 
     if(NOT CMAKE_CXX_FLAGS MATCHES "-march")
         CHECK_CXX_COMPILER_FLAG(-march=native HAS_MARCH_NATIVE)

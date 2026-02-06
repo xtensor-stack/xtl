@@ -41,7 +41,7 @@ namespace xtl
 
     TEST(xsequence, forward_type)
     {
-        std::array<int, 2> a, b;
+        std::array<int, 2> a;
         std::vector<int> c;
         EXPECT_TRUE(test(std::move(a)));
         EXPECT_FALSE(test(a));
@@ -57,11 +57,19 @@ namespace xtl
 
     TEST(xsequence, different_arrays)
     {
-        std::array<int, 3> x, y;
-        aligned_array<int, 3> aa, ab;
+        std::array<int, 3> x{};
+        aligned_array<int, 3> aa{};
 
         auto res1 = test_different_array<aligned_array<int, 3>>(x);
+            EXPECT_EQ(res1.size(), 3);
+            EXPECT_EQ(res1[0], 0);
+            EXPECT_EQ(res1[1], 0);
+            EXPECT_EQ(res1[2], 0);
         auto res2 = test_different_array<aligned_array<int, 3>>(aa);
+            EXPECT_EQ(res2.size(), 3);
+            EXPECT_EQ(res2[0], 0);
+            EXPECT_EQ(res2[1], 0);
+            EXPECT_EQ(res2[2], 0);
     }
 
     TEST(xsequence, forward)

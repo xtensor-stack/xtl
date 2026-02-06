@@ -210,7 +210,6 @@ namespace xtl
         auto res8 = fma(o1, o2, o3);
         EXPECT_EQ(res8, std::fma(d1, d2, d3));
 
-        using optional_int = xoptional<int, bool>;
         using optional_int_ref = xoptional<int&, bool&>;
         int i1 = 9;
         int i2 = 4;
@@ -232,7 +231,7 @@ namespace xtl
 
         auto res13 = ~oi1;
         EXPECT_EQ(res13, optional(~i1, true));
-        
+
         auto res5 = oi1 || oi2;
         EXPECT_EQ(res5, optional(i1 || i2, true));
 
@@ -297,7 +296,6 @@ namespace xtl
 
     TEST(xoptional, select)
     {
-        using opt_type = xoptional<double, bool>;
         using bool_opt_type = xoptional<bool, bool>;
         auto missing_val = missing<double>();
 

@@ -575,6 +575,7 @@ namespace xtl
         EXPECT_EQ(pow(o, m1).value(), std::pow(5., 5.));
         EXPECT_EQ(pow(m1, 2).value(), 25.0);
         EXPECT_EQ(pow(2, m1).value(), 32);
+        EXPECT_EQ(pow(m1, m2).value(), std::pow(5., 5.));
     }
 
     TEST(xmasked_value, ternary_op)
