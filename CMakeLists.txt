@@ -12,6 +12,17 @@ project(xtl)
 
 set(XTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Enforce C++20
+if(DEFINED CMAKE_CXX_STANDARD)
+    if(CMAKE_CXX_STANDARD LESS 20)
+        message(FATAL_ERROR "xtl requires at least C++20")
+    endif()
+else()
+    set(CMAKE_CXX_STANDARD 20)
+endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Versioning
 # ===========
 
