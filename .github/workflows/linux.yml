@@ -13,64 +13,65 @@ defaults:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    name: "${{ matrix.sys.compiler }} ${{ matrix.sys.version }}"
+    name: '${{ matrix.sys.compiler }} ${{ matrix.sys.version }}'
     strategy:
       matrix:
         sys:
-          - { compiler: "gcc", version: "11" }
-          - { compiler: "gcc", version: "12" }
-          - { compiler: "gcc", version: "13" }
-          - { compiler: "gcc", version: "14" }
-          - { compiler: "clang", version: "17" }
-          - { compiler: "clang", version: "18" }
-          - { compiler: "clang", version: "19" }
-          - { compiler: "clang", version: "20" }
+          - { compiler: 'gcc',   version: '11' }
+          - { compiler: 'gcc',   version: '12' }
+          - { compiler: 'gcc',   version: '13' }
+          - { compiler: 'gcc',   version: '14' }
+          - { compiler: 'clang', version: '17' }
+          - { compiler: 'clang', version: '18' }
+          - { compiler: 'clang', version: '19' }
+          - { compiler: 'clang', version: '20' }
 
     steps:
-      - name: Install GCC
-        if: matrix.sys.compiler == 'gcc'
-        uses: egor-tensin/setup-gcc@v1
-        with:
-          version: ${{matrix.sys.version}}
-          platform: x64
+    - name: Install GCC
+      if: matrix.sys.compiler == 'gcc'
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: ${{matrix.sys.version}}
+        platform: x64
 
-      - name: Install LLVM and Clang
-        if: matrix.sys.compiler == 'clang'
-        run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh ${{matrix.sys.version}}
-          sudo apt-get install -y clang-tools-${{matrix.sys.version}}
-          sudo update-alternatives --install /usr/bin/clang++				    clang++					    /usr/bin/clang++-${{matrix.sys.version}} 200
-          sudo update-alternatives --install /usr/bin/clang					    clang					      /usr/bin/clang-${{matrix.sys.version}} 200
-          sudo update-alternatives --install /usr/bin/clang-scan-deps   clang-scan-deps     /usr/bin/clang-scan-deps-${{matrix.sys.version}} 200
-          sudo update-alternatives --set clang /usr/bin/clang-${{matrix.sys.version}}
-          sudo update-alternatives --set clang++ /usr/bin/clang++-${{matrix.sys.version}}
-          sudo update-alternatives --set clang-scan-deps /usr/bin/clang-scan-deps-${{matrix.sys.version}}
+    - name: Install LLVM and Clang
+      if: matrix.sys.compiler == 'clang'
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh ${{matrix.sys.version}}
+        sudo apt-get install -y clang-tools-${{matrix.sys.version}} 
+        sudo update-alternatives --install /usr/bin/clang++				    clang++					    /usr/bin/clang++-${{matrix.sys.version}} 200
+        sudo update-alternatives --install /usr/bin/clang					    clang					      /usr/bin/clang-${{matrix.sys.version}} 200
+        sudo update-alternatives --install /usr/bin/clang-scan-deps   clang-scan-deps     /usr/bin/clang-scan-deps-${{matrix.sys.version}} 200 
+        sudo update-alternatives --set clang /usr/bin/clang-${{matrix.sys.version}}
+        sudo update-alternatives --set clang++ /usr/bin/clang++-${{matrix.sys.version}}
+        sudo update-alternatives --set clang-scan-deps /usr/bin/clang-scan-deps-${{matrix.sys.version}}
 
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set mamba environment
-        uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-file: environment-dev.yml
-          cache-environment: true
+    - name: Set mamba environment
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-file: environment-dev.yml
+        cache-environment: true
 
-      - name: Configure
-        run: |
-          if [[ "${{matrix.sys.compiler}}" = "gcc" ]]; then export CC=gcc-${{matrix.sys.version}}; export CXX=g++-${{matrix.sys.version}}; else export CC=clang; export CXX=clang++; fi
-          mkdir -p build
-          cd build
-          cmake .. -DBUILD_TESTS=ON \
-                   -DCMAKE_C_COMPILER=$CC \
-                   -DCMAKE_CXX_COMPILER=$CXX \
-                   -G Ninja
+    - name: Configure
+      run: |
+        if [[ "${{matrix.sys.compiler}}" = "gcc" ]]; then export CC=gcc-${{matrix.sys.version}}; export CXX=g++-${{matrix.sys.version}}; else export CC=clang; export CXX=clang++; fi
+        mkdir -p build
+        cd build
+        cmake .. -DBUILD_TESTS=ON \
+                 -DCMAKE_C_COMPILER=$CC \
+                 -DCMAKE_CXX_COMPILER=$CXX \
+                 -G Ninja
 
-      - name: Build
-        run: ninja -C build test_xtl
+    - name: Build
+      run: ninja -C build test_xtl
 
-      - name: Test
-        run: |
-          cd build/test
-          ./test_xtl
+    - name: Test
+      run: |
+        cd build/test
+        ./test_xtl
+
