@@ -7,6 +7,11 @@
 Changelog
 =========
 
+0.8.2
+-----
+
+- Removed warnings
+
 0.8.1
 -----
 
