@@ -541,6 +541,28 @@ namespace xtl
 #undef DEFINE_UNARY_BOOL_OPERATOR
 #undef DEFINE_OPERATOR
 #undef DEFINE_BOOL_OPERATOR
+
+
+    template <class T, class B>
+    struct is_scalar<xmasked_value<T, B>> : is_scalar<std::remove_reference_t<T>>
+    {
+    };
+
+    template <class T, class B>
+    struct is_arithmetic<xmasked_value<T, B>> : is_arithmetic<std::remove_reference_t<T>>
+    {
+    };
+
+    template <class T, class B>
+    struct is_signed<xmasked_value<T, B>> : is_signed<std::remove_reference_t<T>>
+    {
+    };
+
+    template <class T, class B>
+    struct is_floating_point<xmasked_value<T, B>> : is_floating_point<std::remove_reference_t<T>>
+    {
+    };
+
 }
 
 #endif
