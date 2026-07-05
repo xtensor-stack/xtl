@@ -106,6 +106,23 @@ namespace xtl
     template <class E, class R = void>
     using enable_scalar = std::enable_if_t<xtl::is_arithmetic<E>::value, R>;
 
+    /*************************
+     * select implementation *
+     *************************/
+
+    // Complex overload of xtl::select (see xfunctional.hpp, which covers
+    // scalars only): at least one of v1 / v2 is complex, the other may be a
+    // scalar.
+    template <class B, class T1, class T2,
+              XTL_REQUIRES(std::is_scalar<B>,
+                           std::disjunction<is_gen_complex<T1>, is_gen_complex<T2>>,
+                           std::disjunction<std::is_scalar<T1>, is_gen_complex<T1>>,
+                           std::disjunction<std::is_scalar<T2>, is_gen_complex<T2>>)>
+    inline std::common_type_t<T1, T2> select(const B& cond, const T1& v1, const T2& v2) noexcept
+    {
+        return cond ? v1 : v2;
+    }
+
     /*******************
      * common_xcomplex *
      *******************/
