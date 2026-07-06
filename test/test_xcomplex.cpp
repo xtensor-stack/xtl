@@ -328,5 +328,27 @@ namespace xtl
         EXPECT_COMPLEX_APPROX_EQ(b / x_closure, b / 5.0);
         EXPECT_COMPLEX_APPROX_EQ(x_closure / b, 5.0 / b);
     }
+
+    TEST(xcomplex, select)
+    {
+        std::complex<double> a(1., 2.);
+        std::complex<double> b(3., 4.);
+        EXPECT_EQ(select(true, a, b), a);
+        EXPECT_EQ(select(false, a, b), b);
+
+        // Mixed precision promotes to the common type.
+        std::complex<float> af(1.f, 2.f);
+        EXPECT_EQ(select(true, af, b), std::complex<double>(1., 2.));
+        EXPECT_EQ(select(false, af, b), b);
+
+        // Mixed real / complex.
+        EXPECT_EQ(select(true, 5., b), std::complex<double>(5., 0.));
+        EXPECT_EQ(select(false, 5., b), b);
+
+        xcomplex<double> xa(1., 2.);
+        xcomplex<double> xb(3., 4.);
+        EXPECT_EQ(select(true, xa, xb), xa);
+        EXPECT_EQ(select(false, xa, xb), xb);
+    }
 }
 
